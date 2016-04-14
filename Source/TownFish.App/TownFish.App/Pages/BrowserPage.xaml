@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TownFish.App.Pages.BrowserPage">
+  <ContentPage.Resources>
+    <ResourceDictionary>
+      <Style x:Key="BottomNavBtnStyle" TargetType="Button">
+        <Setter Property="TextColor" Value="#8b8b8b" />
+        <Setter Property="BackgroundColor" Value="White" />
+        <Setter Property="FontSize" Value="10" />
+        <Setter Property="HorizontalOptions" Value="Fill" />
+      </Style>
+      <Style x:Key="TopNavBtnStyle" TargetType="Button">
+        <Setter Property="TextColor" Value="#686868" />
+        <Setter Property="BackgroundColor" Value="#e8e8e8" />
+        <Setter Property="FontSize" Value="10" />
+      </Style>
+    </ResourceDictionary>
+  </ContentPage.Resources>
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="auto"/>
+    </Grid.RowDefinitions>
+    <!-- Top Menu Bar -->
+    <Grid BackgroundColor="#686868">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="auto" />
+        <ColumnDefinition Width="auto" />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="auto"/>
+        <RowDefinition Height="auto" />
+      </Grid.RowDefinitions>
+      <Button BackgroundColor="#686868" Text="{Binding PageTitle}" HeightRequest="60" Image="buildings.png"  />
+      <Button BackgroundColor="#686868" Grid.Column="2" Image="search.png" HeightRequest="60" />
+      <Button BackgroundColor="#686868" Grid.Column="3" Image="menu.png"  HeightRequest="60"/>
+      <Grid Grid.Row="1" Grid.ColumnSpan="4"  BackgroundColor="#e8e8e8">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="auto" />
+          <ColumnDefinition Width="auto" />
+          <ColumnDefinition Width="auto" />
+          <ColumnDefinition Width="auto" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="auto" />
+        </Grid.ColumnDefinitions>
+        <Button Text="{Binding TopAction1Label}" 
+                Command="{Binding TopAction1Command}"
+                Style="{StaticResource TopNavBtnStyle}" />
+        <Button Grid.Column="1" 
+                Text="{Binding TopAction2Label}" 
+                Command="{Binding TopAction2Command}"
+                Style="{StaticResource TopNavBtnStyle}" />
+        <Button Grid.Column="2" 
+                Text="{Binding TopAction3Label}" 
+                Command="{Binding TopAction3Command}"
+                Style="{StaticResource TopNavBtnStyle}" />
+        <Button Grid.Column="3" 
+                Text="{Binding TopAction4Label}" 
+                Command="{Binding TopAction4Command}"
+                Style="{StaticResource TopNavBtnStyle}" />
+        <Button Grid.Column="5" 
+                Command="{Binding TopActionMoreCommand}"
+                Text="More" 
+                Style="{StaticResource TopNavBtnStyle}"/>
+      </Grid>
+    </Grid>
+    <WebView Grid.Row="1" Source="{Binding Source}"  VerticalOptions="Fill" HorizontalOptions="Fill" />
+    <!-- Bottom Menu Bar -->
+    <Grid Grid.Row="2" BackgroundColor="White">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+       <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <Button Style="{StaticResource BottomNavBtnStyle}"
+              Image="{Binding BottomAction1Label}"
+              HorizontalOptions="Center"
+              Command="{Binding BottomAction1Command}"/>
+      <Button Style="{StaticResource BottomNavBtnStyle}"  
+              Image="{Binding BottomAction2Label}"
+              HorizontalOptions="Center"
+              Grid.Column="1"  
+              Command="{Binding BottomAction2Command}"/>
+      <Button Grid.Column="2"  
+              Image="{Binding BottomAction3Label}"
+              HorizontalOptions="Center"
+              Style="{StaticResource BottomNavBtnStyle}"  
+              Command="{Binding BottomAction3Command}"/>
+      <Button Image="{Binding BottomAction4Label}"
+              HorizontalOptions="Center" 
+              Grid.Column="3" 
+              Style="{StaticResource BottomNavBtnStyle}"  
+              Command="{Binding BottomAction4Command}"/>
+          <Button Image="{Binding BottomAction5Label}"
+              HorizontalOptions="Center" 
+              Grid.Column="4" 
+              Style="{StaticResource BottomNavBtnStyle}"  
+              Command="{Binding BottomAction5Command}"/>
+    </Grid>
+  </Grid>
+</ContentPage>
