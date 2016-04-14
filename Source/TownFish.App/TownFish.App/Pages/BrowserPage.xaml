@@ -68,7 +68,7 @@
                 Style="{StaticResource TopNavBtnStyle}"/>
       </Grid>
     </Grid>
-    <WebView Grid.Row="1" Source="{Binding Source}"  VerticalOptions="Fill" HorizontalOptions="Fill" />
+    <WebView x:Name="webView" Grid.Row="1" Source="{Binding Source}"  VerticalOptions="Fill" HorizontalOptions="Fill" />
     <!-- Bottom Menu Bar -->
     <Grid Grid.Row="2" BackgroundColor="White">
       <Grid.ColumnDefinitions>
@@ -103,5 +103,8 @@
               Style="{StaticResource BottomNavBtnStyle}"  
               Command="{Binding BottomAction5Command}"/>
     </Grid>
+  <Grid x:Name="loadingPanel" IsVisible="{Binding IsLoading}" Opacity="0.7" Grid.Row="1" BackgroundColor="Black">
+    <ActivityIndicator VerticalOptions="Center" HorizontalOptions="Center" IsRunning="{Binding IsLoading}" />
+  </Grid>
   </Grid>
 </ContentPage>

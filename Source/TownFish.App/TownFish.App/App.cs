@@ -21,7 +21,7 @@ namespace TownFish.App
 						new NavMenuItem { Name = "Notifications", ImageSource = "belldark.png", Url = "http://dev.townfish.tk/profile/notifications/", OrderNo = 1 },
 						new NavMenuItem { Name = "Messages", ImageSource = "messagesdark.png", Url = "http://dev.townfish.tk/messages/inbox", OrderNo = 2 },
 						new NavMenuItem { Name = "Compose", ImageSource = "questiondark.png", Url = "http://dev.townfish.tk/discussions?#", OrderNo = 3 },
-						new NavMenuItem { Name = "Pin", ImageSource = "buildingsdark.png", Url = "http://dev.townfish.tk/discussions?#", OrderNo = 4 }
+						new NavMenuItem { Name = "Pin", ImageSource = "pindark.png", Url = "http://dev.townfish.tk/discussions?#", OrderNo = 4 }
 					 },
 				TopPrimaryButtonText = "Greater London",
 				TopSecondaryMenuItems = new List<NavMenuItem>

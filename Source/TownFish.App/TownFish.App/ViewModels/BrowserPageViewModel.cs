@@ -20,6 +20,8 @@ namespace TownFish.App.ViewModels
 				if (value.Equals(mSource, StringComparison.Ordinal))
 					return;
 
+				IsLoading = true;
+
 				mSource = value;
 				OnPropertyChanged();
 			}
@@ -211,9 +213,22 @@ namespace TownFish.App.ViewModels
 
 		public ICommand TopActionMoreCommand { get; set; }
 
+		public bool IsLoading
+		{
+			get { return mIsLoading; }
+			set
+			{
+				if (value.Equals(mIsLoading))
+					return;
+
+				mIsLoading = value;
+				OnPropertyChanged();
+			}
+		}
+
 		#endregion
 
-		#region Properties
+		#region Methods
 
 		public static BrowserPageViewModel Create(MenuMap map)
 		{
@@ -296,6 +311,8 @@ namespace TownFish.App.ViewModels
 		string mBottomAction3Label;
 		string mBottomAction4Label;
 		string mBottomAction5Label;
+
+		bool mIsLoading;
 
 		#endregion
 	}
