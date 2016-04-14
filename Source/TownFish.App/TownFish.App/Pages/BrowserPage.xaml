@@ -17,7 +17,7 @@
       </Style>
     </ResourceDictionary>
   </ContentPage.Resources>
-  <Grid>
+  <Grid RowSpacing="0">
     <Grid.RowDefinitions>
       <RowDefinition Height="auto" />
       <RowDefinition Height="*" />
