@@ -1,0 +1,61 @@
+﻿{
+  "topBar": {
+    "isVisible": true, // Should we show the top menu at all?
+    "leftButton": {
+      "imageSource": "buildingsdark.png", // The icon to use, this can be a embedded asset like "buildinsdark.png" or can be an external url
+      "name": "Greater London", // Not used for bottom menu
+      "url": "http://dev.townfish.tk" // Url the menu item should go to
+    },
+    "searchButton": {
+      "isVisible": true,
+      "imageSource": "search.png",
+      "url": "javascript:TownFishMenu.showSearch()"
+    },
+    "menuButton": {
+      "isVisible": true,
+      "imageSource": "menu.png",
+      "url": "javascript:TownFishMenu.showProfileMenu()"
+    },
+ 
+    // Refers to the items in the secondary menu under the top bar
+    "menuItems": [
+      {
+        "name": "All",
+        "url": "http://dev.townfish.tk/discussions/type/question",
+        "orderNo": 0
+      },
+      {
+        "name": "Questions",
+        "url": "http://dev.townfish.tk/discussions/type/question",
+        "orderNo": 1
+      },
+      {
+        "name": "News",
+        "url": "http://dev.townfish.tk/discussions/type/question",
+        "orderNo": 2
+      },
+      {
+        "name": "Categories",
+        "url": "http://dev.townfish.tk/discussions/type/question",
+        "orderNo": 3
+      }
+    ]
+  },
+  "bottomBar": {
+    "isVisible": true,
+    "menuItems": [
+      {
+        "imageSource": "buildingsdark.png", // The icon to use, this can be a embedded asset like "buildinsdark.png" or can be an external url
+        "name": "Home", // Not used for bottom menu
+        "url": "http://dev.townfish.tk", // Url the menu item should go to
+        "orderNo": 0 // The order in which it should show in the menu. 0 = first
+      },
+      {
+        "imageSource": "belldark.png", // The icon to use, this can be a embedded asset like "buildinsdark.png" or can be an external url
+        "name": "Notifications", // Not used for bottom menu
+        "url": "http://dev.townfish.tk/profile/notifications/", // Url the menu item should go to
+        "orderNo": 0 // The order in which it should show in the menu. 0 = first
+      }
+    ]
+  }
+}

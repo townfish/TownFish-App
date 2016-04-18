@@ -17,23 +17,23 @@ namespace TownFish.App
 			{
 				BottomMenuItems = new List<NavMenuItem>
 					 {
-						new NavMenuItem { Name = "Home", ImageSource = "buildingsdark.png", Url = "http://dev.townfish.tk", OrderNo = 0 },
-						new NavMenuItem { Name = "Notifications", ImageSource = "belldark.png", Url = "http://dev.townfish.tk/profile/notifications/", OrderNo = 1 },
-						new NavMenuItem { Name = "Messages", ImageSource = "messagesdark.png", Url = "http://dev.townfish.tk/messages/inbox", OrderNo = 2 },
-						new NavMenuItem { Name = "Compose", ImageSource = "questiondark.png", Url = "http://dev.townfish.tk/discussions?#", OrderNo = 3 },
-						new NavMenuItem { Name = "Pin", ImageSource = "pindark.png", Url = "http://dev.townfish.tk/discussions?#", OrderNo = 4 }
+						new NavMenuItem { Name = "Home", ImageSource = "buildingsdark.png", Url = "http://dev.townfish.tk/discussions?mode=app", OrderNo = 0 },
+						new NavMenuItem { Name = "Notifications", ImageSource = "belldark.png", Url = "http://dev.townfish.tk/profile/notifications/?mode=app", OrderNo = 1 },
+						new NavMenuItem { Name = "Messages", ImageSource = "messagesdark.png", Url = "http://dev.townfish.tk/messages/inbox?mode=app", OrderNo = 2 },
+						new NavMenuItem { Name = "Compose", ImageSource = "questiondark.png", Url = "http://dev.townfish.tk/discussions?mode=app", OrderNo = 3 },
+						new NavMenuItem { Name = "Pin", ImageSource = "pindark.png", Url = "http://dev.townfish.tk/discussions?mode=app", OrderNo = 4 }
 					 },
 				TopPrimaryButtonText = "Greater London",
 				TopSecondaryMenuItems = new List<NavMenuItem>
 					{
-						new NavMenuItem { Name = "All", Url = "http://dev.townfish.tk/discussions/type/question", OrderNo = 0 },
-						new NavMenuItem { Name = "Questions", Url = "http://dev.townfish.tk/discussions/type/question", OrderNo = 1 },
-						new NavMenuItem { Name = "News", Url = "http://dev.townfish.tk/discussions/type/discussion", OrderNo = 2 },
-						new NavMenuItem { Name = "Categories", Url = "http://dev.townfish.tk/discussions/type/categories", OrderNo = 3 },
+						new NavMenuItem { Name = "All", Url = "http://dev.townfish.tk/discussions/type/question?mode=app", OrderNo = 0 },
+						new NavMenuItem { Name = "Questions", Url = "http://dev.townfish.tk/discussions/type/question?mode=app", OrderNo = 1 },
+						new NavMenuItem { Name = "News", Url = "http://dev.townfish.tk/discussions/type/discussion?mode=app", OrderNo = 2 },
+						new NavMenuItem { Name = "Categories", Url = "http://dev.townfish.tk/discussions/type/categories?mode=app", OrderNo = 3 },
 					}
 			});
 
-			vm.Source = "http://dev.townfish.tk";
+			vm.Source = "http://dev.townfish.tk/discussions?mode=app";
 
 			// The root page of your application
 			MainPage = new BrowserPage() { BindingContext = vm };
