@@ -78,30 +78,31 @@
         <ColumnDefinition Width="*" />
        <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
-      <Button Style="{StaticResource BottomNavBtnStyle}"
-              Image="{Binding BottomAction1Label}"
-              HorizontalOptions="Center"
-              Command="{Binding BottomAction1Command}"/>
-      <Button Style="{StaticResource BottomNavBtnStyle}"  
-              Image="{Binding BottomAction2Label}"
-              HorizontalOptions="Center"
-              Grid.Column="1"  
-              Command="{Binding BottomAction2Command}"/>
-      <Button Grid.Column="2"  
-              Image="{Binding BottomAction3Label}"
-              HorizontalOptions="Center"
-              Style="{StaticResource BottomNavBtnStyle}"  
-              Command="{Binding BottomAction3Command}"/>
-      <Button Image="{Binding BottomAction4Label}"
-              HorizontalOptions="Center" 
-              Grid.Column="3" 
-              Style="{StaticResource BottomNavBtnStyle}"  
-              Command="{Binding BottomAction4Command}"/>
-          <Button Image="{Binding BottomAction5Label}"
-              HorizontalOptions="Center" 
-              Grid.Column="4" 
-              Style="{StaticResource BottomNavBtnStyle}"  
-              Command="{Binding BottomAction5Command}"/>
+      <Image Source="{Binding BottomAction1Label}" HorizontalOptions="Center" WidthRequest="50" HeightRequest="50">
+        <Image.GestureRecognizers>
+          <TapGestureRecognizer Command="{Binding BottomAction1Command}"/>
+        </Image.GestureRecognizers>
+      </Image>
+      <Image Source="{Binding BottomAction2Label}" Grid.Column="1" HorizontalOptions="Center" WidthRequest="50" HeightRequest="50">
+        <Image.GestureRecognizers>
+          <TapGestureRecognizer Command="{Binding BottomAction2Command}"/>
+        </Image.GestureRecognizers>
+      </Image>
+      <Image Source="{Binding BottomAction3Label}" Grid.Column="2" HorizontalOptions="Center" WidthRequest="50" HeightRequest="50">
+        <Image.GestureRecognizers>
+          <TapGestureRecognizer Command="{Binding BottomAction3Command}"/>
+        </Image.GestureRecognizers>
+      </Image>
+      <Image Source="{Binding BottomAction4Label}" Grid.Column="3" HorizontalOptions="Center" WidthRequest="50" HeightRequest="50">
+        <Image.GestureRecognizers>
+          <TapGestureRecognizer Command="{Binding BottomAction4Command}"/>
+        </Image.GestureRecognizers>
+      </Image>
+      <Image Grid.Column="4" Source="{Binding BottomAction5Label}" HorizontalOptions="Center" WidthRequest="50" HeightRequest="50">
+        <Image.GestureRecognizers>
+          <TapGestureRecognizer Command="{Binding BottomAction5Command}"/>
+        </Image.GestureRecognizers>
+      </Image>
     </Grid>
   <Grid x:Name="loadingPanel" IsVisible="{Binding IsLoading}" Opacity="0.7" Grid.Row="1" BackgroundColor="Black">
     <ActivityIndicator VerticalOptions="Center" HorizontalOptions="Center" IsRunning="{Binding IsLoading}" />

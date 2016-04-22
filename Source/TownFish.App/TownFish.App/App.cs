@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,27 +14,13 @@ namespace TownFish.App
 	{
 		public App()
 		{
-			var vm = BrowserPageViewModel.Create(new MenuMap
-			{
-				BottomMenuItems = new List<NavMenuItem>
-					 {
-						new NavMenuItem { Name = "Home", ImageSource = "buildingsdark.png", Url = "http://dev.townfish.tk/discussions?mode=app", OrderNo = 0 },
-						new NavMenuItem { Name = "Notifications", ImageSource = "belldark.png", Url = "http://dev.townfish.tk/profile/notifications/?mode=app", OrderNo = 1 },
-						new NavMenuItem { Name = "Messages", ImageSource = "messagesdark.png", Url = "http://dev.townfish.tk/messages/inbox?mode=app", OrderNo = 2 },
-						new NavMenuItem { Name = "Compose", ImageSource = "questiondark.png", Url = "http://dev.townfish.tk/discussions?mode=app", OrderNo = 3 },
-						new NavMenuItem { Name = "Pin", ImageSource = "pindark.png", Url = "http://dev.townfish.tk/discussions?mode=app", OrderNo = 4 }
-					 },
-				TopPrimaryButtonText = "Greater London",
-				TopSecondaryMenuItems = new List<NavMenuItem>
-					{
-						new NavMenuItem { Name = "All", Url = "http://dev.townfish.tk/discussions/type/question?mode=app", OrderNo = 0 },
-						new NavMenuItem { Name = "Questions", Url = "http://dev.townfish.tk/discussions/type/question?mode=app", OrderNo = 1 },
-						new NavMenuItem { Name = "News", Url = "http://dev.townfish.tk/discussions/type/discussion?mode=app", OrderNo = 2 },
-						new NavMenuItem { Name = "Categories", Url = "http://dev.townfish.tk/discussions/type/categories?mode=app", OrderNo = 3 },
-					}
-			});
+			var json = "{ \"locationsAPI\": \"\", \"menus\": { \"top\": { \"display\": true, \"position\": \"top\", \"items\": [{ \"type\": \"link\", \"kind\": \"icon\", \"value\": \"Home\", \"iconurl\": \"https://i.ytimg.com/vi/tntOCGkgt98/maxresdefault.jpg\", \"size\": \"mdpi\", \"href\": \"http://dev.townfish.tk/\", \"align\": \"left\" }, { \"type\": \"location\", \"value\": \"\", \"align\": \"left\" }, { \"type\": \"link\", \"kind\": \"icon\", \"value\": \"Hamburger\", \"iconurl\": \"https://i.ytimg.com/vi/tntOCGkgt98/maxresdefault.jpg\", \"size\": \"mdpi\", \"href \": \"http://dev.townfish.tk/messages/inbox\", \"align\": \"right\" }] }, \"topsub\": { \"display\": true, \"position\": \"topsub\", \"items\": [{ \"type\": \"link\", \"kind\": \"text\", \"value\": \"All\", \"href\": \"/\", }, { \"type\": \"link\", \"kind\": \"text\", \"value\": \"Questions\", \"href\": \"/\", }, { \"type\": \"link\", \"kind\": \"text\", \"value\": \"News\", \"href\": \"/\", }, { \"type\": \"link\", \"kind\": \"text\", \"value\": \"Categories\", \"href \": \"/\", } ], \"limitby\": 3 }, \"bottom\": { \"display\": true, \"position\": \"bottom\", \"items\": [{ \"type\": \"link\", \"kind\": \"icon\", \"value\": \"Home\", \"iconurl\": \"https://i.ytimg.com/vi/tntOCGkgt98/maxresdefault.jpg\", \"size\": \"mdpi\", \"href\": \"/\", \"align\": \"middle\", \"highlight\": true }, { \"type\": \"link\", \"kind\": \"icon\", \"value\": \"Notifications\", \"iconurl\": \"https://i.ytimg.com/vi/tntOCGkgt98/maxresdefault.jpg\", \"size\": \"mdpi\", \"href\": \"/profile/notifications/\", \"align\": \"middle\", \"hightlight\": false }, { \"type\": \"link\", \"kind\": \"icon\", \"value\": \"Messages\", \"iconurl\": \"https://i.ytimg.com/vi/tntOCGkgt98/maxresdefault.jpg\", \"size\": \"mdpi\", \"href\": \"/messages/inbox\", \"align\": \"middle\", \"highlight\": false }, { \"type\": \"link\", \"kind\": \"icon\", \"value\": \"Questions\", \"iconurl\": \"https://i.ytimg.com/vi/tntOCGkgt98/maxresdefault.jpg\", \"size\": \"mdpi\", \"href\": \"/discussions/type/question\", \"align\": \"middle\", \"highlight\": false }, { \"type\": \"link\", \"kind\": \"icon\", \"value\": \"Newsfeed\", \"iconurl\": \"https://i.ytimg.com/vi/tntOCGkgt98/maxresdefault.jpg\", \"size\": \"mdpi\", \"href\": \"/discussions/type/discussion\", \"align\": \"middle\", \"highlight\": false }] } } }";
 
+			var model = JsonConvert.DeserializeObject<TownFishMenuMap>(json);
+
+			var vm = BrowserPageViewModel.Create("http://dev.townfish.tk", model);
 			vm.Source = "http://dev.townfish.tk/discussions?mode=app";
+			vm.AppModeParam = "?mode=app";
 
 			// The root page of your application
 			MainPage = new BrowserPage() { BindingContext = vm };
