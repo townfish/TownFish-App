@@ -22,6 +22,7 @@ namespace TownFish.App.iOS
 		//
 		public override bool FinishedLaunching(UIApplication app, NSDictionary options)
 		{
+			var loadTheWebViewLibHere = new Xamify.UberWebViewLib.iOS.UberWebViewRenderer();
 			global::Xamarin.Forms.Forms.Init();
 			LoadApplication(new App());
 

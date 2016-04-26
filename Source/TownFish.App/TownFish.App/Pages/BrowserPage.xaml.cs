@@ -15,8 +15,8 @@ namespace TownFish.App.Pages
 		public BrowserPage()
 		{
 			InitializeComponent();
-			webView.Navigating += WebView_Navigating;
-			webView.Navigated += WebView_Navigated;
+			webView.NavigationStarted += WebView_Navigating;
+			webView.NavigationFinished += WebView_Navigated;
 		}
 
 		#endregion
@@ -32,12 +32,12 @@ namespace TownFish.App.Pages
 
 		#region Methods
 
-		void WebView_Navigated(object sender, WebNavigatedEventArgs e)
+		void WebView_Navigated(object sender, EventArgs e)
 		{
 			ViewModel.IsLoading = false;
 		}
 
-		void WebView_Navigating(object sender, WebNavigatingEventArgs e)
+		void WebView_Navigating(object sender, EventArgs e)
 		{
 			ViewModel.IsLoading = true;
 		}

@@ -19,7 +19,7 @@ namespace TownFish.App
 			var model = JsonConvert.DeserializeObject<TownFishMenuMap>(json);
 
 			var vm = BrowserPageViewModel.Create("http://dev.townfish.tk", model);
-			vm.Source = "http://dev.townfish.tk/discussions?mode=app";
+			vm.Source = "https://dev.townfish.tk/discussions?mode=app";
 			vm.AppModeParam = "?mode=app";
 
 			// The root page of your application
