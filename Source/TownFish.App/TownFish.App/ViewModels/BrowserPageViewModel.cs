@@ -37,6 +37,31 @@ namespace TownFish.App.ViewModels
 			get; set;
 		}
 
+		public bool IsTopBarVisible
+		{
+			get { return mIsTopBarVisible; }
+			set
+			{
+				mIsTopBarVisible = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public bool IsLoading
+		{
+			get { return mIsLoading; }
+			set
+			{
+				if (value.Equals(mIsLoading))
+					return;
+
+				mIsLoading = value;
+				OnPropertyChanged();
+			}
+		}
+
+		#region Bottom Bar
+
 		#region Bottom Action 1
 
 		public string BottomAction1Label
@@ -172,22 +197,62 @@ namespace TownFish.App.ViewModels
 
 		#endregion
 
-		public bool IsTopBarVisible
-		{
-			get { return mIsTopBarVisible;  }
-			set
-			{
-				mIsTopBarVisible = value;
-				OnPropertyChanged();
-			}
-		}
-
 		public bool IsBottomBarVisible
 		{
 			get { return mIsBottomBarVisible; }
 			set
 			{
 				mIsBottomBarVisible = value;
+				OnPropertyChanged();
+			}
+		}
+
+		#endregion
+
+		#region Top Bar
+
+		public string TopBarLeftLabel
+		{
+			get { return mTopBarLeftLabel; }
+			set
+			{
+				if (value.Equals(mTopBarLeftLabel, StringComparison.Ordinal))
+					return;
+
+				mTopBarLeftLabel = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public ICommand TopBarLeftCommand
+		{
+			get { return mTopBarLeftCommand; }
+			set
+			{
+				mTopBarLeftCommand = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public string TopBarRightLabel
+		{
+			get { return mTopBarRightLabel; }
+			set
+			{
+				if (value.Equals(mTopBarRightLabel, StringComparison.Ordinal))
+					return;
+
+				mTopBarRightLabel = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public ICommand TopBarRightCommand
+		{
+			get { return mTopBarRightCommand; }
+			set
+			{
+				mTopBarRightCommand = value;
 				OnPropertyChanged();
 			}
 		}
@@ -204,6 +269,10 @@ namespace TownFish.App.ViewModels
 				OnPropertyChanged();
 			}
 		}
+
+		#endregion
+
+		#region Top Sub
 
 		#region Top Action 1
 
@@ -283,18 +352,17 @@ namespace TownFish.App.ViewModels
 
 		public ICommand TopActionMoreCommand { get; set; }
 
-		public bool IsLoading
+		public bool IsTopBarSubVisible
 		{
-			get { return mIsLoading; }
+			get { return mIsTopBarSubVisible; }
 			set
 			{
-				if (value.Equals(mIsLoading))
-					return;
-
-				mIsLoading = value;
+				mIsTopBarSubVisible = value;
 				OnPropertyChanged();
 			}
 		}
+
+		#endregion
 
 		#endregion
 
@@ -345,9 +413,32 @@ namespace TownFish.App.ViewModels
 				IsBottomBarVisible = false;
 			}
 
-			if (map.Menus.TopSub.display)
+			if(map.Menus.Top.display)
 			{
 				IsTopBarVisible = true;
+
+				TopBarLeftLabel = GenerateImageUrl(map.Menus.Top.items[0]);
+				TopBarLeftCommand = new Command(() =>
+				{
+					System.Diagnostics.Debug.WriteLine("Show Location Menu");
+				});
+
+				PageTitle = map.Menus.Top.items[1].value;
+
+				TopBarRightLabel = GenerateImageUrl(map.Menus.Top.items[2]);
+				TopBarRightCommand = new Command(() =>
+				{
+					System.Diagnostics.Debug.WriteLine("Show Profile Menu");
+				});
+			}
+			else
+			{
+				IsTopBarVisible = false;
+			}
+
+			if (map.Menus.TopSub.display)
+			{
+				IsTopBarSubVisible = true;
 
 				// Top Menu
 				if (map.Menus.TopSub.items.Count > 0 && map.Menus.TopSub.items[0] != null)
@@ -376,7 +467,7 @@ namespace TownFish.App.ViewModels
 			}
 			else
 			{
-				IsTopBarVisible = false;
+				IsTopBarSubVisible = false;
 			}
 		}
 
@@ -414,7 +505,6 @@ namespace TownFish.App.ViewModels
 		string mTopAction3Label;
 		string mTopAction2Label;
 		string mTopAction4Label;
-
 		string mBottomAction1Label;
 		ICommand mBottomAction1Command;
 		string mBottomAction2Label;
@@ -425,11 +515,14 @@ namespace TownFish.App.ViewModels
 		ICommand mBottomAction4Command;
 		string mBottomAction5Label;
 		ICommand mBottomAction5Command;
-
 		bool mIsLoading;
-
 		bool mIsTopBarVisible;
 		bool mIsBottomBarVisible;
+		string mTopBarLeftLabel;
+		ICommand mTopBarLeftCommand;
+		string mTopBarRightLabel;
+		ICommand mTopBarRightCommand;
+		bool mIsTopBarSubVisible;
 
 		#endregion
 	}

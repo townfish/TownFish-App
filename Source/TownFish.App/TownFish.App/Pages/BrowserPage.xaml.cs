@@ -10,7 +10,7 @@ using Xamarin.Forms;
 
 namespace TownFish.App.Pages
 {
-	public partial class BrowserPage : MasterDetailPage
+	public partial class BrowserPage : ContentPage
 	{
 		#region Construction
 
