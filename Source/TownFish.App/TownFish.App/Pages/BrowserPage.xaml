@@ -37,21 +37,7 @@
           <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <!-- Top Menu Bar -->
-        <Grid BackgroundColor="#686868">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="auto" />
-            <ColumnDefinition Width="auto" />
-          </Grid.ColumnDefinitions>
-          <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto" />
-          </Grid.RowDefinitions>
-          <Button BackgroundColor="#686868" Text="{Binding PageTitle}" HeightRequest="60" Image="buildings.png"  />
-          <Button BackgroundColor="#686868" Grid.Column="2" Image="search.png" HeightRequest="60" />
-          <Button BackgroundColor="#686868" Grid.Column="3" Image="menu.png"  HeightRequest="60"/>
-          <Grid Grid.Row="1" Grid.ColumnSpan="4"  BackgroundColor="#e8e8e8">
+          <Grid Grid.Row="0" BackgroundColor="#e8e8e8" IsVisible="{Binding IsTopBarVisible}">
             <Grid.ColumnDefinitions>
               <ColumnDefinition Width="auto" />
               <ColumnDefinition Width="auto" />
@@ -80,10 +66,9 @@
                     Text="More"
                     Style="{StaticResource TopNavBtnStyle}"/>
           </Grid>
-        </Grid>
         <xamify:UberWebView x:Name="webView" Grid.Row="1" Source="{Binding Source}"  VerticalOptions="Fill" HorizontalOptions="Fill" />
         <!-- Bottom Menu Bar -->
-        <Grid Grid.Row="2" BackgroundColor="White">
+        <Grid Grid.Row="2" BackgroundColor="White" Padding="10" IsVisible="{Binding IsBottomBarVisible}">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
@@ -91,27 +76,27 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
           </Grid.ColumnDefinitions>
-          <Image Source="{Binding BottomAction1Label}" HorizontalOptions="Center" WidthRequest="50" HeightRequest="50">
+          <Image Source="{Binding BottomAction1Label}" HorizontalOptions="Center" WidthRequest="30" HeightRequest="30">
             <Image.GestureRecognizers>
               <TapGestureRecognizer Command="{Binding BottomAction1Command}"/>
             </Image.GestureRecognizers>
           </Image>
-          <Image Source="{Binding BottomAction2Label}" Grid.Column="1" HorizontalOptions="Center" WidthRequest="50" HeightRequest="50">
+          <Image Source="{Binding BottomAction2Label}" Grid.Column="1" HorizontalOptions="Center" WidthRequest="30" HeightRequest="30">
             <Image.GestureRecognizers>
               <TapGestureRecognizer Command="{Binding BottomAction2Command}"/>
             </Image.GestureRecognizers>
           </Image>
-          <Image Source="{Binding BottomAction3Label}" Grid.Column="2" HorizontalOptions="Center" WidthRequest="50" HeightRequest="50">
+          <Image Source="{Binding BottomAction3Label}" Grid.Column="2" HorizontalOptions="Center" WidthRequest="30" HeightRequest="30">
             <Image.GestureRecognizers>
               <TapGestureRecognizer Command="{Binding BottomAction3Command}"/>
             </Image.GestureRecognizers>
           </Image>
-          <Image Source="{Binding BottomAction4Label}" Grid.Column="3" HorizontalOptions="Center" WidthRequest="50" HeightRequest="50">
+          <Image Source="{Binding BottomAction4Label}" Grid.Column="3" HorizontalOptions="Center" WidthRequest="30" HeightRequest="30">
             <Image.GestureRecognizers>
               <TapGestureRecognizer Command="{Binding BottomAction4Command}"/>
             </Image.GestureRecognizers>
           </Image>
-          <Image Grid.Column="4" Source="{Binding BottomAction5Label}" HorizontalOptions="Center" WidthRequest="50" HeightRequest="50">
+          <Image Grid.Column="4" Source="{Binding BottomAction5Label}" HorizontalOptions="Center" WidthRequest="30" HeightRequest="30">
             <Image.GestureRecognizers>
               <TapGestureRecognizer Command="{Binding BottomAction5Command}"/>
             </Image.GestureRecognizers>

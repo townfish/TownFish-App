@@ -15,6 +15,7 @@ namespace TownFish.App.Models
 		public string value { get; set; }
 		public string iconurl { get; set; }
 		public string size { get; set; }
+		public string color { get; set; }
 		public string href { get; set; }
 		public string align { get; set; }
 		public bool highlight { get; set; }

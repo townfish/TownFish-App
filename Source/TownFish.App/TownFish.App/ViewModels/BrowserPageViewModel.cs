@@ -52,7 +52,15 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		public ICommand BottomAction1Command { get; set; }
+		public ICommand BottomAction1Command
+		{
+			get { return mBottomAction1Command; }
+			set
+			{
+				mBottomAction1Command = value;
+				OnPropertyChanged();
+			}
+		}
 
 		#endregion
 
@@ -71,7 +79,15 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		public ICommand BottomAction2Command { get; set; }
+		public ICommand BottomAction2Command
+		{
+			get { return mBottomAction2Command; }
+			set
+			{
+				mBottomAction2Command = value;
+				OnPropertyChanged();
+			}
+		}
 
 		#endregion
 
@@ -90,7 +106,15 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		public ICommand BottomAction3Command { get; set; }
+		public ICommand BottomAction3Command
+		{
+			get { return mBottomAction3Command; }
+			set
+			{
+				mBottomAction3Command = value;
+				OnPropertyChanged();
+			}
+		}
 
 		#endregion
 
@@ -109,7 +133,15 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		public ICommand BottomAction4Command { get; set; }
+		public ICommand BottomAction4Command
+		{
+			get { return mBottomAction4Command; }
+			set
+			{
+				mBottomAction4Command = value;
+				OnPropertyChanged();
+			}
+		}
 
 		#endregion
 
@@ -128,7 +160,15 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		public ICommand BottomAction5Command { get; set; }
+		public ICommand BottomAction5Command
+		{
+			get { return mBottomAction5Command; }
+			set
+			{
+				mBottomAction5Command = value;
+				OnPropertyChanged();
+			}
+		}
 
 		#endregion
 
@@ -269,7 +309,7 @@ namespace TownFish.App.ViewModels
 				// Bottom Menu
 				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[0] != null)
 				{
-					BottomAction1Label = map.Menus.Bottom.items[0].iconurl.Replace("{size}", map.Menus.Bottom.items[0].size);
+					BottomAction1Label = GenerateImageUrl(map.Menus.Bottom.items[0]);
 					BottomAction1Command = new Command(() =>
 					{
 						Source = BaseUri + map.Menus.Bottom.items[0].href + AppModeParam;
@@ -278,25 +318,25 @@ namespace TownFish.App.ViewModels
 
 				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[1] != null)
 				{
-					BottomAction2Label = map.Menus.Bottom.items[1].iconurl.Replace("{size}", map.Menus.Bottom.items[1].size);
+					BottomAction2Label = GenerateImageUrl(map.Menus.Bottom.items[1]);
 					BottomAction2Command = new Command(() => { Source = BaseUri + map.Menus.Bottom.items[1].href + AppModeParam; });
 				}
 
 				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[2] != null)
 				{
-					BottomAction3Label = map.Menus.Bottom.items[2].iconurl.Replace("{size}", map.Menus.Bottom.items[2].size);
+					BottomAction3Label = GenerateImageUrl(map.Menus.Bottom.items[2]);
 					BottomAction3Command = new Command(() => { Source = BaseUri + map.Menus.Bottom.items[2].href + AppModeParam; });
 				}
 
 				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[3] != null)
 				{
-					BottomAction4Label = map.Menus.Bottom.items[3].iconurl.Replace("{size}", map.Menus.Bottom.items[3].size);
+					BottomAction4Label = GenerateImageUrl(map.Menus.Bottom.items[3]);
 					BottomAction4Command = new Command(() => { Source = BaseUri + map.Menus.Bottom.items[3].href + AppModeParam; });
 				}
 
 				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[4] != null)
 				{
-					BottomAction5Label = map.Menus.Bottom.items[4].iconurl.Replace("{size}", map.Menus.Bottom.items[4].size);
+					BottomAction5Label = GenerateImageUrl(map.Menus.Bottom.items[4]);
 					BottomAction5Command = new Command(() => { Source = BaseUri + map.Menus.Bottom.items[4].href + AppModeParam; });
 				}
 			}
@@ -340,6 +380,16 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
+		string GenerateImageUrl(TownFishMenuItem item)
+		{
+			var url = item.iconurl;
+
+			url = url.Replace("{size}", item.size);
+			url = url.Replace("{color}", item.color);
+
+			return url;
+		}
+
 		public static BrowserPageViewModel Create(string baseUri, TownFishMenuMap map)
 		{
 			var viewModel = new BrowserPageViewModel
@@ -348,7 +398,8 @@ namespace TownFish.App.ViewModels
 				BaseUri = baseUri
 			};
 
-			viewModel.LoadMenuMap(baseUri, map);
+			if(map != null)
+				viewModel.LoadMenuMap(baseUri, map);
 
 			return viewModel;
 		}
@@ -363,11 +414,17 @@ namespace TownFish.App.ViewModels
 		string mTopAction3Label;
 		string mTopAction2Label;
 		string mTopAction4Label;
+
 		string mBottomAction1Label;
+		ICommand mBottomAction1Command;
 		string mBottomAction2Label;
+		ICommand mBottomAction2Command;
 		string mBottomAction3Label;
+		ICommand mBottomAction3Command;
 		string mBottomAction4Label;
+		ICommand mBottomAction4Command;
 		string mBottomAction5Label;
+		ICommand mBottomAction5Command;
 
 		bool mIsLoading;
 
