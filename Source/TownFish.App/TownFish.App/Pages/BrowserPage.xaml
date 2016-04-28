@@ -15,7 +15,7 @@
       <Style x:Key="TopNavBtnStyle" TargetType="Button">
         <Setter Property="TextColor" Value="#686868" />
         <Setter Property="BackgroundColor" Value="#e8e8e8" />
-        <Setter Property="FontSize" Value="10" />
+        <Setter Property="FontSize" Value="14" />
       </Style>
     </ResourceDictionary>
   </ContentPage.Resources>
@@ -26,7 +26,7 @@
       <RowDefinition Height="auto"/>
     </Grid.RowDefinitions>
     <!-- Top Menu Bar -->
-    <Grid >
+    <Grid RowSpacing="0" >
       <Grid.RowDefinitions>
         <RowDefinition />
         <RowDefinition />
@@ -49,7 +49,7 @@
           </Image.GestureRecognizers>
         </Image>
       </Grid>
-      <Grid Grid.Row="1" BackgroundColor="#e8e8e8" IsVisible="{Binding IsTopBarSubVisible}">
+      <Grid Grid.Row="1" BackgroundColor="#e8e8e8" ColumnSpacing="10" Padding="10, 0" IsVisible="{Binding IsTopBarSubVisible}">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="auto" />
           <ColumnDefinition Width="auto" />
@@ -69,14 +69,11 @@
                 Text="{Binding TopAction3Label}"
                 Command="{Binding TopAction3Command}"
                 Style="{StaticResource TopNavBtnStyle}" />
-        <Button Grid.Column="3"
-                Text="{Binding TopAction4Label}"
-                Command="{Binding TopAction4Command}"
-                Style="{StaticResource TopNavBtnStyle}" />
-        <Button Grid.Column="5"
-                Command="{Binding TopActionMoreCommand}"
-                Text="More"
-                Style="{StaticResource TopNavBtnStyle}"/>
+        <Image Source="{Binding TopActionMoreLabel}" Grid.Column="5" HorizontalOptions="Center" WidthRequest="20" HeightRequest="20">
+          <Image.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding TopActionMoreCommand}"/>
+          </Image.GestureRecognizers>
+        </Image>
       </Grid>
     </Grid>
     <xamify:UberWebView x:Name="webView" Grid.Row="1" Source="{Binding Source}"  VerticalOptions="Fill" HorizontalOptions="Fill" />

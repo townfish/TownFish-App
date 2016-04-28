@@ -39,6 +39,23 @@ namespace TownFish.App.Pages
 					System.Diagnostics.Debug.WriteLine(e.Message);
 				}
 			});
+
+			BindingContextChanged += BrowserPage_BindingContextChanged;
+		}
+
+		void BrowserPage_BindingContextChanged(object sender, EventArgs e)
+		{
+			if (ViewModel != null)
+			{
+				// Because we use DisplayActionSheet
+				ViewModel.TopActionMoreCommand = new Command(async () =>
+				{
+					var action = await DisplayActionSheet("More Actions", "Cancel", null, 
+						ViewModel.OverflowImages.Select(x => x.value).ToArray<string>());
+
+					ViewModel.Source = ViewModel.OverflowImages.First(i => i.value == action).href + ViewModel.AppModeParam;
+				});
+			}
 		}
 
 		#endregion

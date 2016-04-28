@@ -274,8 +274,6 @@ namespace TownFish.App.ViewModels
 
 		#region Top Sub
 
-		#region Top Action 1
-
 		public string TopAction1Label
 		{
 			get { return mTopAction1Label; }
@@ -289,11 +287,15 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		public ICommand TopAction1Command { get; set; }
-
-		#endregion
-
-		#region Top Action 2
+		public ICommand TopAction1Command
+		{
+			get { return mTopAction1Command; }
+			set
+			{
+				mTopAction1Command = value;
+				OnPropertyChanged();
+			}
+		}
 
 		public string TopAction2Label
 		{
@@ -308,11 +310,15 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		public ICommand TopAction2Command { get; set; }
-
-		#endregion
-
-		#region Top Action 3
+		public ICommand TopAction2Command
+		{
+			get { return mTopAction2Command; }
+			set
+			{
+				mTopAction2Command = value;
+				OnPropertyChanged();
+			}
+		}
 
 		public string TopAction3Label
 		{
@@ -327,30 +333,38 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		public ICommand TopAction3Command { get; set; }
-
-		#endregion
-
-		#region Top Action 4
-
-		public string TopAction4Label
+		public ICommand TopAction3Command
 		{
-			get { return mTopAction4Label; }
+			get { return mTopAction3Command; }
 			set
 			{
-				if (value.Equals(mTopAction4Label, StringComparison.Ordinal))
-					return;
-
-				mTopAction4Label = value;
+				mTopAction3Command = value;
 				OnPropertyChanged();
 			}
 		}
 
-		public ICommand TopAction4Command { get; set; }
+		public ICommand TopActionMoreCommand
+		{
+			get { return mTopBarMoreCommand; }
+			set
+			{
+				mTopBarMoreCommand = value;
+				OnPropertyChanged();
+			}
+		}
 
-		#endregion
+		public string TopActionMoreLabel
+		{
+			get { return mTopBarMoreLabel; }
+			set
+			{
+				if (value.Equals(mTopBarMoreLabel, StringComparison.Ordinal))
+					return;
 
-		public ICommand TopActionMoreCommand { get; set; }
+				mTopBarMoreLabel = value;
+				OnPropertyChanged();
+			}
+		}
 
 		public bool IsTopBarSubVisible
 		{
@@ -361,6 +375,8 @@ namespace TownFish.App.ViewModels
 				OnPropertyChanged();
 			}
 		}
+
+		public List<TownFishMenuItem> OverflowImages { get; set; }
 
 		#endregion
 
@@ -459,10 +475,13 @@ namespace TownFish.App.ViewModels
 					TopAction3Command = new Command(() => { Source = BaseUri + map.Menus.TopSub.items[2].href + AppModeParam; });
 				}
 
-				if (map.Menus.TopSub.items.Count > 0 && map.Menus.TopSub.items[3] != null)
+				var moreIcon = map.Menus.TopSub.items.FirstOrDefault(x => x.type == "limitby");
+
+				if (moreIcon != null)
 				{
-					TopAction4Label = map.Menus.TopSub.items[3].value;
-					TopAction4Command = new Command(() => { Source = BaseUri + map.Menus.TopSub.items[3].href + AppModeParam; });
+					TopActionMoreLabel = GenerateImageUrl(map.Menus.TopSub.items[3]);
+
+					OverflowImages = map.Menus.TopSub.items.Skip(3).Where(i => i.type != "limitby").ToList();
 				}
 			}
 			else
@@ -485,8 +504,8 @@ namespace TownFish.App.ViewModels
 		{
 			var viewModel = new BrowserPageViewModel
 			{
-				//	PageTitle = map.TopPrimaryButtonText, TODO,
-				BaseUri = baseUri
+				BaseUri = baseUri,
+				OverflowImages = new List<TownFishMenuItem>()
 			};
 
 			if(map != null)
@@ -523,6 +542,12 @@ namespace TownFish.App.ViewModels
 		string mTopBarRightLabel;
 		ICommand mTopBarRightCommand;
 		bool mIsTopBarSubVisible;
+
+		string mTopBarMoreLabel;
+		ICommand mTopBarMoreCommand;
+		ICommand mTopAction1Command;
+		ICommand mTopAction2Command;
+		ICommand mTopAction3Command;
 
 		#endregion
 	}
