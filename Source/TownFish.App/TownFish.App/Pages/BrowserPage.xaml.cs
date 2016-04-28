@@ -53,7 +53,8 @@ namespace TownFish.App.Pages
 					var action = await DisplayActionSheet("More Actions", "Cancel", null, 
 						ViewModel.OverflowImages.Select(x => x.value).ToArray<string>());
 
-					ViewModel.Source = ViewModel.OverflowImages.First(i => i.value == action).href + ViewModel.AppModeParam;
+					if(action != "Cancel")
+						ViewModel.Source = ViewModel.OverflowImages.First(i => i.value == action).href + ViewModel.AppModeParam;
 				});
 			}
 		}
