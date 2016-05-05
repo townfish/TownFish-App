@@ -78,7 +78,7 @@
     </Grid>
     <xamify:UberWebView x:Name="webView" Grid.Row="1" Source="{Binding Source}"  VerticalOptions="Fill" HorizontalOptions="Fill" />
     <!-- Bottom Menu Bar -->
-    <Grid Grid.Row="2" BackgroundColor="White" Padding="10" IsVisible="{Binding IsBottomBarVisible}">
+    <Grid Grid.Row="2" BackgroundColor="#F2F2F2" Padding="10" IsVisible="{Binding IsBottomBarVisible}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="*" />

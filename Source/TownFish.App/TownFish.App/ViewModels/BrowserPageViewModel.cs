@@ -497,7 +497,7 @@ namespace TownFish.App.ViewModels
 			url = url.Replace("{size}", item.size);
 			url = url.Replace("{color}", item.color);
 
-			return url;
+			return BaseUri + url;
 		}
 
 		public static BrowserPageViewModel Create(string baseUri, TownFishMenuMap map)
