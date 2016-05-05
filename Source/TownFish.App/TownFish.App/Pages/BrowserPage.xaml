@@ -26,12 +26,12 @@
       <RowDefinition Height="auto"/>
     </Grid.RowDefinitions>
     <!-- Top Menu Bar -->
-    <Grid RowSpacing="0" >
+    <Grid RowSpacing="0">
       <Grid.RowDefinitions>
         <RowDefinition />
         <RowDefinition />
       </Grid.RowDefinitions>
-      <Grid IsVisible="{Binding IsTopBarVisible}" BackgroundColor="#787878" Padding="10">
+      <Grid x:Name="topBar" IsVisible="{Binding IsTopBarVisible}" BackgroundColor="#787878" Padding="10,10,10,10">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="auto" />
           <ColumnDefinition />

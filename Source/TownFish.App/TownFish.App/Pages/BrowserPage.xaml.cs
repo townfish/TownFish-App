@@ -41,6 +41,11 @@ namespace TownFish.App.Pages
 			});
 
 			BindingContextChanged += BrowserPage_BindingContextChanged;
+
+			if(Device.OS == TargetPlatform.iOS)
+			{
+				topBar.Padding = new Thickness(10, 25, 10, 10);
+			}
 		}
 
 		void BrowserPage_BindingContextChanged(object sender, EventArgs e)
