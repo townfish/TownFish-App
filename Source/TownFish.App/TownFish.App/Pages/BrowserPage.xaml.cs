@@ -60,6 +60,12 @@ namespace TownFish.App.Pages
 
 					ViewModel.Source = ViewModel.OverflowImages.First(i => i.value == action).href + ViewModel.AppModeParam;
 				});
+
+				ViewModel.CallbackRequested += (reqstSender, callback) =>
+				{
+					webView.InvokeJS("twnfsh.runCallback('" + callback.ToLower() + "')");
+				};
+
 			}
 		}
 

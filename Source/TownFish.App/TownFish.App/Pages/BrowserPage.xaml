@@ -36,16 +36,23 @@
           <ColumnDefinition Width="auto" />
           <ColumnDefinition />
           <ColumnDefinition Width="auto"/>
+          <ColumnDefinition Width="10" />
+          <ColumnDefinition Width="auto"/>
         </Grid.ColumnDefinitions>
         <Image Source="{Binding TopBarLeftLabel}" Grid.Column="0" HorizontalOptions="Center" WidthRequest="20" HeightRequest="20">
           <Image.GestureRecognizers>
             <TapGestureRecognizer Command="{Binding TopBarLeftCommand}"/>
           </Image.GestureRecognizers>
         </Image>
-        <Label VerticalOptions="Center" Grid.Column="1" Text="{Binding PageTitle}" />
+        <Label VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" Text="{Binding PageTitle}" />
         <Image Source="{Binding TopBarRightLabel}" Grid.Column="2" HorizontalOptions="Center" WidthRequest="20" HeightRequest="20">
           <Image.GestureRecognizers>
             <TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
+          </Image.GestureRecognizers>
+        </Image>
+        <Image Source="{Binding TopBarRight1Label}" Grid.Column="4" HorizontalOptions="Center" WidthRequest="20" HeightRequest="20">
+          <Image.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
           </Image.GestureRecognizers>
         </Image>
       </Grid>
