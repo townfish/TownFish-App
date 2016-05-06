@@ -37,6 +37,9 @@ namespace TownFish.App.Pages
 				{
 					// TODO: menu failed, use a default? go to offline page?
 					System.Diagnostics.Debug.WriteLine(e.Message);
+					ViewModel.IsBottomBarVisible = false;
+					ViewModel.IsTopBarSubVisible = false;
+					ViewModel.IsTopBarVisible = false;
 				}
 			});
 

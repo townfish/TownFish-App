@@ -421,7 +421,7 @@ namespace TownFish.App.ViewModels
 
 		public void LoadMenuMap(string baseUri, TownFishMenuMap map)
 		{
-			if (map.Menus.Bottom.display)
+			if (map.Menus.Bottom != null && map.Menus.Bottom.display)
 			{
 				IsBottomBarVisible = true;
 
@@ -461,7 +461,7 @@ namespace TownFish.App.ViewModels
 				IsBottomBarVisible = false;
 			}
 
-			if(map.Menus.Top.display)
+			if(map.Menus.Top != null && map.Menus.Top.display)
 			{
 				IsTopBarVisible = true;
 
@@ -489,7 +489,7 @@ namespace TownFish.App.ViewModels
 				IsTopBarVisible = false;
 			}
 
-			if (map.Menus.TopSub.display)
+			if (map.Menus.TopSub != null && map.Menus.TopSub.display)
 			{
 				IsTopBarSubVisible = true;
 
