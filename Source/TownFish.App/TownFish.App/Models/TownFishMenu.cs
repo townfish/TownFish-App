@@ -29,6 +29,8 @@ namespace TownFish.App.Models
 
 		public TownFishMenu TopSub { get; set; }
 
+		public TownFishMenu TopForm { get; set; }
+
 		public TownFishMenu Bottom { get; set; }
 
 		#endregion

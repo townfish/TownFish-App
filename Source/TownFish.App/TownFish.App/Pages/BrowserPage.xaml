@@ -22,6 +22,7 @@
   <Grid RowSpacing="0">
     <Grid.RowDefinitions>
       <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
       <RowDefinition Height="*" />
       <RowDefinition Height="auto"/>
     </Grid.RowDefinitions>
@@ -83,9 +84,28 @@
         </Image>
       </Grid>
     </Grid>
-    <xamify:UberWebView x:Name="webView" Grid.Row="1" Source="{Binding Source}"  VerticalOptions="Fill" HorizontalOptions="Fill" />
+    <Grid RowSpacing="0" Grid.Row="1" IsVisible="{Binding IsTopFormBarVisible}" BackgroundColor="#F2F2F2">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="auto" />
+      </Grid.ColumnDefinitions>
+      <Button Command="{Binding TopFormLeftAction}" 
+              Grid.Column="0" 
+              Text="{Binding TopFormLeftActionLabel}" 
+              BackgroundColor="#F2F2F2" 
+              TextColor="#007aff">       
+      </Button>
+      <Button Command="{Binding TopFormRightAction}" 
+              Grid.Column="2" 
+              Text="{Binding TopFormRightActionLabel}" 
+              BackgroundColor="#F2F2F2"
+              TextColor="#007aff">      
+      </Button>
+    </Grid>
+    <xamify:UberWebView x:Name="webView" Grid.Row="2" Source="{Binding Source}"  VerticalOptions="Fill" HorizontalOptions="Fill" />
     <!-- Bottom Menu Bar -->
-    <Grid Grid.Row="2" BackgroundColor="#F2F2F2" Padding="10" IsVisible="{Binding IsBottomBarVisible}">
+    <Grid Grid.Row="3" BackgroundColor="#F2F2F2" Padding="10" IsVisible="{Binding IsBottomBarVisible}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="*" />
@@ -119,7 +139,7 @@
         </Image.GestureRecognizers>
       </Image>
     </Grid>
-    <Grid x:Name="loadingPanel" IsVisible="{Binding IsLoading}" Opacity="0.7" Grid.Row="1" BackgroundColor="Black">
+    <Grid x:Name="loadingPanel" IsVisible="{Binding IsLoading}" Opacity="0.7" Grid.Row="2" BackgroundColor="Black">
       <ActivityIndicator VerticalOptions="Center" HorizontalOptions="Center" IsRunning="{Binding IsLoading}" />
     </Grid>
   </Grid>

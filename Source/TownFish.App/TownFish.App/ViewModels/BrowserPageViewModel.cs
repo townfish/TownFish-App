@@ -403,6 +403,79 @@ namespace TownFish.App.ViewModels
 
 		#endregion
 
+		#region TopForm
+
+		public string TopFormLeftActionLabel
+		{
+			get { return mTopFormLeftActionLabel; }
+			set
+			{
+				if (value.Equals(mTopFormLeftActionLabel, StringComparison.Ordinal))
+					return;
+
+				mTopFormLeftActionLabel = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public ICommand TopFormLeftAction
+		{
+			get { return mTopFormLeftAction; }
+			set
+			{
+				mTopFormLeftAction = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public string TopFormRightActionLabel
+		{
+			get { return mTopFormRightActionLabel; }
+			set
+			{
+				if (value.Equals(mTopFormRightActionLabel, StringComparison.Ordinal))
+					return;
+
+				mTopFormRightActionLabel = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public ICommand TopFormRightAction
+		{
+			get { return mTopFormRightAction; }
+			set
+			{
+				mTopFormRightAction = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public string TopFormPageTitle
+		{
+			get { return mTopFormPageTitle; }
+			set
+			{
+				if (value.Equals(mTopFormPageTitle, StringComparison.Ordinal))
+					return;
+
+				mTopFormPageTitle = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public bool IsTopFormBarVisible
+		{
+			get { return mIsTopFormBarVisible; }
+			set
+			{
+				mIsTopFormBarVisible = value;
+				OnPropertyChanged();
+			}
+		}
+
+		#endregion
+
 		#endregion
 
 		#region Events
@@ -524,6 +597,28 @@ namespace TownFish.App.ViewModels
 			{
 				IsTopBarSubVisible = false;
 			}
+
+			if(map.Menus.TopForm != null && map.Menus.TopForm.display)
+			{
+				if(map.Menus.TopForm.items.Count >= 2)
+				{
+					TopFormLeftActionLabel = GenerateLabel(map.Menus.TopForm.items[0]);
+					TopFormLeftAction = GenerateAction(map.Menus.TopForm.items[0]);
+
+					TopFormRightActionLabel = GenerateLabel(map.Menus.TopForm.items[1]);
+					TopFormRightAction = GenerateAction(map.Menus.TopForm.items[1]);
+
+					IsTopFormBarVisible = true;
+				}
+				else
+				{
+					IsTopFormBarVisible = false;
+				}			
+			}
+			else
+			{
+				IsTopFormBarVisible = false;
+			}
 		}
 
 		string GenerateLabel(TownFishMenuItem item)
@@ -624,6 +719,12 @@ namespace TownFish.App.ViewModels
 		ICommand mTopAction3Command;
 		ICommand mTopBarRight1Command;
 		string mTopBarRight1Label;
+		string mTopFormLeftActionLabel;
+		ICommand mTopFormLeftAction;
+		string mTopFormRightActionLabel;
+		ICommand mTopFormRightAction;
+		string mTopFormPageTitle;
+		bool mIsTopFormBarVisible;
 
 		#endregion
 	}
