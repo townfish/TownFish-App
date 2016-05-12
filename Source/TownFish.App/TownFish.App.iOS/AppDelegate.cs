@@ -24,6 +24,8 @@ namespace TownFish.App.iOS
 		{
 			var loadTheWebViewLibHere = new Xamify.UberWebViewLib.iOS.UberWebViewRenderer();
 			global::Xamarin.Forms.Forms.Init();
+			UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.LightContent, false);
+			UIApplication.SharedApplication.SetStatusBarHidden(false, false);
 			LoadApplication(new App());
 
 			return base.FinishedLaunching(app, options);

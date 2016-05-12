@@ -37,10 +37,18 @@ namespace TownFish.App.Pages
 				{
 					// TODO: menu failed, use a default? go to offline page?
 					System.Diagnostics.Debug.WriteLine(e.Message);
+					ViewModel.IsBottomBarVisible = false;
+					ViewModel.IsTopBarSubVisible = false;
+					ViewModel.IsTopBarVisible = false;
 				}
 			});
 
 			BindingContextChanged += BrowserPage_BindingContextChanged;
+
+			if(Device.OS == TargetPlatform.iOS)
+			{
+				topBar.Padding = new Thickness(10, 25, 10, 10);
+			}
 		}
 
 		void BrowserPage_BindingContextChanged(object sender, EventArgs e)
@@ -56,6 +64,12 @@ namespace TownFish.App.Pages
 					if(action != "Cancel")
 						ViewModel.Source = ViewModel.OverflowImages.First(i => i.value == action).href + ViewModel.AppModeParam;
 				});
+
+				ViewModel.CallbackRequested += (reqstSender, callback) =>
+				{
+					webView.InvokeJS("twnfsh.runCallback('" + callback.ToLower() + "')");
+				};
+
 			}
 		}
 

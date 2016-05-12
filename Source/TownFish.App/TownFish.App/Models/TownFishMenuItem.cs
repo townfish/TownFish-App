@@ -19,6 +19,7 @@ namespace TownFish.App.Models
 		public string href { get; set; }
 		public string align { get; set; }
 		public bool highlight { get; set; }
+		public string main { get; set; }
 
 		#endregion
 	}

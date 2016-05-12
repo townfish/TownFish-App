@@ -257,6 +257,29 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
+		public string TopBarRight1Label
+		{
+			get { return mTopBarRight1Label; }
+			set
+			{
+				if (value.Equals(mTopBarRight1Label, StringComparison.Ordinal))
+					return;
+
+				mTopBarRight1Label = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public ICommand TopBarRight1Command
+		{
+			get { return mTopBarRight1Command; }
+			set
+			{
+				mTopBarRight1Command = value;
+				OnPropertyChanged();
+			}
+		}
+
 		public string PageTitle
 		{
 			get { return mPageTitle; }
@@ -380,48 +403,130 @@ namespace TownFish.App.ViewModels
 
 		#endregion
 
+		#region TopForm
+
+		public string TopFormLeftActionLabel
+		{
+			get { return mTopFormLeftActionLabel; }
+			set
+			{
+				if (value.Equals(mTopFormLeftActionLabel, StringComparison.Ordinal))
+					return;
+
+				mTopFormLeftActionLabel = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public ICommand TopFormLeftAction
+		{
+			get { return mTopFormLeftAction; }
+			set
+			{
+				mTopFormLeftAction = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public string TopFormRightActionLabel
+		{
+			get { return mTopFormRightActionLabel; }
+			set
+			{
+				if (value.Equals(mTopFormRightActionLabel, StringComparison.Ordinal))
+					return;
+
+				mTopFormRightActionLabel = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public ICommand TopFormRightAction
+		{
+			get { return mTopFormRightAction; }
+			set
+			{
+				mTopFormRightAction = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public string TopFormPageTitle
+		{
+			get { return mTopFormPageTitle; }
+			set
+			{
+				if (value.Equals(mTopFormPageTitle, StringComparison.Ordinal))
+					return;
+
+				mTopFormPageTitle = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public bool IsTopFormBarVisible
+		{
+			get { return mIsTopFormBarVisible; }
+			set
+			{
+				mIsTopFormBarVisible = value;
+				OnPropertyChanged();
+			}
+		}
+
+		#endregion
+
+		#endregion
+
+		#region Events
+
+		public event EventHandler<string> CallbackRequested;
+
 		#endregion
 
 		#region Methods
 
+		public void OnCallbackRequested(string callbackName)
+		{
+			if (CallbackRequested != null)
+				CallbackRequested(this, callbackName);
+		}
+
 		public void LoadMenuMap(string baseUri, TownFishMenuMap map)
 		{
-			if (map.Menus.Bottom.display)
+			if (map.Menus.Bottom != null && map.Menus.Bottom.display)
 			{
 				IsBottomBarVisible = true;
 
 				// Bottom Menu
 				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[0] != null)
 				{
-					BottomAction1Label = GenerateImageUrl(map.Menus.Bottom.items[0]);
-					BottomAction1Command = new Command(() =>
-					{
-						Source = BaseUri + map.Menus.Bottom.items[0].href + AppModeParam;
-					});
+					BottomAction1Label = GenerateLabel(map.Menus.Bottom.items[0]);
+					BottomAction1Command = GenerateAction(map.Menus.Bottom.items[0]);
 				}
 
 				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[1] != null)
 				{
-					BottomAction2Label = GenerateImageUrl(map.Menus.Bottom.items[1]);
-					BottomAction2Command = new Command(() => { Source = BaseUri + map.Menus.Bottom.items[1].href + AppModeParam; });
+					BottomAction2Label = GenerateLabel(map.Menus.Bottom.items[1]);
+					BottomAction2Command = GenerateAction(map.Menus.Bottom.items[1]);
 				}
 
 				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[2] != null)
 				{
-					BottomAction3Label = GenerateImageUrl(map.Menus.Bottom.items[2]);
-					BottomAction3Command = new Command(() => { Source = BaseUri + map.Menus.Bottom.items[2].href + AppModeParam; });
+					BottomAction3Label = GenerateLabel(map.Menus.Bottom.items[2]);
+					BottomAction3Command = GenerateAction(map.Menus.Bottom.items[2]); ;
 				}
 
 				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[3] != null)
 				{
-					BottomAction4Label = GenerateImageUrl(map.Menus.Bottom.items[3]);
-					BottomAction4Command = new Command(() => { Source = BaseUri + map.Menus.Bottom.items[3].href + AppModeParam; });
+					BottomAction4Label = GenerateLabel(map.Menus.Bottom.items[3]);
+					BottomAction4Command = GenerateAction(map.Menus.Bottom.items[3]);
 				}
 
 				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[4] != null)
 				{
-					BottomAction5Label = GenerateImageUrl(map.Menus.Bottom.items[4]);
-					BottomAction5Command = new Command(() => { Source = BaseUri + map.Menus.Bottom.items[4].href + AppModeParam; });
+					BottomAction5Label = GenerateLabel(map.Menus.Bottom.items[4]);
+					BottomAction5Command = GenerateAction(map.Menus.Bottom.items[4]);
 				}
 			}
 			else
@@ -429,58 +534,62 @@ namespace TownFish.App.ViewModels
 				IsBottomBarVisible = false;
 			}
 
-			if(map.Menus.Top.display)
+			if(map.Menus.Top != null && map.Menus.Top.display)
 			{
 				IsTopBarVisible = true;
 
-				TopBarLeftLabel = GenerateImageUrl(map.Menus.Top.items[0]);
-				TopBarLeftCommand = new Command(() =>
-				{
-					System.Diagnostics.Debug.WriteLine("Show Location Menu");
-				});
+				TopBarLeftLabel = GenerateLabel(map.Menus.Top.items[0]);
+				TopBarLeftCommand = GenerateAction(map.Menus.Top.items[0]);
 
-				PageTitle = map.Menus.Top.items[1].value;
+				PageTitle = GenerateLabel(map.Menus.Top.items[1]);
 
-				TopBarRightLabel = GenerateImageUrl(map.Menus.Top.items[2]);
-				TopBarRightCommand = new Command(() =>
+				TopBarRightLabel = GenerateLabel(map.Menus.Top.items[2]);
+				TopBarRightCommand = GenerateAction(map.Menus.Top.items[2]);
+
+				if (map.Menus.Top.items.Count == 4)
 				{
-					System.Diagnostics.Debug.WriteLine("Show Profile Menu");
-				});
+					TopBarRight1Label = GenerateLabel(map.Menus.Top.items[3]);
+					TopBarRight1Command = GenerateAction(map.Menus.Top.items[3]);
+				}
+				else
+				{
+					TopBarRight1Label = "";
+					//TopBarRight1Command = new Command(() => { });
+				}
 			}
 			else
 			{
 				IsTopBarVisible = false;
 			}
 
-			if (map.Menus.TopSub.display)
+			if (map.Menus.TopSub != null && map.Menus.TopSub.display)
 			{
 				IsTopBarSubVisible = true;
 
 				// Top Menu
 				if (map.Menus.TopSub.items.Count > 0 && map.Menus.TopSub.items[0] != null)
 				{
-					TopAction1Label = map.Menus.TopSub.items[0].value;
-					TopAction1Command = new Command(() => { Source = BaseUri + map.Menus.TopSub.items[0].href + AppModeParam; });
+					TopAction1Label = GenerateLabel(map.Menus.TopSub.items[0]);
+					TopAction1Command = GenerateAction(map.Menus.TopSub.items[0]);
 				}
 
 				if (map.Menus.TopSub.items.Count > 0 && map.Menus.TopSub.items[1] != null)
 				{
-					TopAction2Label = map.Menus.TopSub.items[1].value;
-					TopAction2Command = new Command(() => { Source = BaseUri + map.Menus.TopSub.items[1].href + AppModeParam; });
+					TopAction2Label = GenerateLabel(map.Menus.TopSub.items[1]);
+					TopAction2Command = GenerateAction(map.Menus.TopSub.items[1]);
 				}
 
 				if (map.Menus.TopSub.items.Count > 0 && map.Menus.TopSub.items[2] != null)
 				{
-					TopAction3Label = map.Menus.TopSub.items[2].value;
-					TopAction3Command = new Command(() => { Source = BaseUri + map.Menus.TopSub.items[2].href + AppModeParam; });
+					TopAction3Label = GenerateLabel(map.Menus.TopSub.items[2]);
+					TopAction3Command = GenerateAction(map.Menus.TopSub.items[2]);
 				}
 
 				var moreIcon = map.Menus.TopSub.items.FirstOrDefault(x => x.type == "limitby");
 
 				if (moreIcon != null)
 				{
-					TopActionMoreLabel = GenerateImageUrl(map.Menus.TopSub.items[3]);
-
+					TopActionMoreLabel = GenerateLabel(map.Menus.TopSub.items[3]);
 					OverflowImages = map.Menus.TopSub.items.Skip(3).Where(i => i.type != "limitby").ToList();
 				}
 			}
@@ -488,16 +597,76 @@ namespace TownFish.App.ViewModels
 			{
 				IsTopBarSubVisible = false;
 			}
+
+			if(map.Menus.TopForm != null && map.Menus.TopForm.display)
+			{
+				if(map.Menus.TopForm.items.Count >= 2)
+				{
+					TopFormLeftActionLabel = GenerateLabel(map.Menus.TopForm.items[0]);
+					TopFormLeftAction = GenerateAction(map.Menus.TopForm.items[0]);
+
+					TopFormRightActionLabel = GenerateLabel(map.Menus.TopForm.items[1]);
+					TopFormRightAction = GenerateAction(map.Menus.TopForm.items[1]);
+
+					IsTopFormBarVisible = true;
+				}
+				else
+				{
+					IsTopFormBarVisible = false;
+				}			
+			}
+			else
+			{
+				IsTopFormBarVisible = false;
+			}
 		}
 
-		string GenerateImageUrl(TownFishMenuItem item)
+		string GenerateLabel(TownFishMenuItem item)
 		{
-			var url = item.iconurl;
+			if (item.kind == "icon")
+			{
+				var url = item.iconurl;
 
-			url = url.Replace("{size}", item.size);
-			url = url.Replace("{color}", item.color);
+				url = url.Replace("{size}", item.size);
+				url = url.Replace("{color}", item.color);
 
-			return url;
+				return BaseUri + url;
+			}
+			else if(item.type == "heading")
+			{
+				return item.main;
+			}
+			else
+			{
+				return item.value;
+			}
+		}
+
+		ICommand GenerateAction(TownFishMenuItem item)
+		{
+			if(item.type == "link")
+			{
+				return new Command(() =>
+				{
+					Source = BaseUri + item.href + AppModeParam;
+				});
+			}
+			else if(item.type == "callback")
+			{
+				return new Command(() =>
+				{
+					OnCallbackRequested(item.value);
+				});
+			}
+			else if(item.type == "heading")
+			{
+				//do nothing
+				return null;
+			}
+			else
+			{
+				return null;
+			}
 		}
 
 		public static BrowserPageViewModel Create(string baseUri, TownFishMenuMap map)
@@ -548,6 +717,14 @@ namespace TownFish.App.ViewModels
 		ICommand mTopAction1Command;
 		ICommand mTopAction2Command;
 		ICommand mTopAction3Command;
+		ICommand mTopBarRight1Command;
+		string mTopBarRight1Label;
+		string mTopFormLeftActionLabel;
+		ICommand mTopFormLeftAction;
+		string mTopFormRightActionLabel;
+		ICommand mTopFormRightAction;
+		string mTopFormPageTitle;
+		bool mIsTopFormBarVisible;
 
 		#endregion
 	}
