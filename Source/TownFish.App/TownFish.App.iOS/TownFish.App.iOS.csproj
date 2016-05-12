@@ -79,7 +79,7 @@
     <ConsolePause>False</ConsolePause>
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <BuildIpa>True</BuildIpa>
-    <CodesignProvision>b029f8a7-41f3-4205-acc5-c5313725d031</CodesignProvision>
+    <CodesignProvision>82e40999-855f-4028-b6a4-dea0313c5114</CodesignProvision>
     <CodesignKey>iPhone Developer: Josh Browning (CN8ZA7DDJJ)</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <CodesignResourceRules />
