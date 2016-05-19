@@ -31,7 +31,7 @@ namespace TownFish.App.Pages
 				try
 				{
 					var model = JsonConvert.DeserializeObject<TownFishMenuMap>(s);
-					ViewModel.LoadMenuMap(ViewModel.BaseUri, model);
+					ViewModel.LoadMenuMap(BrowserPageViewModel.cBaseUri, model);
 				}
 				catch(Exception e)
 				{
@@ -61,7 +61,7 @@ namespace TownFish.App.Pages
 					var action = await DisplayActionSheet("More Actions", "Cancel", null, 
 						ViewModel.OverflowImages.Select(x => x.value).ToArray<string>());
 
-					ViewModel.Source = ViewModel.OverflowImages.First(i => i.value == action).href + ViewModel.AppModeParam;
+					ViewModel.Source = ViewModel.OverflowImages.First(i => i.value == action).href + BrowserPageViewModel.cBaseUriParam;
 				});
 
 				ViewModel.CallbackRequested += (reqstSender, callback) =>
@@ -69,7 +69,23 @@ namespace TownFish.App.Pages
 					webView.InvokeJS("twnfsh.runCallback('" + callback.ToLower() + "')");
 				};
 
+				SearchPanelInput.TextChanged += SearchPanelInput_TextChanged;
+				LocationResultsListView.ItemTapped += LocationResultsListView_ItemTapped;
 			}
+		}
+
+		void LocationResultsListView_ItemTapped(object sender, ItemTappedEventArgs e)
+		{
+			ViewModel.SearchLocationHasResults = false;
+			ViewModel.SearchPanelVisible = false;
+			// TODO: Set users location
+			ViewModel.SetLocation((e.Item as TownfishLocationItem).CityID);
+		}
+
+		void SearchPanelInput_TextChanged(object sender, TextChangedEventArgs e)
+		{
+			if(e.NewTextValue.Length > 2)
+				ViewModel.UpdateLocationList(e.NewTextValue);
 		}
 
 		#endregion

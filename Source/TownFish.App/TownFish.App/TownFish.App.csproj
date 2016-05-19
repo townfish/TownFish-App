@@ -39,6 +39,7 @@
     <Compile Include="Command.cs" />
     <Compile Include="Models\BottomMenu.cs" />
     <Compile Include="Models\NavMenuItem.cs" />
+    <Compile Include="Models\TownFishLocationList.cs" />
     <Compile Include="Models\TownFishMenu.cs" />
     <Compile Include="Models\TownFishMenuMap.cs" />
     <Compile Include="Models\TownFishMenuItem.cs" />

@@ -14,9 +14,8 @@ namespace TownFish.App
 	{
 		public App()
 		{
-			var vm = BrowserPageViewModel.Create("http://dev.townfish.tk", null);			
-			vm.AppModeParam = "?mode=app";
-			vm.Source = "http://dev.townfish.tk/discussions" + "?mode=app";
+			var vm = BrowserPageViewModel.Create(null);			
+			vm.Source = "http://dev.townfish.tk/discussions?mode=app";
 			// The root page of your application
 			MainPage = new BrowserPage() { BindingContext = vm };
 		}
