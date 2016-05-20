@@ -153,23 +153,35 @@
           Grid.RowSpacing="0"
           Grid.ColumnSpacing="0"
           BackgroundColor="#444444"
+          WidthRequest="440" HorizontalOptions="Start"
           Grid.RowSpan="3"
           Grid.Row="1">
       <Grid.RowDefinitions>
         <RowDefinition Height="auto" />
         <RowDefinition Height="*" />
+        <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
+      <RowDefinition Height="auto" />
       </Grid.RowDefinitions>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="*" />
-        <ColumnDefinition Width="*" />
-      </Grid.ColumnDefinitions>
-      <Button Text="My Locations" BackgroundColor="#000000" BorderRadius="0" TextColor="#ffffff" Grid.Row="0" Grid.Column="0" />
-      <Button Text="Nearby Locations" Grid.Row="0" Grid.Column="1" BorderRadius="0" BackgroundColor="#ffffff" TextColor="#000000" />
-      <ListView Grid.Row="1" Grid.ColumnSpan="2">
-      </ListView>
+      <Grid BackgroundColor="#333333" Padding="20,5">
+        <Label Text="MY LOCATIONS" TextColor="#c8c8c8" HorizontalOptions="Fill" />
+      </Grid>
+      <ListView Grid.Row="1"></ListView>
+      <Grid Grid.Row="2" Padding="20,10" >
+        <Label TextColor="#ececec"
+               Text="Your account is connected with the above locations allowing you to post news, events, and information that's relevant to these feeds." />
+      </Grid>
+          <Grid Grid.Row="3" Padding="20,10" >
+        <Label TextColor="#ececec"
+               Text="Use the top bar to search for other locations that are available where you can ask the locals for recommendations and advice, and view anything in the newsfeed. Please read our Member Agreement" />
+      </Grid>
+          <Grid Grid.Row="4" Padding="20,10" >
+        <Label TextColor="#ececec"
+               Text="Note: if you change your account location you will no longer be associated with these locations or have permission to post in their newsfeeds." />
+      </Grid>
     </Grid>
 
-    <!-- Location Search Results Panel -->
+
     <!-- Search PANEL -->
     <Grid x:Name="TopSearchPanel"
           BackgroundColor="#444444"
@@ -203,11 +215,12 @@
       </Frame>
     </Grid>
 
+    <!-- Location Search Results Panel -->
     <Grid x:Name="LocationResultsPanel"
           IsVisible="{Binding SearchLocationHasResults}"
           Grid.RowSpacing="0" Grid.ColumnSpacing="0"
           WidthRequest="440" HorizontalOptions="Start"
-          HeightRequest="400" VerticalOptions="Start"         
+          HeightRequest="400" VerticalOptions="Start"
           Grid.RowSpan="3" Grid.Row="1">
 
       <Frame Padding="2,0,2,2" BackgroundColor="#f2f2f2">
