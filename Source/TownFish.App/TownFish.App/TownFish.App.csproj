@@ -47,6 +47,7 @@
       <DependentUpon>BrowserPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SearchFormatConverter.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\BrowserPageViewModel.cs" />
   </ItemGroup>

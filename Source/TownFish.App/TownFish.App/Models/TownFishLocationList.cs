@@ -21,5 +21,10 @@ namespace TownFish.App.Models
 		public string PostCode { get; set; }
 		public string CountryID { get; set; }
 		public string CountryName { get; set; }
+
+		public string LocationFormat
+		{
+			get { return Name + ", " + PostCode;  }
+		}
 	}
 }

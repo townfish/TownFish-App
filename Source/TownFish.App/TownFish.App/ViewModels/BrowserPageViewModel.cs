@@ -726,6 +726,8 @@ namespace TownFish.App.ViewModels
 
 		public async void UpdateLocationList(string searchTerm)
 		{
+			sSearchTerm = searchTerm;
+
 			try
 			{
 				using (var client = new HttpClient())
@@ -808,6 +810,8 @@ namespace TownFish.App.ViewModels
 		bool mTopSearchPanelVisible;
 		List<TownfishLocationItem> mLocationSearchItems;
 		bool mSearchLocationHasResults;
+
+		public static string sSearchTerm = "";
 
 		#endregion
 	}

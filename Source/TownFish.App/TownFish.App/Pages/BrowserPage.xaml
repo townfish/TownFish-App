@@ -2,10 +2,12 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
             xmlns:xamify="clr-namespace:Xamify.UberWebViewLib;assembly=Xamify.UberWebViewLib"
+             xmlns:cons="clr-namespace:TownFish.App;assembly=TownFish.App"
             Title="TownFish"
              x:Class="TownFish.App.Pages.BrowserPage">
   <ContentPage.Resources>
     <ResourceDictionary>
+      <cons:SearchFormatConverter x:Key="searchCon"></cons:SearchFormatConverter>
       <Style x:Key="BottomNavBtnStyle" TargetType="Button">
         <Setter Property="TextColor" Value="#8b8b8b" />
         <Setter Property="BackgroundColor" Value="White" />
@@ -205,8 +207,7 @@
           IsVisible="{Binding SearchLocationHasResults}"
           Grid.RowSpacing="0" Grid.ColumnSpacing="0"
           WidthRequest="440" HorizontalOptions="Start"
-          HeightRequest="400" VerticalOptions="Start"
-          
+          HeightRequest="400" VerticalOptions="Start"         
           Grid.RowSpan="3" Grid.Row="1">
 
       <Frame Padding="2,0,2,2" BackgroundColor="#f2f2f2">
@@ -222,8 +223,7 @@
                     <RowDefinition Height="8" />
                   </Grid.RowDefinitions>
                   <StackLayout Orientation="Horizontal" Padding="20,10">
-                    <Label Text="{Binding Name}" TextColor="#989898" />
-                    <Label Text="{Binding PostCode}" TextColor="#989898" />
+                    <Label FormattedText="{Binding LocationFormat, Converter={StaticResource searchCon}, ConverterParameter='lon'}" TextColor="#989898" />
                   </StackLayout>
                   <BoxView Grid.Row="1" Color="#f2f2f2" HeightRequest="4" VerticalOptions="Center" />
                 </Grid>
