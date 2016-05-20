@@ -194,9 +194,9 @@
                  HeightRequest="25" VerticalOptions="Center" Grid.Column="2" >
             <Image.GestureRecognizers>
               <TapGestureRecognizer Command="{Binding CancelSearchCommand}"/>
-            </Image.GestureRecognizers>  
+            </Image.GestureRecognizers>
           </Image>
-            
+
         </Grid>
       </Frame>
     </Grid>
@@ -206,23 +206,32 @@
           Grid.RowSpacing="0" Grid.ColumnSpacing="0"
           WidthRequest="440" HorizontalOptions="Start"
           HeightRequest="400" VerticalOptions="Start"
-          BackgroundColor="#f2f2f2"
+          
           Grid.RowSpan="3" Grid.Row="1">
 
-      <ListView x:Name="LocationResultsListView"
-                BackgroundColor="#ffffff"
-                ItemsSource="{Binding LocationSearchItems}">
-        <ListView.ItemTemplate>
-          <DataTemplate>
-            <ViewCell>
-              <StackLayout Orientation="Horizontal" Padding="20,10">
-                <Label Text="{Binding Name}" TextColor="#989898" />
-                <Label Text="{Binding PostCode}" TextColor="#989898" />
-              </StackLayout>
-            </ViewCell>
-          </DataTemplate>
-        </ListView.ItemTemplate>
-      </ListView>
+      <Frame Padding="2,0,2,2" BackgroundColor="#f2f2f2">
+        <ListView x:Name="LocationResultsListView"
+                  BackgroundColor="#ffffff" RowHeight="60"
+                  ItemsSource="{Binding LocationSearchItems}">
+          <ListView.ItemTemplate>
+            <DataTemplate>
+              <ViewCell>
+                <Grid>
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="8" />
+                  </Grid.RowDefinitions>
+                  <StackLayout Orientation="Horizontal" Padding="20,10">
+                    <Label Text="{Binding Name}" TextColor="#989898" />
+                    <Label Text="{Binding PostCode}" TextColor="#989898" />
+                  </StackLayout>
+                  <BoxView Grid.Row="1" Color="#f2f2f2" HeightRequest="4" VerticalOptions="Center" />
+                </Grid>
+              </ViewCell>
+            </DataTemplate>
+          </ListView.ItemTemplate>
+        </ListView>
+      </Frame>
     </Grid>
 
   </Grid>
