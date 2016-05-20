@@ -4118,6 +4118,9 @@ namespace TownFish.App.Droid
 			// aapt resource value: 0x7f070084
 			public const int Animation_AppCompat_DropDownUp = 2131165316;
 			
+			// aapt resource value: 0x7f070145
+			public const int App_EditTextStyle = 2131165509;
+			
 			// aapt resource value: 0x7f070085
 			public const int Base_AlertDialog_AppCompat = 2131165317;
 			
@@ -5077,6 +5080,9 @@ namespace TownFish.App.Droid
 			
 			// aapt resource value: 0x7f070003
 			public const int Widget_MediaRouter_MediaRouteButton = 2131165187;
+			
+			// aapt resource value: 0x7f070144
+			public const int townfishTheme = 2131165508;
 			
 			static Style()
 			{

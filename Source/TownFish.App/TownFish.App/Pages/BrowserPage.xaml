@@ -187,7 +187,7 @@
                  HeightRequest="20" VerticalOptions="Center" Grid.Column="0" />
           <Entry x:Name="SearchPanelInput"
                  Grid.Column="1"
-                 VerticalOptions="Start" FontSize="12"
+                 VerticalOptions="Center" FontSize="12"
                  HeightRequest="40"
                  HorizontalOptions="Fill"
                  BackgroundColor="#333333"
