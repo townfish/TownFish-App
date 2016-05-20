@@ -153,29 +153,30 @@
           Grid.RowSpacing="0"
           Grid.ColumnSpacing="0"
           BackgroundColor="#444444"
-          WidthRequest="440" HorizontalOptions="Start"
+          WidthRequest="440" 
+          HorizontalOptions="Start"
           Grid.RowSpan="3"
           Grid.Row="1">
       <Grid.RowDefinitions>
         <RowDefinition Height="auto" />
         <RowDefinition Height="*" />
         <RowDefinition Height="auto" />
-      <RowDefinition Height="auto" />
-      <RowDefinition Height="auto" />
+        <RowDefinition Height="auto" />
+        <RowDefinition Height="auto" />
       </Grid.RowDefinitions>
       <Grid BackgroundColor="#333333" Padding="20,5">
         <Label Text="MY LOCATIONS" TextColor="#c8c8c8" HorizontalOptions="Fill" />
       </Grid>
-      <ListView Grid.Row="1"></ListView>
+      <ListView Grid.Row="1" BackgroundColor="#444444" SeparatorVisibility="None"></ListView>
       <Grid Grid.Row="2" Padding="20,10" >
         <Label TextColor="#ececec"
                Text="Your account is connected with the above locations allowing you to post news, events, and information that's relevant to these feeds." />
       </Grid>
-          <Grid Grid.Row="3" Padding="20,10" >
+      <Grid Grid.Row="3" Padding="20,10" >
         <Label TextColor="#ececec"
                Text="Use the top bar to search for other locations that are available where you can ask the locals for recommendations and advice, and view anything in the newsfeed. Please read our Member Agreement" />
       </Grid>
-          <Grid Grid.Row="4" Padding="20,10" >
+      <Grid Grid.Row="4" Padding="20,10" >
         <Label TextColor="#ececec"
                Text="Note: if you change your account location you will no longer be associated with these locations or have permission to post in their newsfeeds." />
       </Grid>
@@ -187,16 +188,18 @@
           BackgroundColor="#444444"
           Grid.Row="0"
           WidthRequest="400" HorizontalOptions="Start"
-          IsVisible="{Binding SearchPanelVisible}" Padding="20, 10">
-      <Frame BackgroundColor="#333333" Padding="10,2">
-        <Grid ColumnSpacing="5">
+          IsVisible="{Binding SearchPanelVisible}" 
+          Padding="20, 10">
+      <Frame BackgroundColor="#333333" OutlineColor="#333333" Padding="1" HasShadow="False">
+        <Grid ColumnSpacing="5" BackgroundColor="#333333">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="auto"/>
           </Grid.ColumnDefinitions>
-          <Image Source="{Binding TopBarRightLabel}"
-                 HeightRequest="20" VerticalOptions="Center" Grid.Column="0" />
+          <Grid Padding="9,5" Grid.Column="0">
+            <Image Source="{Binding TopBarRightLabel}" HeightRequest="20" VerticalOptions="Center"  />
+          </Grid>
           <Entry x:Name="SearchPanelInput"
                  Grid.Column="1"
                  VerticalOptions="Center" FontSize="12"
@@ -204,13 +207,13 @@
                  HorizontalOptions="Fill"
                  BackgroundColor="#333333"
                  TextColor="#b9b9b9" />
-          <Image Source="close.png"
-                 HeightRequest="25" VerticalOptions="Center" Grid.Column="2" >
-            <Image.GestureRecognizers>
-              <TapGestureRecognizer Command="{Binding CancelSearchCommand}"/>
-            </Image.GestureRecognizers>
-          </Image>
-
+          <Grid Padding="9,5" Grid.Column="2">
+            <Image Source="close.png" HeightRequest="25" VerticalOptions="Center"  >
+              <Image.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding CancelSearchCommand}"/>
+              </Image.GestureRecognizers>
+            </Image>
+          </Grid>
         </Grid>
       </Frame>
     </Grid>
@@ -225,7 +228,7 @@
 
       <Frame Padding="2,0,2,2" BackgroundColor="#f2f2f2">
         <ListView x:Name="LocationResultsListView"
-                  BackgroundColor="#ffffff" RowHeight="60"
+                  BackgroundColor="#ffffff" RowHeight="60" SeparatorVisibility="None"
                   ItemsSource="{Binding LocationSearchItems}">
           <ListView.ItemTemplate>
             <DataTemplate>
