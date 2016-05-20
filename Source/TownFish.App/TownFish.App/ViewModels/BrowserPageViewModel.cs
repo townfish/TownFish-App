@@ -499,6 +499,18 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
+		public ICommand CancelSearchCommand
+		{
+			get
+			{
+				return new Command(() =>
+				{
+					SearchLocationHasResults = false;
+					SearchPanelVisible = false;
+				});
+			}
+		}
+
 		#endregion
 
 		#endregion
@@ -732,7 +744,7 @@ namespace TownFish.App.ViewModels
 					}
 				}
 			}
-			catch(Exception)
+			catch (Exception)
 			{
 				// TODO Alert the user of this crap up the wall
 				SearchLocationHasResults = false;
@@ -760,12 +772,12 @@ namespace TownFish.App.ViewModels
 		string mTopAction1Label;
 		string mTopAction3Label;
 		string mTopAction2Label;
-		string mBottomAction1Label;		
-		string mBottomAction2Label;		
-		string mBottomAction3Label;	
-		string mBottomAction4Label;	
+		string mBottomAction1Label;
+		string mBottomAction2Label;
+		string mBottomAction3Label;
+		string mBottomAction4Label;
 		string mBottomAction5Label;
-		string mTopBarLeftLabel;	
+		string mTopBarLeftLabel;
 		string mTopBarRightLabel;
 		string mTopFormPageTitle;
 		string mTopBarRight1Label;
@@ -778,7 +790,7 @@ namespace TownFish.App.ViewModels
 		ICommand mTopAction2Command;
 		ICommand mTopAction3Command;
 		ICommand mTopBarRight1Command;
-		ICommand mTopFormLeftAction;		
+		ICommand mTopFormLeftAction;
 		ICommand mTopFormRightAction;
 		ICommand mTopBarRightCommand;
 		ICommand mTopBarLeftCommand;

@@ -174,27 +174,51 @@
           Grid.Row="0"
           WidthRequest="400" HorizontalOptions="Start"
           IsVisible="{Binding SearchPanelVisible}" Padding="20, 10">
-      <Entry x:Name="SearchPanelInput" BackgroundColor="#333333" TextColor="#b9b9b9" />
+      <Frame BackgroundColor="#333333" Padding="10,2">
+        <Grid ColumnSpacing="5">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto"/>
+          </Grid.ColumnDefinitions>
+          <Image Source="{Binding TopBarRightLabel}"
+                 HeightRequest="20" VerticalOptions="Center" Grid.Column="0" />
+          <Entry x:Name="SearchPanelInput"
+                 Grid.Column="1"
+                 VerticalOptions="Start" FontSize="12"
+                 HeightRequest="40"
+                 HorizontalOptions="Fill"
+                 BackgroundColor="#333333"
+                 TextColor="#b9b9b9" />
+          <Image Source="close.png"
+                 HeightRequest="25" VerticalOptions="Center" Grid.Column="2" >
+            <Image.GestureRecognizers>
+              <TapGestureRecognizer Command="{Binding CancelSearchCommand}"/>
+            </Image.GestureRecognizers>  
+          </Image>
+            
+        </Grid>
+      </Frame>
     </Grid>
-    
+
     <Grid x:Name="LocationResultsPanel"
           IsVisible="{Binding SearchLocationHasResults}"
           Grid.RowSpacing="0" Grid.ColumnSpacing="0"
-          WidthRequest="440" HorizontalOptions="Start" 
-          HeightRequest="400" VerticalOptions="Start" 
+          WidthRequest="440" HorizontalOptions="Start"
+          HeightRequest="400" VerticalOptions="Start"
           BackgroundColor="#f2f2f2"
           Grid.RowSpan="3" Grid.Row="1">
 
-      <ListView x:Name="LocationResultsListView" 
-                BackgroundColor="#ffffff" 
+      <ListView x:Name="LocationResultsListView"
+                BackgroundColor="#ffffff"
                 ItemsSource="{Binding LocationSearchItems}">
         <ListView.ItemTemplate>
           <DataTemplate>
             <ViewCell>
-                <StackLayout Orientation="Horizontal" Padding="20,10">
-                  <Label Text="{Binding Name}" TextColor="#989898" />
-                  <Label Text="{Binding PostCode}" TextColor="#989898" />
-                </StackLayout>
+              <StackLayout Orientation="Horizontal" Padding="20,10">
+                <Label Text="{Binding Name}" TextColor="#989898" />
+                <Label Text="{Binding PostCode}" TextColor="#989898" />
+              </StackLayout>
             </ViewCell>
           </DataTemplate>
         </ListView.ItemTemplate>
