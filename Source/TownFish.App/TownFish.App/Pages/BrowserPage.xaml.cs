@@ -65,14 +65,18 @@ namespace TownFish.App.Pages
 
 		#region Methods
 
-		void WebView_Navigated(object sender, EventArgs e)
-		{
+		async void WebView_Navigated(object sender, EventArgs e)
+		{		
+			await loadingPanel.FadeTo(0);
 			ViewModel.IsLoading = false;
 		}
 
 		void WebView_Navigating(object sender, EventArgs e)
 		{
 			ViewModel.IsLoading = true;
+			loadingPanel.Opacity = 1;
+			loadingPanel.TranslationX = loadingPanel.Width;
+			loadingPanel.TranslateTo(0, 0);
 		}
 
 		void BrowserPage_BindingContextChanged(object sender, EventArgs e)
