@@ -8,4 +8,9 @@
     <item name="android:layout_marginBottom">10dp</item>
     <item name="android:padding">10dp</item>
   </style>
+
+  <style name="townfishSplash">
+    <item name="android:windowBackground">@drawable/splash_screen</item>
+    <item name="android:windowNoTitle">true</item>
+  </style>
 </resources>

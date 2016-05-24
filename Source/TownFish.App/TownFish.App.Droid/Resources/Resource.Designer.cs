@@ -3393,8 +3393,14 @@ namespace TownFish.App.Droid
 			// aapt resource value: 0x7f020063
 			public const int mr_ic_settings_light = 2130837603;
 			
+			// aapt resource value: 0x7f020066
+			public const int notification_template_icon_bg = 2130837606;
+			
 			// aapt resource value: 0x7f020064
-			public const int notification_template_icon_bg = 2130837604;
+			public const int splash = 2130837604;
+			
+			// aapt resource value: 0x7f020065
+			public const int splash_screen = 2130837605;
 			
 			static Drawable()
 			{
@@ -5080,6 +5086,9 @@ namespace TownFish.App.Droid
 			
 			// aapt resource value: 0x7f070003
 			public const int Widget_MediaRouter_MediaRouteButton = 2131165187;
+			
+			// aapt resource value: 0x7f070146
+			public const int townfishSplash = 2131165510;
 			
 			// aapt resource value: 0x7f070144
 			public const int townfishTheme = 2131165508;
