@@ -2,10 +2,12 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
             xmlns:xamify="clr-namespace:Xamify.UberWebViewLib;assembly=Xamify.UberWebViewLib"
+             xmlns:cons="clr-namespace:TownFish.App;assembly=TownFish.App"
             Title="TownFish"
              x:Class="TownFish.App.Pages.BrowserPage">
   <ContentPage.Resources>
     <ResourceDictionary>
+      <cons:SearchFormatConverter x:Key="searchCon"></cons:SearchFormatConverter>
       <Style x:Key="BottomNavBtnStyle" TargetType="Button">
         <Setter Property="TextColor" Value="#8b8b8b" />
         <Setter Property="BackgroundColor" Value="White" />
@@ -26,84 +28,86 @@
       <RowDefinition Height="*" />
       <RowDefinition Height="auto"/>
     </Grid.RowDefinitions>
+
     <!-- Top Menu Bar -->
-    <Grid RowSpacing="0">
-      <Grid.RowDefinitions>
-        <RowDefinition />
-        <RowDefinition />
-      </Grid.RowDefinitions>
-      <Grid x:Name="topBar" IsVisible="{Binding IsTopBarVisible}" BackgroundColor="#787878" Padding="10,10,10,10">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="auto" />
-          <ColumnDefinition />
-          <ColumnDefinition Width="auto"/>
-          <ColumnDefinition Width="10" />
-          <ColumnDefinition Width="auto"/>
-        </Grid.ColumnDefinitions>
-        <Image Source="{Binding TopBarLeftLabel}" Grid.Column="0" HorizontalOptions="Center" WidthRequest="20" HeightRequest="20">
-          <Image.GestureRecognizers>
-            <TapGestureRecognizer Command="{Binding TopBarLeftCommand}"/>
-          </Image.GestureRecognizers>
-        </Image>
-        <Label VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" Text="{Binding PageTitle}" />
-        <Image Source="{Binding TopBarRightLabel}" Grid.Column="2" HorizontalOptions="Center" WidthRequest="20" HeightRequest="20">
-          <Image.GestureRecognizers>
-            <TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
-          </Image.GestureRecognizers>
-        </Image>
-        <Image Source="{Binding TopBarRight1Label}" Grid.Column="4" HorizontalOptions="Center" WidthRequest="20" HeightRequest="20">
-          <Image.GestureRecognizers>
-            <TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
-          </Image.GestureRecognizers>
-        </Image>
-      </Grid>
-      <Grid Grid.Row="1" BackgroundColor="#e8e8e8" ColumnSpacing="10" Padding="10, 0" IsVisible="{Binding IsTopBarSubVisible}">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="auto" />
-          <ColumnDefinition Width="auto" />
-          <ColumnDefinition Width="auto" />
-          <ColumnDefinition Width="auto" />
-          <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="auto" />
-        </Grid.ColumnDefinitions>
-        <Button Text="{Binding TopAction1Label}"
-                Command="{Binding TopAction1Command}"
-                Style="{StaticResource TopNavBtnStyle}" />
-        <Button Grid.Column="1"
-                Text="{Binding TopAction2Label}"
-                Command="{Binding TopAction2Command}"
-                Style="{StaticResource TopNavBtnStyle}" />
-        <Button Grid.Column="2"
-                Text="{Binding TopAction3Label}"
-                Command="{Binding TopAction3Command}"
-                Style="{StaticResource TopNavBtnStyle}" />
-        <Image Source="{Binding TopActionMoreLabel}" Grid.Column="5" HorizontalOptions="Center" WidthRequest="20" HeightRequest="20">
-          <Image.GestureRecognizers>
-            <TapGestureRecognizer Command="{Binding TopActionMoreCommand}"/>
-          </Image.GestureRecognizers>
-        </Image>
-      </Grid>
+    <Grid x:Name="topBar" IsVisible="{Binding IsTopBarVisible}" BackgroundColor="#787878" Padding="10,10,10,10">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="auto" />
+        <ColumnDefinition />
+        <ColumnDefinition Width="auto"/>
+        <ColumnDefinition Width="10" />
+        <ColumnDefinition Width="auto"/>
+      </Grid.ColumnDefinitions>
+      <Image Source="{Binding TopBarLeftLabel}" Grid.Column="0" HorizontalOptions="Center">
+        <Image.GestureRecognizers>
+          <TapGestureRecognizer Command="{Binding TopBarLeftCommand}"/>
+        </Image.GestureRecognizers>
+      </Image>
+      <Label VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" Text="{Binding PageTitle}" />
+      <Image Source="{Binding TopBarRightLabel}" Grid.Column="2" HorizontalOptions="Center">
+        <Image.GestureRecognizers>
+          <TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
+        </Image.GestureRecognizers>
+      </Image>
+      <Image Source="{Binding TopBarRight1Label}" Grid.Column="4" HorizontalOptions="Center">
+        <Image.GestureRecognizers>
+          <TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
+        </Image.GestureRecognizers>
+      </Image>
     </Grid>
+
+    <!-- Top bar Sub -->
+    <Grid Grid.Row="1" BackgroundColor="#e8e8e8" ColumnSpacing="10" Padding="10, 0" IsVisible="{Binding IsTopBarSubVisible}">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="auto" />
+        <ColumnDefinition Width="auto" />
+        <ColumnDefinition Width="auto" />
+        <ColumnDefinition Width="auto" />
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="auto" />
+      </Grid.ColumnDefinitions>
+      <Button Text="{Binding TopAction1Label}"
+              Command="{Binding TopAction1Command}"
+              Style="{StaticResource TopNavBtnStyle}" />
+      <Button Grid.Column="1"
+              Text="{Binding TopAction2Label}"
+              Command="{Binding TopAction2Command}"
+              Style="{StaticResource TopNavBtnStyle}" />
+      <Button Grid.Column="2"
+              Text="{Binding TopAction3Label}"
+              Command="{Binding TopAction3Command}"
+              Style="{StaticResource TopNavBtnStyle}" />
+      <Image Source="{Binding TopActionMoreLabel}" Grid.Column="5" HorizontalOptions="Center" WidthRequest="20" HeightRequest="20">
+        <Image.GestureRecognizers>
+          <TapGestureRecognizer Command="{Binding TopActionMoreCommand}"/>
+        </Image.GestureRecognizers>
+      </Image>
+    </Grid>
+
+    <!-- Top form -->
     <Grid RowSpacing="0" Grid.Row="1" IsVisible="{Binding IsTopFormBarVisible}" BackgroundColor="#F2F2F2">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="auto" />
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="auto" />
       </Grid.ColumnDefinitions>
-      <Button Command="{Binding TopFormLeftAction}" 
-              Grid.Column="0" 
-              Text="{Binding TopFormLeftActionLabel}" 
-              BackgroundColor="#F2F2F2" 
-              TextColor="#007aff">       
-      </Button>
-      <Button Command="{Binding TopFormRightAction}" 
-              Grid.Column="2" 
-              Text="{Binding TopFormRightActionLabel}" 
+      <Button Command="{Binding TopFormLeftAction}"
+              Grid.Column="0"
+              Text="{Binding TopFormLeftActionLabel}"
               BackgroundColor="#F2F2F2"
-              TextColor="#007aff">      
+              TextColor="#007aff">
+      </Button>
+      <Button Command="{Binding TopFormRightAction}"
+              Grid.Column="2"
+              Text="{Binding TopFormRightActionLabel}"
+              BackgroundColor="#F2F2F2"
+              TextColor="#007aff">
       </Button>
     </Grid>
+
+    <!-- WebView -->
     <xamify:UberWebView x:Name="webView" Grid.Row="2" Source="{Binding Source}"  VerticalOptions="Fill" HorizontalOptions="Fill" />
+
     <!-- Bottom Menu Bar -->
     <Grid Grid.Row="3" BackgroundColor="#F2F2F2" Padding="10" IsVisible="{Binding IsBottomBarVisible}">
       <Grid.ColumnDefinitions>
@@ -113,34 +117,148 @@
         <ColumnDefinition Width="*" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
-      <Image Source="{Binding BottomAction1Label}" HorizontalOptions="Center" WidthRequest="30" HeightRequest="30">
+      <Image Source="{Binding BottomAction1Label}" HorizontalOptions="Center" WidthRequest="24">
         <Image.GestureRecognizers>
           <TapGestureRecognizer Command="{Binding BottomAction1Command}"/>
         </Image.GestureRecognizers>
       </Image>
-      <Image Source="{Binding BottomAction2Label}" Grid.Column="1" HorizontalOptions="Center" WidthRequest="30" HeightRequest="30">
-        <Image.GestureRecognizers>
-          <TapGestureRecognizer Command="{Binding BottomAction2Command}"/>
-        </Image.GestureRecognizers>
-      </Image>
-      <Image Source="{Binding BottomAction3Label}" Grid.Column="2" HorizontalOptions="Center" WidthRequest="30" HeightRequest="30">
-        <Image.GestureRecognizers>
-          <TapGestureRecognizer Command="{Binding BottomAction3Command}"/>
-        </Image.GestureRecognizers>
-      </Image>
-      <Image Source="{Binding BottomAction4Label}" Grid.Column="3" HorizontalOptions="Center" WidthRequest="30" HeightRequest="30">
+      <Grid Padding="2,0" Grid.Column="1" BackgroundColor="#F2F2F2"  HorizontalOptions="Center" WidthRequest="30" HeightRequest="30">
+        <Image Source="{Binding BottomAction2Label}"  HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="24">
+          <Image.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding BottomAction2Command}"/>
+          </Image.GestureRecognizers>
+        </Image>
+        <Grid IsVisible="{Binding BottomAction2HasNumber}"  Padding="2,0" BackgroundColor="#F2F2F2" HorizontalOptions="End" VerticalOptions="Start">
+          <Label Text="{Binding BottomAction2Number}" TextColor="Red" FontAttributes="Bold" FontSize="10" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
+      </Grid>
+      <Grid Grid.Column="2" HorizontalOptions="Center" WidthRequest="30" HeightRequest="30">
+        <Image Source="{Binding BottomAction3Label}" WidthRequest="24" HorizontalOptions="Center" VerticalOptions="Center">
+          <Image.GestureRecognizers>
+            <TapGestureRecognizer Command="{Binding BottomAction3Command}"/>
+          </Image.GestureRecognizers>
+        </Image>
+        <Grid IsVisible="{Binding BottomAction3HasNumber}" Padding="2,0" BackgroundColor="#F2F2F2" HorizontalOptions="End" VerticalOptions="Start">
+          <Label Text="{Binding BottomAction3Number}" TextColor="Red" FontAttributes="Bold" FontSize="10" VerticalOptions="Center" HorizontalOptions="Center" />
+        </Grid>
+      </Grid>
+      <Image Source="{Binding BottomAction4Label}" Grid.Column="3" HorizontalOptions="Center" WidthRequest="24">
         <Image.GestureRecognizers>
           <TapGestureRecognizer Command="{Binding BottomAction4Command}"/>
         </Image.GestureRecognizers>
       </Image>
-      <Image Grid.Column="4" Source="{Binding BottomAction5Label}" HorizontalOptions="Center" WidthRequest="30" HeightRequest="30">
+      <Image Grid.Column="4" Source="{Binding BottomAction5Label}" HorizontalOptions="Center" WidthRequest="24">
         <Image.GestureRecognizers>
           <TapGestureRecognizer Command="{Binding BottomAction5Command}"/>
         </Image.GestureRecognizers>
       </Image>
     </Grid>
-    <Grid x:Name="loadingPanel" IsVisible="{Binding IsLoading}" Opacity="0.7" Grid.Row="2" BackgroundColor="Black">
+    <!-- Loading Panel -->
+    <Grid x:Name="loadingPanel" IsVisible="{Binding IsLoading}" Grid.Row="2" BackgroundColor="#ffffff">
       <ActivityIndicator VerticalOptions="Center" HorizontalOptions="Center" IsRunning="{Binding IsLoading}" />
     </Grid>
+    <!-- Locations Panel-->
+    <Grid x:Name="LocationPanel"
+          IsVisible="{Binding SearchPanelVisible}"
+          Grid.RowSpacing="0"
+          Grid.ColumnSpacing="0"
+          BackgroundColor="#444444"
+          WidthRequest="440"
+          HorizontalOptions="Start"
+          Grid.RowSpan="3"
+          Grid.Row="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="auto" />
+        <RowDefinition Height="*" />
+        <RowDefinition Height="auto" />
+        <RowDefinition Height="auto" />
+        <RowDefinition Height="auto" />
+      </Grid.RowDefinitions>
+      <Grid BackgroundColor="#333333" Padding="20,5">
+        <Label Text="MY LOCATIONS" TextColor="#c8c8c8" HorizontalOptions="Fill" />
+      </Grid>
+      <ListView Grid.Row="1" BackgroundColor="#444444" SeparatorVisibility="None"></ListView>
+      <Grid Grid.Row="2" Padding="20,10" >
+        <Label TextColor="#ececec"
+               Text="Your account is connected with the above locations allowing you to post news, events, and information that's relevant to these feeds." />
+      </Grid>
+      <Grid Grid.Row="3" Padding="20,10" >
+        <Label TextColor="#ececec"
+               Text="Use the top bar to search for other locations that are available where you can ask the locals for recommendations and advice, and view anything in the newsfeed. Please read our Member Agreement" />
+      </Grid>
+      <Grid Grid.Row="4" Padding="20,10" >
+        <Label TextColor="#ececec"
+               Text="Note: if you change your account location you will no longer be associated with these locations or have permission to post in their newsfeeds." />
+      </Grid>
+    </Grid>
+
+
+    <!-- Search PANEL -->
+    <Grid x:Name="TopSearchPanel"
+          BackgroundColor="#444444"
+          Grid.Row="0"
+          WidthRequest="400" HorizontalOptions="Start"
+          IsVisible="{Binding SearchPanelVisible}"
+          Padding="20, 10">
+      <Frame BackgroundColor="#333333" OutlineColor="#333333" Padding="1" HasShadow="False">
+        <Grid ColumnSpacing="5" BackgroundColor="#333333">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="auto"/>
+          </Grid.ColumnDefinitions>
+          <Grid Padding="9,5" Grid.Column="0">
+            <Image Source="{Binding TopBarRightLabel}" HeightRequest="20" VerticalOptions="Center"  />
+          </Grid>
+          <Entry x:Name="SearchPanelInput"
+                 Grid.Column="1"
+                 VerticalOptions="Center" FontSize="12"
+                 HeightRequest="40"
+                 HorizontalOptions="Fill"
+                 BackgroundColor="#333333"
+                 TextColor="#b9b9b9" />
+          <Grid Padding="9,5" Grid.Column="2">
+            <Image Source="close.png" HeightRequest="25" VerticalOptions="Center"  >
+              <Image.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding CancelSearchCommand}"/>
+              </Image.GestureRecognizers>
+            </Image>
+          </Grid>
+        </Grid>
+      </Frame>
+    </Grid>
+
+    <!-- Location Search Results Panel -->
+    <Grid x:Name="LocationResultsPanel"
+          IsVisible="{Binding SearchLocationHasResults}"
+          Grid.RowSpacing="0" Grid.ColumnSpacing="0"
+          WidthRequest="440" HorizontalOptions="Start"
+          HeightRequest="400" VerticalOptions="Start"
+          Grid.RowSpan="3" Grid.Row="1">
+
+      <Frame Padding="2,0,2,2" BackgroundColor="#f2f2f2">
+        <ListView x:Name="LocationResultsListView"
+                  BackgroundColor="#ffffff" RowHeight="60" SeparatorVisibility="None"
+                  ItemsSource="{Binding LocationSearchItems}">
+          <ListView.ItemTemplate>
+            <DataTemplate>
+              <ViewCell>
+                <Grid>
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="8" />
+                  </Grid.RowDefinitions>
+                  <StackLayout Orientation="Horizontal" Padding="20,10">
+                    <Label FormattedText="{Binding LocationFormat, Converter={StaticResource searchCon}, ConverterParameter='lon'}" TextColor="#989898" />
+                  </StackLayout>
+                  <BoxView Grid.Row="1" Color="#f2f2f2" HeightRequest="4" VerticalOptions="Center" />
+                </Grid>
+              </ViewCell>
+            </DataTemplate>
+          </ListView.ItemTemplate>
+        </ListView>
+      </Frame>
+    </Grid>
+
   </Grid>
 </ContentPage>

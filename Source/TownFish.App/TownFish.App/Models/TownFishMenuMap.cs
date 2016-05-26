@@ -12,6 +12,8 @@ namespace TownFish.App.Models
 
 		public string LocationsAPI { get; set; }
 
+		public string LocationSetUrl { get; set; }
+
 		public TownFishMenuList Menus { get; set; }
 
 		#endregion

@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Http;
 using System.Windows.Input;
+
+using Newtonsoft.Json;
+
 using TownFish.App.Models;
 
 namespace TownFish.App.ViewModels
@@ -25,16 +27,6 @@ namespace TownFish.App.ViewModels
 				mSource = value;
 				OnPropertyChanged();
 			}
-		}
-
-		public string BaseUri
-		{
-			get; set;
-		}
-
-		public string AppModeParam
-		{
-			get; set;
 		}
 
 		public bool IsTopBarVisible
@@ -114,6 +106,26 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
+		public bool BottomAction2HasNumber
+		{
+			get { return mBottomAction2HasNumber;  }
+			set
+			{
+				mBottomAction2HasNumber = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public string BottomAction2Number
+		{
+			get { return mBottomAction2Number; }
+			set
+			{
+				mBottomAction2Number = value;
+				OnPropertyChanged();
+			}
+		}
+
 		#endregion
 
 		#region Bottom Action 3
@@ -137,6 +149,26 @@ namespace TownFish.App.ViewModels
 			set
 			{
 				mBottomAction3Command = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public bool BottomAction3HasNumber
+		{
+			get { return mBottomAction3HasNumber; }
+			set
+			{
+				mBottomAction3HasNumber = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public string BottomAction3Number
+		{
+			get { return mBottomAction3Number; }
+			set
+			{
+				mBottomAction3Number = value;
 				OnPropertyChanged();
 			}
 		}
@@ -476,6 +508,51 @@ namespace TownFish.App.ViewModels
 
 		#endregion
 
+		#region Search
+		public List<TownfishLocationItem> LocationSearchItems
+		{
+			get { return mLocationSearchItems; }
+			set
+			{
+				mLocationSearchItems = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public bool SearchPanelVisible
+		{
+			get { return mTopSearchPanelVisible; }
+			set
+			{
+				mTopSearchPanelVisible = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public bool SearchLocationHasResults
+		{
+			get { return mSearchLocationHasResults; }
+			set
+			{
+				mSearchLocationHasResults = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public ICommand CancelSearchCommand
+		{
+			get
+			{
+				return new Command(() =>
+				{
+					SearchLocationHasResults = false;
+					SearchPanelVisible = false;
+				});
+			}
+		}
+
+		#endregion
+
 		#endregion
 
 		#region Events
@@ -494,6 +571,9 @@ namespace TownFish.App.ViewModels
 
 		public void LoadMenuMap(string baseUri, TownFishMenuMap map)
 		{
+			mLocationApiFormat = map.LocationsAPI;
+			mLocationSetFormat = map.LocationSetUrl;
+
 			if (map.Menus.Bottom != null && map.Menus.Bottom.display)
 			{
 				IsBottomBarVisible = true;
@@ -509,12 +589,24 @@ namespace TownFish.App.ViewModels
 				{
 					BottomAction2Label = GenerateLabel(map.Menus.Bottom.items[1]);
 					BottomAction2Command = GenerateAction(map.Menus.Bottom.items[1]);
+
+					if(!string.IsNullOrEmpty(map.Menus.Bottom.items[1].super))
+					{
+						BottomAction2HasNumber = true;
+						BottomAction2Number = map.Menus.Bottom.items[1].super;
+					}
 				}
 
 				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[2] != null)
 				{
 					BottomAction3Label = GenerateLabel(map.Menus.Bottom.items[2]);
 					BottomAction3Command = GenerateAction(map.Menus.Bottom.items[2]); ;
+
+					if (!string.IsNullOrEmpty(map.Menus.Bottom.items[2].super))
+					{
+						BottomAction3HasNumber = true;
+						BottomAction3Number = map.Menus.Bottom.items[2].super;
+					}
 				}
 
 				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[3] != null)
@@ -534,12 +626,18 @@ namespace TownFish.App.ViewModels
 				IsBottomBarVisible = false;
 			}
 
-			if(map.Menus.Top != null && map.Menus.Top.display)
+			if (map.Menus.Top != null && map.Menus.Top.display)
 			{
 				IsTopBarVisible = true;
 
 				TopBarLeftLabel = GenerateLabel(map.Menus.Top.items[0]);
-				TopBarLeftCommand = GenerateAction(map.Menus.Top.items[0]);
+
+				// TODO: detect that this is location, Paul is to add a new type in schema for this
+				//TopBarLeftCommand = GenerateAction(map.Menus.Top.items[0]);
+				TopBarLeftCommand = new Command(() =>
+				{
+					SearchPanelVisible = !SearchPanelVisible;
+				});
 
 				PageTitle = GenerateLabel(map.Menus.Top.items[1]);
 
@@ -598,9 +696,9 @@ namespace TownFish.App.ViewModels
 				IsTopBarSubVisible = false;
 			}
 
-			if(map.Menus.TopForm != null && map.Menus.TopForm.display)
+			if (map.Menus.TopForm != null && map.Menus.TopForm.display)
 			{
-				if(map.Menus.TopForm.items.Count >= 2)
+				if (map.Menus.TopForm.items.Count >= 2)
 				{
 					TopFormLeftActionLabel = GenerateLabel(map.Menus.TopForm.items[0]);
 					TopFormLeftAction = GenerateAction(map.Menus.TopForm.items[0]);
@@ -613,7 +711,7 @@ namespace TownFish.App.ViewModels
 				else
 				{
 					IsTopFormBarVisible = false;
-				}			
+				}
 			}
 			else
 			{
@@ -630,9 +728,9 @@ namespace TownFish.App.ViewModels
 				url = url.Replace("{size}", item.size);
 				url = url.Replace("{color}", item.color);
 
-				return BaseUri + url;
+				return cBaseUri + url;
 			}
-			else if(item.type == "heading")
+			else if (item.type == "heading")
 			{
 				return item.main;
 			}
@@ -644,24 +742,19 @@ namespace TownFish.App.ViewModels
 
 		ICommand GenerateAction(TownFishMenuItem item)
 		{
-			if(item.type == "link")
+			if (item.type == "link")
 			{
 				return new Command(() =>
 				{
-					Source = BaseUri + item.href + AppModeParam;
+					Source = cBaseUri + item.href + cBaseUriParam;
 				});
 			}
-			else if(item.type == "callback")
+			else if (item.type == "callback")
 			{
 				return new Command(() =>
 				{
 					OnCallbackRequested(item.value);
 				});
-			}
-			else if(item.type == "heading")
-			{
-				//do nothing
-				return null;
 			}
 			else
 			{
@@ -669,18 +762,52 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		public static BrowserPageViewModel Create(string baseUri, TownFishMenuMap map)
+		public static BrowserPageViewModel Create(TownFishMenuMap map)
 		{
 			var viewModel = new BrowserPageViewModel
 			{
-				BaseUri = baseUri,
-				OverflowImages = new List<TownFishMenuItem>()
+				OverflowImages = new List<TownFishMenuItem>(),
+				Source = cBaseUri + cBaseUriParam
 			};
 
-			if(map != null)
-				viewModel.LoadMenuMap(baseUri, map);
+			if (map != null)
+				viewModel.LoadMenuMap(cBaseUri, map);
 
 			return viewModel;
+		}
+
+		public async void UpdateLocationList(string searchTerm)
+		{
+			sSearchTerm = searchTerm;
+
+			try
+			{
+				using (var client = new HttpClient())
+				{
+					var resultJson = await client.GetStringAsync(cBaseUri + mLocationApiFormat.Replace("{term}", searchTerm));
+
+					if (!string.IsNullOrEmpty(resultJson))
+					{
+						var model = JsonConvert.DeserializeObject<TownFishLocationList>(resultJson);
+
+						if (model != null)
+						{
+							LocationSearchItems = model.items.ToList();
+							SearchLocationHasResults = true;
+						}
+					}
+				}
+			}
+			catch (Exception)
+			{
+				// TODO Alert the user of this crap up the wall
+				SearchLocationHasResults = false;
+			}
+		}
+
+		public void SetLocation(string cityId)
+		{
+			Source = cBaseUri + mLocationSetFormat.Replace("{id}", cityId) + cBaseUriParam;
 		}
 
 		#endregion
@@ -689,42 +816,58 @@ namespace TownFish.App.ViewModels
 
 		string mPageTitle;
 		string mSource;
+		bool mIsLoading;
+
+		public const string cBaseUri = "http://dev.townfish.tk";
+		string mLocationApiFormat = "";
+		string mLocationSetFormat = "";
+		public const string cBaseUriParam = "?mode=app";
+
 		string mTopAction1Label;
 		string mTopAction3Label;
 		string mTopAction2Label;
-		string mTopAction4Label;
 		string mBottomAction1Label;
-		ICommand mBottomAction1Command;
 		string mBottomAction2Label;
-		ICommand mBottomAction2Command;
 		string mBottomAction3Label;
-		ICommand mBottomAction3Command;
 		string mBottomAction4Label;
-		ICommand mBottomAction4Command;
 		string mBottomAction5Label;
-		ICommand mBottomAction5Command;
-		bool mIsLoading;
-		bool mIsTopBarVisible;
-		bool mIsBottomBarVisible;
 		string mTopBarLeftLabel;
-		ICommand mTopBarLeftCommand;
 		string mTopBarRightLabel;
-		ICommand mTopBarRightCommand;
-		bool mIsTopBarSubVisible;
-
+		string mTopFormPageTitle;
+		string mTopBarRight1Label;
+		string mTopFormLeftActionLabel;
 		string mTopBarMoreLabel;
+		string mTopFormRightActionLabel;
+
 		ICommand mTopBarMoreCommand;
 		ICommand mTopAction1Command;
 		ICommand mTopAction2Command;
 		ICommand mTopAction3Command;
 		ICommand mTopBarRight1Command;
-		string mTopBarRight1Label;
-		string mTopFormLeftActionLabel;
 		ICommand mTopFormLeftAction;
-		string mTopFormRightActionLabel;
 		ICommand mTopFormRightAction;
-		string mTopFormPageTitle;
+		ICommand mTopBarRightCommand;
+		ICommand mTopBarLeftCommand;
+		ICommand mBottomAction5Command;
+		ICommand mBottomAction4Command;
+		ICommand mBottomAction2Command;
+		ICommand mBottomAction3Command;
+		ICommand mBottomAction1Command;
+
 		bool mIsTopFormBarVisible;
+		bool mIsTopBarSubVisible;
+		bool mIsTopBarVisible;
+		bool mIsBottomBarVisible;
+
+		bool mTopSearchPanelVisible;
+		List<TownfishLocationItem> mLocationSearchItems;
+		bool mSearchLocationHasResults;
+
+		public static string sSearchTerm = "";
+		bool mBottomAction2HasNumber;
+		string mBottomAction2Number;
+		bool mBottomAction3HasNumber;
+		string mBottomAction3Number;
 
 		#endregion
 	}

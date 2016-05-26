@@ -210,3 +210,5 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+/Source/TownFish.App/TownFish.App.Droid/Resources/android-icons.zip
+/Source/TownFish.App/TownFish.App.iOS/Resources/iOS icons.zip
