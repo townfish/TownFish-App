@@ -20,6 +20,7 @@ namespace TownFish.App.Models
 		public string align { get; set; }
 		public bool highlight { get; set; }
 		public string main { get; set; }
+		public string super { get; set; }
 
 		#endregion
 	}

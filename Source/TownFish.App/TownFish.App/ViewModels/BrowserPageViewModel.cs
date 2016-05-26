@@ -106,6 +106,26 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
+		public bool BottomAction2HasNumber
+		{
+			get { return mBottomAction2HasNumber;  }
+			set
+			{
+				mBottomAction2HasNumber = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public string BottomAction2Number
+		{
+			get { return mBottomAction2Number; }
+			set
+			{
+				mBottomAction2Number = value;
+				OnPropertyChanged();
+			}
+		}
+
 		#endregion
 
 		#region Bottom Action 3
@@ -129,6 +149,26 @@ namespace TownFish.App.ViewModels
 			set
 			{
 				mBottomAction3Command = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public bool BottomAction3HasNumber
+		{
+			get { return mBottomAction3HasNumber; }
+			set
+			{
+				mBottomAction3HasNumber = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public string BottomAction3Number
+		{
+			get { return mBottomAction3Number; }
+			set
+			{
+				mBottomAction3Number = value;
 				OnPropertyChanged();
 			}
 		}
@@ -549,12 +589,24 @@ namespace TownFish.App.ViewModels
 				{
 					BottomAction2Label = GenerateLabel(map.Menus.Bottom.items[1]);
 					BottomAction2Command = GenerateAction(map.Menus.Bottom.items[1]);
+
+					if(!string.IsNullOrEmpty(map.Menus.Bottom.items[1].super))
+					{
+						BottomAction2HasNumber = true;
+						BottomAction2Number = map.Menus.Bottom.items[1].super;
+					}
 				}
 
 				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[2] != null)
 				{
 					BottomAction3Label = GenerateLabel(map.Menus.Bottom.items[2]);
 					BottomAction3Command = GenerateAction(map.Menus.Bottom.items[2]); ;
+
+					if (!string.IsNullOrEmpty(map.Menus.Bottom.items[2].super))
+					{
+						BottomAction3HasNumber = true;
+						BottomAction3Number = map.Menus.Bottom.items[2].super;
+					}
 				}
 
 				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[3] != null)
@@ -812,6 +864,10 @@ namespace TownFish.App.ViewModels
 		bool mSearchLocationHasResults;
 
 		public static string sSearchTerm = "";
+		bool mBottomAction2HasNumber;
+		string mBottomAction2Number;
+		bool mBottomAction3HasNumber;
+		string mBottomAction3Number;
 
 		#endregion
 	}
