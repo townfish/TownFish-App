@@ -21,7 +21,7 @@
       </Style>
     </ResourceDictionary>
   </ContentPage.Resources>
-  <Grid RowSpacing="0">
+  <Grid RowSpacing="0" BackgroundColor="#686868" x:Name="rootGrid">
     <Grid.RowDefinitions>
       <RowDefinition Height="auto" />
       <RowDefinition Height="auto" />

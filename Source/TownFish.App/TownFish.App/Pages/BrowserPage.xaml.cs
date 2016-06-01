@@ -49,10 +49,7 @@ namespace TownFish.App.Pages
 			BindingContextChanged += BrowserPage_BindingContextChanged;
 
 			if (Device.OS == TargetPlatform.iOS)
-			{
-				topBar.Padding = new Thickness(10, 25, 10, 10);
-				TopSearchPanel.Padding = new Thickness(20, 25, 20, 10);
-			}
+				rootGrid.Padding = new Thickness(0, 22, 0, 0);
 		}
 
 		#endregion
