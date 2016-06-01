@@ -1,12 +1,11 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Newtonsoft.Json;
+using Xamarin.Forms;
+
 using TownFish.App.Models;
 using TownFish.App.ViewModels;
-using Xamarin.Forms;
 
 namespace TownFish.App.Pages
 {
@@ -21,10 +20,14 @@ namespace TownFish.App.Pages
 			webView.NavigationFinished += WebView_Navigated;
 
 			if (Device.OS == TargetPlatform.iOS)
+			{
 				webView.OnLoadJSScript = "window.webkit.messageHandlers.invokeAction.postMessage(JSON.stringify(twnfsh.getSchema()));";
+			}
 			else
+			{
 				webView.OnLoadJSScript = "jsBridge.invokeAction(JSON.stringify(twnfsh.getSchema()))";
-
+				(App.Current as App).BackButtonPressed += BrowserPage_BackButtonPressed;
+			}
 			webView.RegisterAction((s) =>
 			{
 				System.Diagnostics.Debug.WriteLine(s);
@@ -120,6 +123,14 @@ namespace TownFish.App.Pages
 		{
 			if (e.NewTextValue.Length > 2)
 				ViewModel.UpdateLocationList(e.NewTextValue);
+		}
+
+		void BrowserPage_BackButtonPressed(object sender, EventArgs e)
+		{
+			if (webView.CanGoBack)
+				webView.GoBack();
+			else
+				(App.Current as App).OnAndroidCloseApp();
 		}
 
 		#endregion

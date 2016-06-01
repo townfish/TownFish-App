@@ -1,17 +1,16 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using TownFish.App.Models;
+﻿using System;
+
+using Xamarin.Forms;
+
 using TownFish.App.Pages;
 using TownFish.App.ViewModels;
-using Xamarin.Forms;
 
 namespace TownFish.App
 {
 	public class App : Application
 	{
+		#region Construction
+
 		public App()
 		{
 			var vm = BrowserPageViewModel.Create(null);			
@@ -19,6 +18,10 @@ namespace TownFish.App
 			// The root page of your application
 			MainPage = new BrowserPage() { BindingContext = vm };
 		}
+
+		#endregion
+
+		#region Methods
 
 		protected override void OnStart()
 		{
@@ -34,5 +37,24 @@ namespace TownFish.App
 		{
 			// Handle when your app resumes
 		}
+
+		public void OnBackButtonPressed()
+		{
+			BackButtonPressed?.Invoke(this, new EventArgs());
+		}
+
+		public void OnAndroidCloseApp()
+		{
+			AndroidAppCloseRequested?.Invoke(this, new EventArgs());
+		}
+
+		#endregion
+
+		#region Events
+
+		public event EventHandler BackButtonPressed;
+		public event EventHandler AndroidAppCloseRequested;
+
+		#endregion
 	}
 }
