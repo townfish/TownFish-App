@@ -30,7 +30,11 @@
     </Grid.RowDefinitions>
 
     <!-- Top Menu Bar -->
-    <Grid x:Name="topBar" IsVisible="{Binding IsTopBarVisible}" BackgroundColor="#686868" Padding="10,10,10,10">
+    <Grid x:Name="topBar" 
+          IsVisible="{Binding IsTopBarVisible}" 
+          BackgroundColor="#686868" 
+          Padding="10,10,10,10"
+          HeightRequest="22">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="auto" />
         <ColumnDefinition />
@@ -57,7 +61,12 @@
     </Grid>
 
     <!-- Top bar Sub -->
-    <Grid Grid.Row="1" BackgroundColor="#e8e8e8" ColumnSpacing="10" Padding="10, 0" IsVisible="{Binding IsTopBarSubVisible}">
+    <Grid Grid.Row="1" 
+          BackgroundColor="#e8e8e8" 
+          ColumnSpacing="10" 
+          Padding="10, 0" 
+          HeightRequest="22"    
+      IsVisible="{Binding IsTopBarSubVisible}">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="auto" />
         <ColumnDefinition Width="auto" />
@@ -85,7 +94,7 @@
     </Grid>
 
     <!-- Top form -->
-    <Grid RowSpacing="0" Grid.Row="1" IsVisible="{Binding IsTopFormBarVisible}" BackgroundColor="#F2F2F2">
+    <Grid RowSpacing="0" Grid.Row="1" IsVisible="{Binding IsTopFormBarVisible}" HeightRequest="22" BackgroundColor="#F2F2F2">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="auto" />
         <ColumnDefinition Width="*" />
@@ -198,8 +207,9 @@
           BackgroundColor="#444444"
           Grid.Row="0"
           WidthRequest="400" HorizontalOptions="Start"
+          HeightRequest="22"
           IsVisible="{Binding SearchPanelVisible}"
-          Padding="20, 10">
+          Padding="20, 6">
       <Frame BackgroundColor="#333333" OutlineColor="#333333" Padding="1" HasShadow="False">
         <Grid ColumnSpacing="5" BackgroundColor="#333333">
           <Grid.ColumnDefinitions>
@@ -207,8 +217,8 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="auto"/>
           </Grid.ColumnDefinitions>
-          <Grid Padding="9,5" Grid.Column="0">
-            <Image Source="{Binding TopBarRightLabel}" HeightRequest="20" VerticalOptions="Center"  />
+          <Grid Padding="8,4,8,4" Grid.Column="0">
+            <Image Source="{Binding TopBarRightLabel}" HeightRequest="16" VerticalOptions="Center"  />
           </Grid>
           <Entry x:Name="SearchPanelInput"
                  Grid.Column="1"
@@ -217,7 +227,7 @@
                  HorizontalOptions="Fill"
                  BackgroundColor="#333333"
                  TextColor="#b9b9b9" />
-          <Grid Padding="9,5" Grid.Column="2">
+          <Grid Padding="8,4,8,4" Grid.Column="2">
             <Image Source="close.png" HeightRequest="25" VerticalOptions="Center"  >
               <Image.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding CancelSearchCommand}"/>
