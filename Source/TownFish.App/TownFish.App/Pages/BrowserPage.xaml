@@ -30,7 +30,7 @@
     </Grid.RowDefinitions>
 
     <!-- Top Menu Bar -->
-    <Grid x:Name="topBar" IsVisible="{Binding IsTopBarVisible}" BackgroundColor="#787878" Padding="10,10,10,10">
+    <Grid x:Name="topBar" IsVisible="{Binding IsTopBarVisible}" BackgroundColor="#686868" Padding="10,10,10,10">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="auto" />
         <ColumnDefinition />
