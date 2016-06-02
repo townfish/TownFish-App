@@ -172,7 +172,7 @@
           Grid.RowSpacing="0"
           Grid.ColumnSpacing="0"
           BackgroundColor="#444444"
-          WidthRequest="440"
+          WidthRequest="420"
           HorizontalOptions="Start"
           Grid.RowSpan="3"
           Grid.Row="1">
@@ -184,19 +184,19 @@
         <RowDefinition Height="auto" />
       </Grid.RowDefinitions>
       <Grid BackgroundColor="#333333" Padding="20,5">
-        <Label Text="MY LOCATIONS" TextColor="#c8c8c8" HorizontalOptions="Fill" />
+        <Label Text="MY LOCATIONS" TextColor="#c8c8c8" FontSize="12" HorizontalOptions="Fill" />
       </Grid>
       <ListView Grid.Row="1" BackgroundColor="#444444" SeparatorVisibility="None"></ListView>
       <Grid Grid.Row="2" Padding="20,10" >
-        <Label TextColor="#ececec"
+        <Label TextColor="#ececec" FontSize="12"
                Text="Your account is connected with the above locations allowing you to post news, events, and information that's relevant to these feeds." />
       </Grid>
       <Grid Grid.Row="3" Padding="20,10" >
-        <Label TextColor="#ececec"
+        <Label TextColor="#ececec" FontSize="12"
                Text="Use the top bar to search for other locations that are available where you can ask the locals for recommendations and advice, and view anything in the newsfeed. Please read our Member Agreement" />
       </Grid>
       <Grid Grid.Row="4" Padding="20,10" >
-        <Label TextColor="#ececec"
+        <Label TextColor="#ececec" FontSize="12"
                Text="Note: if you change your account location you will no longer be associated with these locations or have permission to post in their newsfeeds." />
       </Grid>
     </Grid>
@@ -209,25 +209,36 @@
           WidthRequest="400" HorizontalOptions="Start"
           HeightRequest="22"
           IsVisible="{Binding SearchPanelVisible}"
-          Padding="20, 6">
-      <Frame BackgroundColor="#333333" OutlineColor="#333333" Padding="1" HasShadow="False">
+          Padding="10, 6">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="auto" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <Image Source="{Binding TopBarLeftLabel}" Grid.Column="0" HorizontalOptions="Center">
+        <Image.GestureRecognizers>
+          <TapGestureRecognizer Command="{Binding TopBarLeftCommand}"/>
+        </Image.GestureRecognizers>
+      </Image>
+      <Frame BackgroundColor="#333333" Grid.Column="1" OutlineColor="#333333" Padding="1" HasShadow="False">
         <Grid ColumnSpacing="5" BackgroundColor="#333333">
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="auto"/>
           </Grid.ColumnDefinitions>
-          <Grid Padding="8,4,8,4" Grid.Column="0">
+          <Grid Padding="8,4,4,4" Grid.Column="0">
             <Image Source="{Binding TopBarRightLabel}" HeightRequest="16" VerticalOptions="Center"  />
           </Grid>
-          <Entry x:Name="SearchPanelInput"
+          <Entry x:Name="SearchPanelInput" 
+                 Placeholder="Type location e.g. Camden or NW1"
                  Grid.Column="1"
                  VerticalOptions="Center" FontSize="12"
                  HeightRequest="40"
                  HorizontalOptions="Fill"
                  BackgroundColor="#333333"
-                 TextColor="#b9b9b9" />
-          <Grid Padding="8,4,8,4" Grid.Column="2">
+                 TextColor="#b9b9b9" 
+                  Text="{Binding SearchTerm}" />
+          <Grid Padding="8,4,8,4" Grid.Column="2" IsVisible="{Binding SearchHasContent}">
             <Image Source="close.png" HeightRequest="25" VerticalOptions="Center"  >
               <Image.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding CancelSearchCommand}"/>
@@ -242,7 +253,7 @@
     <Grid x:Name="LocationResultsPanel"
           IsVisible="{Binding SearchLocationHasResults}"
           Grid.RowSpacing="0" Grid.ColumnSpacing="0"
-          WidthRequest="440" HorizontalOptions="Start"
+          WidthRequest="420" HorizontalOptions="Start"
           HeightRequest="400" VerticalOptions="Start"
           Grid.RowSpan="3" Grid.Row="1">
 

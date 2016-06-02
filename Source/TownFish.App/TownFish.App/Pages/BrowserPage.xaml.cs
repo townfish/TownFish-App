@@ -118,6 +118,11 @@ namespace TownFish.App.Pages
 
 		void SearchPanelInput_TextChanged(object sender, TextChangedEventArgs e)
 		{
+			if (e.NewTextValue.Length > 0)
+				ViewModel.SearchHasContent = true;
+			else
+				ViewModel.SearchHasContent = false;
+
 			if (e.NewTextValue.Length > 2)
 				ViewModel.UpdateLocationList(e.NewTextValue);
 		}

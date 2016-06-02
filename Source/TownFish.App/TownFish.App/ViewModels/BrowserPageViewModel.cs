@@ -546,8 +546,28 @@ namespace TownFish.App.ViewModels
 				return new Command(() =>
 				{
 					SearchLocationHasResults = false;
-					SearchPanelVisible = false;
+					SearchTerm = "";
 				});
+			}
+		}
+
+		public bool SearchHasContent
+		{
+			get { return mSearchHasContent; }
+			set
+			{
+				mSearchHasContent = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public string SearchTerm
+		{
+			get { return mSearchTerm; }
+			set
+			{
+				mSearchTerm = value;
+				OnPropertyChanged();
 			}
 		}
 
@@ -637,6 +657,7 @@ namespace TownFish.App.ViewModels
 				TopBarLeftCommand = new Command(() =>
 				{
 					SearchPanelVisible = !SearchPanelVisible;
+					SearchLocationHasResults = false;
 				});
 
 				PageTitle = GenerateLabel(map.Menus.Top.items[1]);
@@ -868,6 +889,8 @@ namespace TownFish.App.ViewModels
 		string mBottomAction2Number;
 		bool mBottomAction3HasNumber;
 		string mBottomAction3Number;
+		bool mSearchHasContent;
+		string mSearchTerm;
 
 		#endregion
 	}
