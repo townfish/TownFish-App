@@ -465,9 +465,6 @@ namespace TownFish.App.ViewModels
 			get { return mTopFormRightActionLabel; }
 			set
 			{
-				if (value.Equals(mTopFormRightActionLabel, StringComparison.Ordinal))
-					return;
-
 				mTopFormRightActionLabel = value;
 				OnPropertyChanged();
 			}
@@ -479,19 +476,6 @@ namespace TownFish.App.ViewModels
 			set
 			{
 				mTopFormRightAction = value;
-				OnPropertyChanged();
-			}
-		}
-
-		public string TopFormPageTitle
-		{
-			get { return mTopFormPageTitle; }
-			set
-			{
-				if (value.Equals(mTopFormPageTitle, StringComparison.Ordinal))
-					return;
-
-				mTopFormPageTitle = value;
 				OnPropertyChanged();
 			}
 		}
@@ -719,19 +703,26 @@ namespace TownFish.App.ViewModels
 
 			if (map.Menus.TopForm != null && map.Menus.TopForm.display)
 			{
-				if (map.Menus.TopForm.items.Count >= 2)
+				if (map.Menus.TopForm.items.Count >= 1)
 				{
 					TopFormLeftActionLabel = GenerateLabel(map.Menus.TopForm.items[0]);
 					TopFormLeftAction = GenerateAction(map.Menus.TopForm.items[0]);
-
-					TopFormRightActionLabel = GenerateLabel(map.Menus.TopForm.items[1]);
-					TopFormRightAction = GenerateAction(map.Menus.TopForm.items[1]);
-
 					IsTopFormBarVisible = true;
 				}
 				else
 				{
 					IsTopFormBarVisible = false;
+				}
+
+				if (map.Menus.TopForm.items.Count >= 2)
+				{
+					PageTitle = GenerateLabel(map.Menus.TopForm.items[1]);
+				}
+
+				if(map.Menus.TopForm.items.Count >= 3)
+				{ 
+					TopFormRightActionLabel = GenerateLabel(map.Menus.TopForm.items[2]);
+					TopFormRightAction = GenerateAction(map.Menus.TopForm.items[2]);
 				}
 			}
 			else

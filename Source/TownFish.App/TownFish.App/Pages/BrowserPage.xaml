@@ -94,7 +94,12 @@
     </Grid>
 
     <!-- Top form -->
-    <Grid RowSpacing="0" Grid.Row="1" IsVisible="{Binding IsTopFormBarVisible}" HeightRequest="22" BackgroundColor="#F2F2F2">
+    <Grid RowSpacing="0" 
+          Grid.Row="1" 
+          IsVisible="{Binding IsTopFormBarVisible}" 
+          Padding="6,2"
+          HeightRequest="44"
+          BackgroundColor="#686868">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="auto" />
         <ColumnDefinition Width="*" />
@@ -102,15 +107,20 @@
       </Grid.ColumnDefinitions>
       <Button Command="{Binding TopFormLeftAction}"
               Grid.Column="0"
-              Text="{Binding TopFormLeftActionLabel}"
-              BackgroundColor="#F2F2F2"
-              TextColor="#007aff">
+              Text="{Binding TopFormLeftActionLabel}" FontSize="12"
+              BackgroundColor="#686868">
       </Button>
+      <Label Text="{Binding PageTitle}" 
+             VerticalOptions="Center" 
+             HorizontalOptions="Center" 
+             FontSize="14" 
+             FontAttributes="Bold" 
+             Grid.Column="1" />
       <Button Command="{Binding TopFormRightAction}"
               Grid.Column="2"
               Text="{Binding TopFormRightActionLabel}"
-              BackgroundColor="#F2F2F2"
-              TextColor="#007aff">
+              FontSize="12"
+              BackgroundColor="#686868">
       </Button>
     </Grid>
 
