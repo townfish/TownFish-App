@@ -45,10 +45,16 @@
       </Grid.ColumnDefinitions>
       <Image Source="{Binding TopBarLeftLabel}" Grid.Column="0" HorizontalOptions="Center" HeightRequest="18">
         <Image.GestureRecognizers>
-          <TapGestureRecognizer Command="{Binding TopBarLeftCommand}"/>
+          <TapGestureRecognizer x:Name="LocationBtn" Command="{Binding TopBarLeftCommand}"/>
         </Image.GestureRecognizers>
       </Image>
-      <Label VerticalOptions="Center" HorizontalOptions="Center" Grid.Column="1" Text="{Binding PageTitle}" />
+      <Label VerticalOptions="Center" 
+             HorizontalOptions="Center" 
+             TextColor="#ffffff"  
+             FontSize="14" 
+             FontAttributes="Bold"
+             Grid.Column="1" 
+             Text="{Binding PageTitle}" />
       <Image Source="{Binding TopBarRightLabel}" Grid.Column="2" HorizontalOptions="Center" HeightRequest="18">
         <Image.GestureRecognizers>
           <TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
@@ -234,7 +240,7 @@
       </Grid.ColumnDefinitions>
       <Image Source="{Binding TopBarLeftLabel}" Grid.Column="0" HorizontalOptions="Center">
         <Image.GestureRecognizers>
-          <TapGestureRecognizer Command="{Binding TopBarLeftCommand}"/>
+          <TapGestureRecognizer x:Name="SearchPanelCloseBtn" Command="{Binding TopBarLeftCommand}"/>
         </Image.GestureRecognizers>
       </Image>
       <Frame BackgroundColor="#333333" Grid.Column="1" OutlineColor="#333333" Padding="1" HasShadow="False">

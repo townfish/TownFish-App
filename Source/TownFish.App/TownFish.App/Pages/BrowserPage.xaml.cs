@@ -50,6 +50,9 @@ namespace TownFish.App.Pages
 
 			if (Device.OS == TargetPlatform.iOS)
 				rootGrid.Padding = new Thickness(0, 22, 0, 0);
+
+			LocationBtn.Tapped += LocationTapped;
+			SearchPanelCloseBtn.Tapped += SearchPanelCloseBtn_Tapped;
 		}
 
 		#endregion
@@ -133,6 +136,29 @@ namespace TownFish.App.Pages
 				webView.GoBack();
 			else
 				(App.Current as App).OnAndroidCloseApp();
+		}
+
+		async void SearchPanelCloseBtn_Tapped(object sender, EventArgs e)
+		{
+			var offScreenHeight = (LocationPanel.Height + TopSearchPanel.Height);
+
+			// Silly IOS we have to consider the status bar!
+			if (Device.OS == TargetPlatform.iOS)
+				offScreenHeight += 22;
+
+			await LocationPanel.TranslateTo(0, offScreenHeight * -1);
+			await TopSearchPanel.TranslateTo(-420, 0);
+			ViewModel.SearchPanelVisible = false;
+		}
+
+		void LocationTapped(object sender, EventArgs e)
+		{
+			// TODO: Only do this if we are dealing with the location button
+			TopSearchPanel.TranslationX = -420; // This is hard coded :(
+			LocationPanel.TranslationY = (LocationPanel.Height + TopSearchPanel.Height) * -1;
+			ViewModel.SearchPanelVisible = true;
+			TopSearchPanel.TranslateTo(0, 0);
+			LocationPanel.TranslateTo(0, 0);
 		}
 
 		#endregion

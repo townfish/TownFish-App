@@ -569,8 +569,7 @@ namespace TownFish.App.ViewModels
 
 		public void OnCallbackRequested(string callbackName)
 		{
-			if (CallbackRequested != null)
-				CallbackRequested(this, callbackName);
+			CallbackRequested?.Invoke(this, callbackName);
 		}
 
 		public void LoadMenuMap(string baseUri, TownFishMenuMap map)
@@ -640,7 +639,7 @@ namespace TownFish.App.ViewModels
 				//TopBarLeftCommand = GenerateAction(map.Menus.Top.items[0]);
 				TopBarLeftCommand = new Command(() =>
 				{
-					SearchPanelVisible = !SearchPanelVisible;
+					//SearchPanelVisible = !SearchPanelVisible;
 					SearchLocationHasResults = false;
 				});
 
@@ -766,6 +765,13 @@ namespace TownFish.App.ViewModels
 				return new Command(() =>
 				{
 					OnCallbackRequested(item.value);
+				});
+			}
+			else if(item.type == "back")
+			{
+				return new Command(() =>
+				{
+					Source = cBaseUri + item.href + cBaseUriParam;
 				});
 			}
 			else
