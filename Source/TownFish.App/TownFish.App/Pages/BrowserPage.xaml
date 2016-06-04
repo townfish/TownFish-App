@@ -139,7 +139,7 @@
     </Grid>
 
     <!-- WebView -->
-    <xamify:UberWebView x:Name="webView" Grid.Row="2" Source="{Binding Source}"  VerticalOptions="Fill" HorizontalOptions="Fill" />
+    <xamify:UberWebView x:Name="webView" Grid.Row="2" Source="{Binding Source}" VerticalOptions="Fill" HorizontalOptions="Fill" />
 
     <!-- Bottom Menu Bar -->
     <Grid Grid.Row="3" BackgroundColor="#F2F2F2" Padding="10" IsVisible="{Binding IsBottomBarVisible}">

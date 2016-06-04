@@ -18,6 +18,7 @@ namespace TownFish.App.Pages
 			InitializeComponent();
 			webView.NavigationStarted += WebView_Navigating;
 			webView.NavigationFinished += WebView_Navigated;
+			webView.AffixedUrlParam = "mode=app";
 
 			if (Device.OS == TargetPlatform.iOS)
 			{
