@@ -563,9 +563,16 @@ namespace TownFish.App.ViewModels
 
 		public event EventHandler<string> CallbackRequested;
 
+		public event EventHandler<string> MenuRendered;
+
 		#endregion
 
 		#region Methods
+
+		void OnMenuRendered()
+		{
+			MenuRendered?.Invoke(this, "");
+		}
 
 		public void OnCallbackRequested(string callbackName)
 		{
@@ -728,6 +735,8 @@ namespace TownFish.App.ViewModels
 			{
 				IsTopFormBarVisible = false;
 			}
+
+			OnMenuRendered();
 		}
 
 		string GenerateLabel(TownFishMenuItem item)

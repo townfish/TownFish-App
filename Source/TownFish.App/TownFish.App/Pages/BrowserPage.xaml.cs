@@ -44,6 +44,7 @@ namespace TownFish.App.Pages
 					ViewModel.IsBottomBarVisible = false;
 					ViewModel.IsTopBarSubVisible = false;
 					ViewModel.IsTopBarVisible = false;
+					ViewModel.IsLoading = false;
 				}
 			});
 
@@ -53,7 +54,7 @@ namespace TownFish.App.Pages
 				rootGrid.Padding = new Thickness(0, 22, 0, 0);
 
 			LocationBtn.Tapped += LocationTapped;
-			SearchPanelCloseBtn.Tapped += SearchPanelCloseBtn_Tapped;
+			SearchPanelCloseBtn.Tapped += SearchPanelCloseBtn_Tapped;			
 		}
 
 		#endregion
@@ -71,8 +72,8 @@ namespace TownFish.App.Pages
 
 		async void WebView_Navigated(object sender, EventArgs e)
 		{		
-			await loadingPanel.FadeTo(0);
-			ViewModel.IsLoading = false;
+			//await loadingPanel.FadeTo(0);
+			//ViewModel.IsLoading = false;
 		}
 
 		void WebView_Navigating(object sender, EventArgs e)
@@ -104,6 +105,7 @@ namespace TownFish.App.Pages
 				SearchPanelInput.TextChanged += SearchPanelInput_TextChanged;
 				SearchPanelInput.Completed += SearchPanelInput_Completed;
 				LocationResultsListView.ItemTapped += LocationResultsListView_ItemTapped;
+				ViewModel.MenuRendered += ViewModel_MenuRendered;
 			}
 		}
 
@@ -160,6 +162,18 @@ namespace TownFish.App.Pages
 			ViewModel.SearchPanelVisible = true;
 			TopSearchPanel.TranslateTo(0, 0);
 			LocationPanel.TranslateTo(0, 0);
+		}
+
+		void ViewModel_MenuRendered(object sender, string e)
+		{
+			if (ViewModel.IsLoading)
+			{
+				Xamarin.Forms.Device.BeginInvokeOnMainThread(async () =>
+				{
+					await loadingPanel.FadeTo(0);
+					ViewModel.IsLoading = false;
+				});
+			}
 		}
 
 		#endregion
