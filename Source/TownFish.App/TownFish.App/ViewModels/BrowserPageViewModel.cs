@@ -325,6 +325,8 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
+		public bool LeftActionIsLocationPin { get; set; }
+
 		#endregion
 
 		#region Top Sub
@@ -583,6 +585,7 @@ namespace TownFish.App.ViewModels
 		{
 			mLocationApiFormat = map.LocationsAPI;
 			mLocationSetFormat = map.LocationSetUrl;
+			LeftActionIsLocationPin = false;
 
 			if (map.Menus.Bottom != null && map.Menus.Bottom.display)
 			{
@@ -641,14 +644,7 @@ namespace TownFish.App.ViewModels
 				IsTopBarVisible = true;
 
 				TopBarLeftLabel = GenerateLabel(map.Menus.Top.items[0]);
-
-				// TODO: detect that this is location, Paul is to add a new type in schema for this
-				//TopBarLeftCommand = GenerateAction(map.Menus.Top.items[0]);
-				TopBarLeftCommand = new Command(() =>
-				{
-					//SearchPanelVisible = !SearchPanelVisible;
-					SearchLocationHasResults = false;
-				});
+				TopBarLeftCommand = GenerateAction(map.Menus.Top.items[0]);
 
 				PageTitle = GenerateLabel(map.Menus.Top.items[1]);
 
@@ -741,7 +737,7 @@ namespace TownFish.App.ViewModels
 
 		string GenerateLabel(TownFishMenuItem item)
 		{
-			if (item.kind == "icon")
+			if (item.kind == "icon" || item.type == "locationpin")
 			{
 				var url = item.iconurl;
 
@@ -781,6 +777,14 @@ namespace TownFish.App.ViewModels
 				return new Command(() =>
 				{
 					Source = cBaseUri + item.href + cBaseUriParam;
+				});
+			}
+			else if(item.type == "locationpin")
+			{
+				LeftActionIsLocationPin = true;
+				return new Command(() =>
+				{
+					SearchLocationHasResults = false;
 				});
 			}
 			else

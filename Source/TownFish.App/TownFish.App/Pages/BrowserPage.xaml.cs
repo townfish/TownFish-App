@@ -156,12 +156,15 @@ namespace TownFish.App.Pages
 
 		void LocationTapped(object sender, EventArgs e)
 		{
-			// TODO: Only do this if we are dealing with the location button
-			TopSearchPanel.TranslationX = -420; // This is hard coded :(
-			LocationPanel.TranslationY = (LocationPanel.Height + TopSearchPanel.Height) * -1;
-			ViewModel.SearchPanelVisible = true;
-			TopSearchPanel.TranslateTo(0, 0);
-			LocationPanel.TranslateTo(0, 0);
+
+			if (ViewModel.LeftActionIsLocationPin)
+			{
+				TopSearchPanel.TranslationX = -420; // This is hard coded :(
+				LocationPanel.TranslationY = (LocationPanel.Height + TopSearchPanel.Height) * -1;
+				ViewModel.SearchPanelVisible = true;
+				TopSearchPanel.TranslateTo(0, 0);
+				LocationPanel.TranslateTo(0, 0);
+			}
 		}
 
 		void ViewModel_MenuRendered(object sender, string e)
