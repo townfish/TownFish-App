@@ -38,6 +38,7 @@
           HeightRequest="38">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="auto" />
+        <ColumnDefinition Width="auto" />
         <ColumnDefinition />
         <ColumnDefinition Width="auto"/>
         <ColumnDefinition Width="10" />
@@ -48,19 +49,20 @@
           <TapGestureRecognizer x:Name="LocationBtn" Command="{Binding TopBarLeftCommand}"/>
         </Image.GestureRecognizers>
       </Image>
+      <Label Grid.Column="1" VerticalOptions="Center" FontSize="14" FontAttributes="Bold" TextColor="#ffffff" Text="{Binding LocationName}" />
       <Label VerticalOptions="Center" 
              HorizontalOptions="Center" 
              TextColor="#ffffff"  
              FontSize="14" 
              FontAttributes="Bold"
-             Grid.Column="1" 
+             Grid.Column="2" 
              Text="{Binding PageTitle}" />
-      <Image Source="{Binding TopBarRightLabel}" Grid.Column="2" HorizontalOptions="Center" HeightRequest="18">
+      <Image Source="{Binding TopBarRightLabel}" Grid.Column="3" HorizontalOptions="Center" HeightRequest="18">
         <Image.GestureRecognizers>
           <TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
         </Image.GestureRecognizers>
       </Image>
-      <Image Source="{Binding TopBarRight1Label}" Grid.Column="4" HorizontalOptions="Center" HeightRequest="18">
+      <Image Source="{Binding TopBarRight1Label}" Grid.Column="5" HorizontalOptions="Center" HeightRequest="18">
         <Image.GestureRecognizers>
           <TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
         </Image.GestureRecognizers>
@@ -210,14 +212,51 @@
       <Grid BackgroundColor="#333333" Padding="20,5">
         <Label Text="MY LOCATIONS" TextColor="#c8c8c8" FontSize="12" HorizontalOptions="Fill" />
       </Grid>
-      <ListView Grid.Row="1" BackgroundColor="#444444" SeparatorVisibility="None"></ListView>
+      <ListView Grid.Row="1" 
+                x:Name="AvalLocationsListview"
+                BackgroundColor="#444444" 
+                SeparatorVisibility="None" 
+                ItemsSource="{Binding AvailableLocations}">
+        <ListView.ItemTemplate>
+          <DataTemplate>
+            <ViewCell>
+              <Grid Padding="0,5">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="auto" />
+                  <ColumnDefinition Width="*" />
+                  <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="auto" />
+                  <RowDefinition Height="auto" />
+                </Grid.RowDefinitions>
+                <Grid Padding="10,5">
+                  <Image Source="{Binding LeftImage}" HeightRequest="18" />
+                </Grid>
+                <Label Text="{Binding name}" TextColor="#ececec" Grid.Column="1" VerticalOptions="Center" />
+                <Grid Padding="10,5"  Grid.Column="2" >
+                  <Image Source="{Binding RightImage}" HeightRequest="18"/>
+                </Grid>
+                <BoxView Grid.Row="1" Color="Black" HeightRequest="1" Grid.ColumnSpan="3" VerticalOptions="Center" />
+              </Grid>
+            </ViewCell>
+          </DataTemplate>
+        </ListView.ItemTemplate>
+      </ListView>
       <Grid Grid.Row="2" Padding="20,10" >
         <Label TextColor="#ececec" FontSize="12"
                Text="Your account is connected with the above locations allowing you to post news, events, and information that's relevant to these feeds." />
       </Grid>
       <Grid Grid.Row="3" Padding="20,10" >
-        <Label TextColor="#ececec" FontSize="12"
-               Text="Use the top bar to search for other locations that are available where you can ask the locals for recommendations and advice, and view anything in the newsfeed. Please read our Member Agreement" />
+        <Label TextColor="#ececec" FontSize="12" >
+          <Label.FormattedText>
+            <FormattedString >
+              <Span Text="Use the top bar to search for other locations that are available where you can ask the locals for recommendations and advice, and view anything in the newsfeed. Please read our" />
+              <Span Text=" Member Agreement" ForegroundColor="#4f92eb" />
+            </FormattedString>
+        </Label.FormattedText>
+        </Label>
+          
       </Grid>
       <Grid Grid.Row="4" Padding="20,10" >
         <Label TextColor="#ececec" FontSize="12"

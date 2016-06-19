@@ -16,6 +16,12 @@ namespace TownFish.App.Models
 
 		public TownFishMenuList Menus { get; set; }
 
+		public string ActiveLocation { get; set; }
+
+		public List<AvailableLocation> AvailableLocations { get; set; }
+
+		public LocationIcons LocationIcons { get; set; }
+
 		#endregion
 	}
 }

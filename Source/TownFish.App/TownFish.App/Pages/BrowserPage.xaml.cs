@@ -106,7 +106,14 @@ namespace TownFish.App.Pages
 				SearchPanelInput.Completed += SearchPanelInput_Completed;
 				LocationResultsListView.ItemTapped += LocationResultsListView_ItemTapped;
 				ViewModel.MenuRendered += ViewModel_MenuRendered;
+				AvalLocationsListview.ItemTapped += AvalLocationsListview_ItemTapped;
 			}
+		}
+
+		void AvalLocationsListview_ItemTapped(object sender, ItemTappedEventArgs e)
+		{
+			ViewModel.SearchPanelVisible = false;
+			ViewModel.SetLocation((e.Item as AvailableLocation).id);
 		}
 
 		void SearchPanelInput_Completed(object sender, EventArgs e)
@@ -156,7 +163,6 @@ namespace TownFish.App.Pages
 
 		void LocationTapped(object sender, EventArgs e)
 		{
-
 			if (ViewModel.LeftActionIsLocationPin)
 			{
 				TopSearchPanel.TranslationX = -420; // This is hard coded :(

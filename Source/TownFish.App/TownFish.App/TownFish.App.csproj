@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="Command.cs" />
+    <Compile Include="Models\AvailableLocation.cs" />
     <Compile Include="Models\BottomMenu.cs" />
     <Compile Include="Models\NavMenuItem.cs" />
     <Compile Include="Models\TownFishLocationList.cs" />

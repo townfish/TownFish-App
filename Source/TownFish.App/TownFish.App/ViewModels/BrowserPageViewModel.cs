@@ -327,6 +327,16 @@ namespace TownFish.App.ViewModels
 
 		public bool LeftActionIsLocationPin { get; set; }
 
+		public string LocationName
+		{
+			get { return mLocationName; }
+			set
+			{
+				mLocationName = value;
+				OnPropertyChanged();
+			}
+		}
+
 		#endregion
 
 		#region Top Sub
@@ -559,6 +569,30 @@ namespace TownFish.App.ViewModels
 
 		#endregion
 
+		#region Locations
+
+		public List<AvailableLocation> AvailableLocations
+		{
+			get { return mAvailableLocations; }
+			set
+			{
+				mAvailableLocations = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public AvailableLocation ActiveLocation
+		{
+			get { return mActiveLocation; }
+			set
+			{
+				mActiveLocation = value;
+				OnPropertyChanged();
+			}
+		}
+
+		#endregion
+
 		#endregion
 
 		#region Events
@@ -586,6 +620,19 @@ namespace TownFish.App.ViewModels
 			mLocationApiFormat = map.LocationsAPI;
 			mLocationSetFormat = map.LocationSetUrl;
 			LeftActionIsLocationPin = false;
+			AvailableLocations = new List<AvailableLocation>();
+
+			foreach(var loc in map.AvailableLocations)
+			{
+				loc.LeftImage = cBaseUri + map.LocationIcons.Pin.Replace("{size}", "ldpi").Replace("{color}", "ffffff");
+				if (map.ActiveLocation == loc.id)
+				{
+					loc.IsSelected = true;
+					loc.RightImage = cBaseUri + map.LocationIcons.Tick.Replace("{size}", "ldpi").Replace("{color}", "ffffff");
+				}
+
+				AvailableLocations.Add(loc);
+			}
 
 			if (map.Menus.Bottom != null && map.Menus.Bottom.display)
 			{
@@ -646,7 +693,17 @@ namespace TownFish.App.ViewModels
 				TopBarLeftLabel = GenerateLabel(map.Menus.Top.items[0]);
 				TopBarLeftCommand = GenerateAction(map.Menus.Top.items[0]);
 
-				PageTitle = GenerateLabel(map.Menus.Top.items[1]);
+				if (map.Menus.Top.items[1].type == "location")
+				{
+					var activeLoc = AvailableLocations.FirstOrDefault(i => i.id == map.ActiveLocation);
+
+					if (activeLoc != null)
+						LocationName = activeLoc.name;
+				}
+				else
+				{
+					PageTitle = GenerateLabel(map.Menus.Top.items[1]);
+				}
 
 				TopBarRightLabel = GenerateLabel(map.Menus.Top.items[2]);
 				TopBarRightCommand = GenerateAction(map.Menus.Top.items[2]);
@@ -901,6 +958,9 @@ namespace TownFish.App.ViewModels
 		string mBottomAction3Number;
 		bool mSearchHasContent;
 		string mSearchTerm;
+		List<AvailableLocation> mAvailableLocations;
+		AvailableLocation mActiveLocation;
+		private string mLocationName;
 
 		#endregion
 	}
