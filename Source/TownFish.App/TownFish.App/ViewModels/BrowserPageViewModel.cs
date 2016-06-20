@@ -703,6 +703,7 @@ namespace TownFish.App.ViewModels
 				else
 				{
 					PageTitle = GenerateLabel(map.Menus.Top.items[1]);
+					LocationName = "";
 				}
 
 				TopBarRightLabel = GenerateLabel(map.Menus.Top.items[2]);

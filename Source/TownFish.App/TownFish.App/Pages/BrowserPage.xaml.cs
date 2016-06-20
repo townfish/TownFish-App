@@ -54,6 +54,7 @@ namespace TownFish.App.Pages
 				rootGrid.Padding = new Thickness(0, 22, 0, 0);
 
 			LocationBtn.Tapped += LocationTapped;
+			LocationLbl.Tapped += LocationTapped;
 			SearchPanelCloseBtn.Tapped += SearchPanelCloseBtn_Tapped;			
 		}
 
