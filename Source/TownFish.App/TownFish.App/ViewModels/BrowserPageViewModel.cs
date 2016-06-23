@@ -7,6 +7,7 @@ using System.Windows.Input;
 using Newtonsoft.Json;
 
 using TownFish.App.Models;
+using Xamarin.Forms;
 
 namespace TownFish.App.ViewModels
 {
@@ -364,6 +365,16 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
+		public FontAttributes TopAction1Bold
+		{
+			get { return mTopAction1Bold; }
+			set
+			{
+				mTopAction1Bold = value;
+				OnPropertyChanged();
+			}
+		}
+
 		public string TopAction2Label
 		{
 			get { return mTopAction2Label; }
@@ -373,6 +384,16 @@ namespace TownFish.App.ViewModels
 					return;
 
 				mTopAction2Label = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public FontAttributes TopAction2Bold
+		{
+			get { return mTopAction2Bold; }
+			set
+			{
+				mTopAction2Bold = value;
 				OnPropertyChanged();
 			}
 		}
@@ -406,6 +427,49 @@ namespace TownFish.App.ViewModels
 			set
 			{
 				mTopAction3Command = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public FontAttributes TopAction3Bold
+		{
+			get { return mTopAction3Bold; }
+			set
+			{
+				mTopAction3Bold = value;
+				OnPropertyChanged();
+			}
+		} 
+
+		public string TopAction4Label
+		{
+			get { return mTopAction4Label; }
+			set
+			{
+				if (value.Equals(mTopAction4Label, StringComparison.Ordinal))
+					return;
+
+				mTopAction4Label = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public ICommand TopAction4Command
+		{
+			get { return mTopAction4Command; }
+			set
+			{
+				mTopAction4Command = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public FontAttributes TopAction4Bold
+		{
+			get { return mTopAction4Bold; }
+			set
+			{
+				mTopAction4Bold = value;
 				OnPropertyChanged();
 			}
 		}
@@ -813,26 +877,76 @@ namespace TownFish.App.ViewModels
 				{
 					TopAction1Label = GenerateLabel(map.Menus.TopSub.items[0]);
 					TopAction1Command = GenerateAction(map.Menus.TopSub.items[0]);
+					if (map.Menus.TopSub.items[0].highlight)
+						TopAction1Bold = FontAttributes.Bold;
+					else
+						TopAction1Bold = FontAttributes.None;
+				}
+				else
+				{
+					TopAction1Label = "";
+					TopAction1Command = null;
 				}
 
-				if (map.Menus.TopSub.items.Count > 0 && map.Menus.TopSub.items[1] != null)
+				if (map.Menus.TopSub.items.Count > 1 && map.Menus.TopSub.items[1] != null)
 				{
 					TopAction2Label = GenerateLabel(map.Menus.TopSub.items[1]);
 					TopAction2Command = GenerateAction(map.Menus.TopSub.items[1]);
+					if (map.Menus.TopSub.items[1].highlight)
+						TopAction2Bold = FontAttributes.Bold;
+					else
+						TopAction2Bold = FontAttributes.None;
+				}
+				else
+				{
+					TopAction2Label = "";
+					TopAction2Command = null;
 				}
 
-				if (map.Menus.TopSub.items.Count > 0 && map.Menus.TopSub.items[2] != null)
+				if (map.Menus.TopSub.items.Count > 2 && map.Menus.TopSub.items[2] != null)
 				{
 					TopAction3Label = GenerateLabel(map.Menus.TopSub.items[2]);
 					TopAction3Command = GenerateAction(map.Menus.TopSub.items[2]);
+					if (map.Menus.TopSub.items[2].highlight)
+						TopAction3Bold = FontAttributes.Bold;
+					else
+						TopAction3Bold = FontAttributes.None;
+				}
+				else
+				{
+					TopAction3Label = "";
+					TopAction3Command = null;
 				}
 
-				var moreIcon = map.Menus.TopSub.items.FirstOrDefault(x => x.type == "limitby");
-
-				if (moreIcon != null)
+				if (map.Menus.TopSub.items.Count > 3 && map.Menus.TopSub.items[3] != null)
 				{
-					TopActionMoreLabel = GenerateLabel(map.Menus.TopSub.items[3]);
-					OverflowImages = map.Menus.TopSub.items.Skip(3).Where(i => i.type != "limitby").ToList();
+					TopAction4Label = GenerateLabel(map.Menus.TopSub.items[3]);
+					TopAction4Command = GenerateAction(map.Menus.TopSub.items[3]);
+					if (map.Menus.TopSub.items[3].highlight)
+						TopAction4Bold = FontAttributes.Bold;
+					else
+						TopAction4Bold = FontAttributes.None;
+				}
+				else
+				{
+					TopAction4Label = "";
+					TopAction4Command = null;
+				}
+
+				if (map.Menus.TopSub.items.Count > 4)
+				{
+					var moreIcon = map.Menus.TopSub.items.FirstOrDefault(x => x.type == "limitby");
+
+					if (moreIcon != null)
+					{
+						TopActionMoreLabel = GenerateLabel(moreIcon);
+						OverflowImages = map.Menus.TopSub.items.Skip(3).Where(i => i.type != "limitby").ToList();
+					}
+				}
+				else
+				{
+					TopActionMoreLabel = "";
+					OverflowImages = null;
 				}
 			}
 			else
@@ -1040,7 +1154,13 @@ namespace TownFish.App.ViewModels
 		string mSearchTerm;
 		List<AvailableLocation> mAvailableLocations;
 		AvailableLocation mActiveLocation;
-		private string mLocationName;
+		string mLocationName;
+		string mTopAction4Label;
+		ICommand mTopAction4Command;
+		FontAttributes mTopAction1Bold;
+		private FontAttributes mTopAction2Bold;
+		private FontAttributes mTopAction3Bold;
+		private FontAttributes mTopAction4Bold;
 
 		#endregion
 	}
