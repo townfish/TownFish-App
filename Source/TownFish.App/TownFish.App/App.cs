@@ -40,12 +40,14 @@ namespace TownFish.App
 
 		public void OnBackButtonPressed()
 		{
-			BackButtonPressed?.Invoke(this, new EventArgs());
+			if(BackButtonPressed != null)
+				BackButtonPressed.Invoke(this, new EventArgs());
 		}
 
 		public void OnAndroidCloseApp()
 		{
-			AndroidAppCloseRequested?.Invoke(this, new EventArgs());
+			if(AndroidAppCloseRequested != null)
+				AndroidAppCloseRequested.Invoke(this, new EventArgs());
 		}
 
 		#endregion

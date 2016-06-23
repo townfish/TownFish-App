@@ -607,12 +607,14 @@ namespace TownFish.App.ViewModels
 
 		void OnMenuRendered()
 		{
-			MenuRendered?.Invoke(this, "");
+			if(MenuRendered != null)
+				MenuRendered.Invoke(this, "");
 		}
 
 		public void OnCallbackRequested(string callbackName)
 		{
-			CallbackRequested?.Invoke(this, callbackName);
+			if (CallbackRequested != null)
+				CallbackRequested.Invoke(this, callbackName);
 		}
 
 		public void LoadMenuMap(string baseUri, TownFishMenuMap map)

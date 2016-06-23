@@ -161,14 +161,14 @@
           <TapGestureRecognizer Command="{Binding BottomAction1Command}"/>
         </Image.GestureRecognizers>
       </Image>
-      <Grid Padding="2,0" Grid.Column="1" BackgroundColor="#F2F2F2"  HorizontalOptions="Center" WidthRequest="30" HeightRequest="30">
+      <Grid Grid.Column="1" BackgroundColor="#F2F2F2"  HorizontalOptions="Center" WidthRequest="30" HeightRequest="30">
         <Image Source="{Binding BottomAction2Label}"  HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="24">
           <Image.GestureRecognizers>
             <TapGestureRecognizer Command="{Binding BottomAction2Command}"/>
           </Image.GestureRecognizers>
         </Image>
         <Grid IsVisible="{Binding BottomAction2HasNumber}"  Padding="2,0" BackgroundColor="#F2F2F2" HorizontalOptions="End" VerticalOptions="Start">
-          <Label Text="{Binding BottomAction2Number}" TextColor="Red" FontAttributes="Bold" FontSize="10" VerticalOptions="Center" HorizontalOptions="Center" />
+          <Label Text="{Binding BottomAction2Number}" TextColor="Red" FontAttributes="Bold" FontSize="12" VerticalOptions="Center" HorizontalOptions="Center" />
         </Grid>
       </Grid>
       <Grid Grid.Column="2" HorizontalOptions="Center" WidthRequest="30" HeightRequest="30">
@@ -178,7 +178,7 @@
           </Image.GestureRecognizers>
         </Image>
         <Grid IsVisible="{Binding BottomAction3HasNumber}" Padding="2,0" BackgroundColor="#F2F2F2" HorizontalOptions="End" VerticalOptions="Start">
-          <Label Text="{Binding BottomAction3Number}" TextColor="Red" FontAttributes="Bold" FontSize="10" VerticalOptions="Center" HorizontalOptions="Center" />
+          <Label Text="{Binding BottomAction3Number}" TextColor="Red" FontAttributes="Bold" FontSize="12" VerticalOptions="Center" HorizontalOptions="Center" />
         </Grid>
       </Grid>
       <Image Source="{Binding BottomAction4Label}" Grid.Column="3" HorizontalOptions="Center" WidthRequest="24">
