@@ -57,7 +57,7 @@
       <Label VerticalOptions="Center" 
              HorizontalOptions="Center" 
              TextColor="#ffffff"  
-             FontSize="14" 
+             FontSize="16" 
              FontAttributes="Bold"
              Grid.Column="2" 
              Text="{Binding PageTitle}" />
