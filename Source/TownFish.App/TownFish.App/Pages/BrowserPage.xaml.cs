@@ -79,10 +79,13 @@ namespace TownFish.App.Pages
 
 		void WebView_Navigating(object sender, EventArgs e)
 		{
-			ViewModel.IsLoading = true;
-			loadingPanel.Opacity = 1;
-			loadingPanel.TranslationX = loadingPanel.Width;
-			loadingPanel.TranslateTo(0, 0);
+			if (ViewModel.IsLoading == false)
+			{
+				ViewModel.IsLoading = true;
+				loadingPanel.Opacity = 1;
+				loadingPanel.TranslationX = loadingPanel.Width;
+				loadingPanel.TranslateTo(0, 0);
+			}
 		}
 
 		void BrowserPage_BindingContextChanged(object sender, EventArgs e)
