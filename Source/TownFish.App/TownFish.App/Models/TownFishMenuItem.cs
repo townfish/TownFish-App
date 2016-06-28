@@ -11,6 +11,7 @@ namespace TownFish.App.Models
 		#region Properties
 
 		public string type { get; set; }
+		public string name { get; set; }
 		public string kind { get; set; }
 		public string value { get; set; }
 		public string iconurl { get; set; }

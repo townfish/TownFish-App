@@ -24,4 +24,11 @@ namespace TownFish.App.Models
 
 		#endregion
 	}
+
+	public class TownFishTopLevelMenu
+	{
+		public string Key { get; set; }
+
+		public string Value { get; set;}
+	}
 }

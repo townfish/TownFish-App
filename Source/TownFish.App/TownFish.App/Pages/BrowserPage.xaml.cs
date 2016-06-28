@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Newtonsoft.Json;
@@ -19,25 +20,53 @@ namespace TownFish.App.Pages
 			webView.NavigationStarted += WebView_Navigating;
 			webView.NavigationFinished += WebView_Navigated;
 			webView.AffixedUrlParam = "mode=app";
+			webView.FragmentActions = new Dictionary<string, string>();
+
+			var popupJs = "";
 
 			if (Device.OS == TargetPlatform.iOS)
 			{
-				webView.OnLoadJSScript = "window.webkit.messageHandlers.invokeAction.postMessage(JSON.stringify(twnfsh.getSchema()));";
+				webView.OnLoadJSScript = "window.webkit.messageHandlers.invokeAction.postMessage(JSON.stringify({ key: 'schema', value: JSON.stringify(twnfsh.getSchema())}));";
+				popupJs = "window.webkit.messageHandlers.invokeAction.postMessage(JSON.stringify({ key: 'menu', value: JSON.stringify(twnfsh.getPopupMenuSchema())}));";
 			}
 			else
 			{
-				webView.OnLoadJSScript = "jsBridge.invokeAction(JSON.stringify(twnfsh.getSchema()))";
+				webView.OnLoadJSScript = "jsBridge.invokeAction(JSON.stringify({ key: 'schema', value: JSON.stringify(twnfsh.getSchema())}))";
+				popupJs = "jsBridge.invokeAction(JSON.stringify({ key: 'menu', value: JSON.stringify(twnfsh.getPopupMenuSchema())}))";
 				(App.Current as App).BackButtonPressed += BrowserPage_BackButtonPressed;
 			}
-			webView.RegisterAction((s) =>
+
+			webView.FragmentActions.Add("#app_schema_reload", webView.OnLoadJSScript);
+			webView.FragmentActions.Add("#app_schema_popup_menu", popupJs);
+
+			webView.RegisterAction(async (s) =>
 			{
 				System.Diagnostics.Debug.WriteLine(s);
 				try
 				{
-					var model = JsonConvert.DeserializeObject<TownFishMenuMap>(s);
-					ViewModel.LoadMenuMap(BrowserPageViewModel.cBaseUri, model);
+					var model = JsonConvert.DeserializeObject<TownFishTopLevelMenu>(s);
+
+					if (model.Key == "schema")
+					{
+						var schema = JsonConvert.DeserializeObject<TownFishMenuMap>(model.Value);
+						ViewModel.LoadMenuMap(BrowserPageViewModel.cBaseUri, schema);
+					}
+					else if (model.Key == "menu")
+					{
+						var menu = JsonConvert.DeserializeObject<List<TownFishMenuItem>>(model.Value);
+
+						var action = await DisplayActionSheet("More Actions", "Cancel", null,
+							menu.Select(x => x.value).ToArray<string>());
+
+						var item = menu.FirstOrDefault(x => x.value == action);
+
+						if (item != null && item.type == "callback")
+						{
+							webView.InvokeJS("twnfsh.runCallback('" + item.name.ToLower() + "')");
+						}
+					}
 				}
-				catch(Exception e)
+				catch (Exception e)
 				{
 					// TODO: menu failed, use a default? go to offline page?
 					System.Diagnostics.Debug.WriteLine(e.Message);
@@ -55,7 +84,7 @@ namespace TownFish.App.Pages
 
 			LocationBtn.Tapped += LocationTapped;
 			LocationLbl.Tapped += LocationTapped;
-			SearchPanelCloseBtn.Tapped += SearchPanelCloseBtn_Tapped;			
+			SearchPanelCloseBtn.Tapped += SearchPanelCloseBtn_Tapped;
 		}
 
 		#endregion
@@ -72,7 +101,7 @@ namespace TownFish.App.Pages
 		#region Methods
 
 		async void WebView_Navigated(object sender, EventArgs e)
-		{		
+		{
 			//await loadingPanel.FadeTo(0);
 			//ViewModel.IsLoading = false;
 		}
