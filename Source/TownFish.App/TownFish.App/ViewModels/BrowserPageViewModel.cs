@@ -23,7 +23,7 @@ namespace TownFish.App.ViewModels
 				if (value.Equals(mSource, StringComparison.Ordinal))
 					return;
 
-				IsLoading = true;
+				//IsLoading = true;
 
 				mSource = value;
 				OnPropertyChanged();
