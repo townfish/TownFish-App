@@ -1020,7 +1020,7 @@ namespace TownFish.App.ViewModels
 			{
 				return new Command(() =>
 				{
-					OnCallbackRequested(item.value);
+					OnCallbackRequested(item.name);
 				});
 			}
 			else if(item.type == "back")

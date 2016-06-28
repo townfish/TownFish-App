@@ -206,7 +206,7 @@
 			</Image>
 		</Grid>
 		<!-- Loading Panel -->
-		<Grid x:Name="loadingPanel" IsVisible="{Binding IsLoading}" Grid.Row="2" BackgroundColor="#ffffff">
+		<Grid x:Name="loadingPanel" IsVisible="{Binding IsLoading}" Grid.Row="1" Grid.RowSpan="2" BackgroundColor="#ffffff">
 			<ActivityIndicator VerticalOptions="Center" HorizontalOptions="Center" IsRunning="{Binding IsLoading}" />
 		</Grid>
 		<!-- Locations Panel-->
