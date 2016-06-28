@@ -194,6 +194,20 @@ namespace TownFish.App.Pages
 			ViewModel.SearchPanelVisible = false;
 		}
 
+		async void OnMemAgreeClicked(object sender, EventArgs e)
+		{
+			ViewModel.Source = "http://www.townfish.com/terms-of-use/";
+			var offScreenHeight = (LocationPanel.Height + TopSearchPanel.Height);
+
+			// Silly IOS we have to consider the status bar!
+			if (Device.OS == TargetPlatform.iOS)
+				offScreenHeight += 22;
+
+			await LocationPanel.TranslateTo(0, offScreenHeight * -1);
+			await TopSearchPanel.TranslateTo(-420, 0);
+			ViewModel.SearchPanelVisible = false;
+		}
+
 		void LocationTapped(object sender, EventArgs e)
 		{
 			if (ViewModel.LeftActionIsLocationPin)

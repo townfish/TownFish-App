@@ -63,6 +63,8 @@ namespace TownFish.App.Models
 
 		public string Tick { get; set; }
 
+		public string Info { get; set; }
+
 		#endregion
 	}
 }

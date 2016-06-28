@@ -247,7 +247,7 @@
 									<RowDefinition Height="auto" />
 									<RowDefinition Height="auto" />
 								</Grid.RowDefinitions>
-								<Grid Padding="10,5">
+								<Grid Padding="20,5">
 									<Image Source="{Binding LeftImage}" HeightRequest="18" />
 								</Grid>
 								<Label Text="{Binding name}" TextColor="#ececec" Grid.Column="1" VerticalOptions="Center" />
@@ -267,11 +267,14 @@
 			<Grid Grid.Row="3" Padding="20,10" >
 				<Label TextColor="#ececec" FontSize="12" >
 					<Label.FormattedText>
-						<FormattedString >
+						<FormattedString>
 							<Span Text="Use the top bar to search for other locations that are available where you can ask the locals for recommendations and advice, and view anything in the newsfeed. Please read our" />
 							<Span Text=" Member Agreement" ForegroundColor="#4f92eb" />
 						</FormattedString>
 					</Label.FormattedText>
+					<Label.GestureRecognizers>
+						<TapGestureRecognizer Tapped="OnMemAgreeClicked"/>
+					</Label.GestureRecognizers>
 				</Label>
 
 			</Grid>

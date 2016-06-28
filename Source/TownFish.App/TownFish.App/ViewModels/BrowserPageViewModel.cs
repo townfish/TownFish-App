@@ -655,6 +655,16 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
+		public string InfoLoactionIcon
+		{
+			get { return mInfoLocationIcon; }
+			set
+			{
+				mInfoLocationIcon = value;
+				OnPropertyChanged();
+			}
+		}
+
 		#endregion
 
 		#endregion
@@ -687,6 +697,7 @@ namespace TownFish.App.ViewModels
 			mLocationSetFormat = map.LocationSetUrl;
 			LeftActionIsLocationPin = false;
 			AvailableLocations = new List<AvailableLocation>();
+			//InfoLoactionIcon = map.LocationIcons.Info.Replace
 
 			foreach(var loc in map.AvailableLocations)
 			{
@@ -1161,6 +1172,7 @@ namespace TownFish.App.ViewModels
 		private FontAttributes mTopAction2Bold;
 		private FontAttributes mTopAction3Bold;
 		private FontAttributes mTopAction4Bold;
+		string mInfoLocationIcon;
 
 		#endregion
 	}
