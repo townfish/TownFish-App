@@ -23,7 +23,7 @@
 			</Style>
 		</ResourceDictionary>
 	</ContentPage.Resources>
-	<Grid RowSpacing="0" ColumnSpacing="0" BackgroundColor="#686868" x:Name="rootGrid">
+	<Grid RowSpacing="0" ColumnSpacing="0" BackgroundColor="#484848" x:Name="rootGrid">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="auto" />
 			<RowDefinition Height="auto" />
@@ -34,7 +34,7 @@
 		<!-- Top Menu Bar -->
 		<Grid x:Name="topBar"
 			  IsVisible="{Binding IsTopBarVisible}"
-			  BackgroundColor="#686868"
+			  BackgroundColor="#484848"
 			  Padding="10, 2"
 			  VerticalOptions="Start"
 			  HeightRequest="38">
@@ -126,7 +126,7 @@
 			  Padding="6,2"
 			  HeightRequest="38"
 			  VerticalOptions="Start"
-			  BackgroundColor="#686868">
+			  BackgroundColor="#484848">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="*" />
@@ -138,7 +138,7 @@
 					TextColor="#ffffff"
 					Text="{Binding TopFormLeftActionLabel}"
 					FontSize="12"
-					BackgroundColor="#686868">
+					BackgroundColor="#484848">
 			</Button>
 			<Label Text="{Binding PageTitle}"
 				   VerticalOptions="Center"
@@ -153,7 +153,7 @@
 					TextColor="#ffffff"
 					Text="{Binding TopFormRightActionLabel}"
 					FontSize="12"
-					BackgroundColor="#686868">
+					BackgroundColor="#484848">
 			</Button>
 		</Grid>
 
