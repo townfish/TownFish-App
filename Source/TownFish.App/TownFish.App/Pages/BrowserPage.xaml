@@ -121,7 +121,7 @@
 
 		<!-- Top form -->
 		<Grid RowSpacing="0"
-			  Grid.Row="1"
+			  Grid.Row="0"
 			  IsVisible="{Binding IsTopFormBarVisible}"
 			  Padding="6,2"
 			  HeightRequest="38"
