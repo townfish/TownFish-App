@@ -17,7 +17,7 @@
 			<Style x:Key="TopNavBtnStyle" TargetType="Label">
 				<Setter Property="TextColor" Value="#686868" />
 				<Setter Property="BackgroundColor" Value="#e8e8e8" />
-				<Setter Property="FontSize" Value="12" />
+				<Setter Property="FontSize" Value="14" />
 				<Setter Property="VerticalOptions" Value="Center" />
 				<Setter Property="HorizontalOptions" Value="Center" />
 			</Style>
@@ -128,9 +128,9 @@
 			  VerticalOptions="Start"
 			  BackgroundColor="#484848">
 			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="auto" />
 				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="auto" />
 			</Grid.ColumnDefinitions>
 			<Button Command="{Binding TopFormLeftAction}"
 					Grid.Column="0"
