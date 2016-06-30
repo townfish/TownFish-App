@@ -342,21 +342,19 @@
 
 			<Frame Padding="2,0,2,2" BackgroundColor="#f2f2f2">
 				<ListView x:Name="LocationResultsListView"
-						  BackgroundColor="#ffffff" RowHeight="60" SeparatorVisibility="None"
+						  BackgroundColor="#ffffff" SeparatorColor="#f2f2f2" HasUnevenRows="True" SeparatorVisibility="None"
 						  ItemsSource="{Binding LocationSearchItems}">
 					<ListView.ItemTemplate>
 						<DataTemplate>
 							<ViewCell>
-								<Grid>
-									<Grid.RowDefinitions>
-										<RowDefinition Height="*" />
-										<RowDefinition Height="8" />
-									</Grid.RowDefinitions>
-									<StackLayout Orientation="Horizontal" Padding="20,10">
-										<Label FormattedText="{Binding LocationFormat, Converter={StaticResource searchCon}, ConverterParameter='lon'}" TextColor="#989898" />
-									</StackLayout>
-									<BoxView Grid.Row="1" Color="#f2f2f2" HeightRequest="4" VerticalOptions="Center" />
-								</Grid>
+								<StackLayout Orientation="Vertical">
+									<Grid Padding="10,10,10,6">
+										<Label FormattedText="{Binding LocationFormat, Converter={StaticResource searchCon}, ConverterParameter='lon'}"
+											   VerticalOptions="Center"
+											   TextColor="#989898" />
+									</Grid>
+									<BoxView Grid.Row="2" Color="#f2f2f2" HeightRequest="4"/>
+								</StackLayout>
 							</ViewCell>
 						</DataTemplate>
 					</ListView.ItemTemplate>
