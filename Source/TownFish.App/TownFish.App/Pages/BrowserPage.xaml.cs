@@ -84,7 +84,7 @@ namespace TownFish.App.Pages
 
 			LocationBtn.Tapped += LocationTapped;
 			LocationLbl.Tapped += LocationTapped;
-			SearchPanelCloseBtn.Tapped += SearchPanelCloseBtn_Tapped;
+			//SearchPanelCloseBtn.Tapped += SearchPanelCloseBtn_Tapped;
 		}
 
 		#endregion
@@ -183,15 +183,7 @@ namespace TownFish.App.Pages
 
 		async void SearchPanelCloseBtn_Tapped(object sender, EventArgs e)
 		{
-			var offScreenHeight = (LocationPanel.Height + TopSearchPanel.Height);
 
-			// Silly IOS we have to consider the status bar!
-			if (Device.OS == TargetPlatform.iOS)
-				offScreenHeight += 22;
-
-			await LocationPanel.TranslateTo(0, offScreenHeight * -1);
-			await TopSearchPanel.TranslateTo(-420, 0);
-			ViewModel.SearchPanelVisible = false;
 		}
 
 		async void OnMemAgreeClicked(object sender, EventArgs e)
@@ -208,17 +200,40 @@ namespace TownFish.App.Pages
 			ViewModel.SearchPanelVisible = false;
 		}
 
-		void LocationTapped(object sender, EventArgs e)
+		async void LocationTapped(object sender, EventArgs e)
 		{
+			var height = TopSearchPanelParent.Height - (TopSearchPanelParent.Padding.Top + TopSearchPanelParent.Padding.Bottom);
 			if (ViewModel.LeftActionIsLocationPin)
 			{
-				TopSearchPanel.TranslationX = -420; // This is hard coded :(
-				LocationPanel.TranslationY = (LocationPanel.Height + TopSearchPanel.Height) * -1;
-				ViewModel.SearchPanelVisible = true;
-				TopSearchPanel.TranslateTo(0, 0);
-				LocationPanel.TranslateTo(0, 0);
+				if (!ViewModel.SearchPanelVisible)
+				{
+					LocationPanel.TranslationY = (LocationPanel.Height + TopSearchPanel.Height) * -1;
+					ViewModel.SearchPanelVisible = true;
+					await LocationPanel.TranslateTo(0, 0);
+
+					TopSearchPanelParent.IsVisible = true;
+					TopSearchPanel.LayoutTo(new Rectangle(TopSearchPanel.X, TopSearchPanel.Y, TopSearchPanelParent.Width - 
+						(TopSearchPanelParent.Padding.Left + TopSearchPanelParent.Padding.Right), 
+						height), 550, Easing.SpringIn);
+				}
+				else
+				{
+					var offScreenHeight = (LocationPanel.Height + TopSearchPanel.Height);
+
+					// Silly IOS we have to consider the status bar!
+					if (Device.OS == TargetPlatform.iOS)
+						offScreenHeight += 22;
+
+					await LocationPanel.TranslateTo(0, offScreenHeight * -1);
+					ViewModel.SearchPanelVisible = false;
+
+					await TopSearchPanel.LayoutTo(new Rectangle(TopSearchPanel.X, TopSearchPanel.Y, 1, height), 350, Easing.SpringIn);
+					TopSearchPanelParent.IsVisible = false;
+				}
 			}
 		}
+
+		double locWidth = 0;
 
 		void ViewModel_MenuRendered(object sender, string e)
 		{

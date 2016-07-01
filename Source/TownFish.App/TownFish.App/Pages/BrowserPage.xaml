@@ -51,7 +51,7 @@
 					<TapGestureRecognizer x:Name="LocationBtn" Command="{Binding TopBarLeftCommand}"/>
 				</Image.GestureRecognizers>
 			</Image>
-			<Label Grid.Column="1" VerticalOptions="Center" FontSize="14" FontAttributes="Bold" TextColor="#ffffff" Text="{Binding LocationName}" >
+					<Label Grid.Column="1" VerticalOptions="Center" FontSize="14" FontAttributes="Bold" TextColor="#ffffff" Text="{Binding LocationName}" >
 				<Label.GestureRecognizers>
 					<TapGestureRecognizer x:Name="LocationLbl" Command="{Binding TopBarLeftCommand}"/>
 				</Label.GestureRecognizers>
@@ -73,6 +73,36 @@
 					<TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
 				</Image.GestureRecognizers>
 			</Image>
+			<Grid Padding="10,6" Grid.Column="1" Grid.ColumnSpan="3" IsVisible="False" BackgroundColor="#484848" x:Name="TopSearchPanelParent">
+				<Frame x:Name="TopSearchPanel" HorizontalOptions="Start" BackgroundColor="#333333" OutlineColor="#333333" Padding="1" HasShadow="False">
+					<Grid ColumnSpacing="5" BackgroundColor="#333333">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="auto" />
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="auto"/>
+						</Grid.ColumnDefinitions>
+						<Grid Padding="8,4,4,4" Grid.Column="0">
+							<Image Source="{Binding TopBarRightLabel}" HeightRequest="16" VerticalOptions="Center"  />
+						</Grid>
+						<Entry x:Name="SearchPanelInput"
+							   Placeholder="Type location e.g. Camden or NW1"
+							   Grid.Column="1"
+							   VerticalOptions="Center" FontSize="12"
+							   HeightRequest="40"
+							   HorizontalOptions="Fill"
+							   BackgroundColor="#333333"
+							   TextColor="#b9b9b9"
+								Text="{Binding SearchTerm}" />
+						<Grid Padding="8,4,8,4" Grid.Column="2" IsVisible="{Binding SearchHasContent}">
+							<Image Source="close.png" HeightRequest="25" VerticalOptions="Center"  >
+								<Image.GestureRecognizers>
+									<TapGestureRecognizer Command="{Binding CancelSearchCommand}"/>
+								</Image.GestureRecognizers>
+							</Image>
+						</Grid>
+					</Grid>
+				</Frame>
+			</Grid>
 		</Grid>
 
 		<!-- Top bar Sub -->
@@ -282,54 +312,6 @@
 				<Label TextColor="#ececec" FontSize="12"
 					   Text="Note: if you change your account location you will no longer be associated with these locations or have permission to post in their newsfeeds." />
 			</Grid>
-		</Grid>
-
-
-		<!-- Search PANEL -->
-		<Grid x:Name="TopSearchPanel"
-			  BackgroundColor="#444444"
-			  Grid.Row="0"
-			  WidthRequest="400" HorizontalOptions="Start"
-			  HeightRequest="22"
-			  IsVisible="{Binding SearchPanelVisible}"
-			  Padding="10, 6">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="auto" />
-				<ColumnDefinition Width="*" />
-			</Grid.ColumnDefinitions>
-			<Image Source="{Binding TopBarLeftLabel}" Grid.Column="0" HorizontalOptions="Center">
-				<Image.GestureRecognizers>
-					<TapGestureRecognizer x:Name="SearchPanelCloseBtn" Command="{Binding TopBarLeftCommand}"/>
-				</Image.GestureRecognizers>
-			</Image>
-			<Frame BackgroundColor="#333333" Grid.Column="1" OutlineColor="#333333" Padding="1" HasShadow="False">
-				<Grid ColumnSpacing="5" BackgroundColor="#333333">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="auto" />
-						<ColumnDefinition Width="*" />
-						<ColumnDefinition Width="auto"/>
-					</Grid.ColumnDefinitions>
-					<Grid Padding="8,4,4,4" Grid.Column="0">
-						<Image Source="{Binding TopBarRightLabel}" HeightRequest="16" VerticalOptions="Center"  />
-					</Grid>
-					<Entry x:Name="SearchPanelInput"
-						   Placeholder="Type location e.g. Camden or NW1"
-						   Grid.Column="1"
-						   VerticalOptions="Center" FontSize="12"
-						   HeightRequest="40"
-						   HorizontalOptions="Fill"
-						   BackgroundColor="#333333"
-						   TextColor="#b9b9b9"
-							Text="{Binding SearchTerm}" />
-					<Grid Padding="8,4,8,4" Grid.Column="2" IsVisible="{Binding SearchHasContent}">
-						<Image Source="close.png" HeightRequest="25" VerticalOptions="Center"  >
-							<Image.GestureRecognizers>
-								<TapGestureRecognizer Command="{Binding CancelSearchCommand}"/>
-							</Image.GestureRecognizers>
-						</Image>
-					</Grid>
-				</Grid>
-			</Frame>
 		</Grid>
 
 		<!-- Location Search Results Panel -->
