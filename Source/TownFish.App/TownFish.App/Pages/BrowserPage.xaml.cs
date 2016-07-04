@@ -209,12 +209,12 @@ namespace TownFish.App.Pages
 				{
 					LocationPanel.TranslationY = (LocationPanel.Height + TopSearchPanel.Height) * -1;
 					ViewModel.SearchPanelVisible = true;
-					await LocationPanel.TranslateTo(0, 0);
+					LocationPanel.TranslateTo(0, 0, 250);
 
 					TopSearchPanelParent.IsVisible = true;
 					TopSearchPanel.LayoutTo(new Rectangle(TopSearchPanel.X, TopSearchPanel.Y, TopSearchPanelParent.Width - 
 						(TopSearchPanelParent.Padding.Left + TopSearchPanelParent.Padding.Right), 
-						height), 550, Easing.SpringIn);
+						height), 250, Easing.SpringIn);
 				}
 				else
 				{
