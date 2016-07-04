@@ -697,7 +697,7 @@ namespace TownFish.App.ViewModels
 			mLocationSetFormat = map.LocationSetUrl;
 			LeftActionIsLocationPin = false;
 			AvailableLocations = new List<AvailableLocation>();
-			//InfoLoactionIcon = map.LocationIcons.Info.Replace
+			InfoLoactionIcon = cBaseUri + map.LocationIcons.Info.Replace("{size}", "ldpi").Replace("{color}", "5099f7");
 
 			foreach(var loc in map.AvailableLocations)
 			{

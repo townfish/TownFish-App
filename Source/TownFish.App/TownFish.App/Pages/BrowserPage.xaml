@@ -233,35 +233,37 @@
 					  x:Name="AvalLocationsListview"
 					  BackgroundColor="#444444"
 					  SeparatorVisibility="None"
+					  HasUnevenRows="True"
 					  ItemsSource="{Binding AvailableLocations}">
 				<ListView.ItemTemplate>
 					<DataTemplate>
-						<ViewCell>
-							<Grid Padding="0,5">
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="auto" />
-									<ColumnDefinition Width="*" />
-									<ColumnDefinition Width="auto" />
-								</Grid.ColumnDefinitions>
-								<Grid.RowDefinitions>
-									<RowDefinition Height="auto" />
-									<RowDefinition Height="auto" />
-								</Grid.RowDefinitions>
-								<Grid Padding="20,5">
+						<ViewCell >
+							<StackLayout Orientation="Vertical">
+								<Grid VerticalOptions="Start" Padding="20,10" RowSpacing="0">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="auto" />
+										<ColumnDefinition Width="6" />
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="auto" />
+									</Grid.ColumnDefinitions>
 									<Image Source="{Binding LeftImage}" HeightRequest="18" />
+									<Label Text="{Binding name}" TextColor="#ececec" Grid.Column="2" VerticalOptions="Center" />
+									<Image Source="{Binding RightImage}" Grid.Column="3" HeightRequest="12"/>
 								</Grid>
-								<Label Text="{Binding name}" TextColor="#ececec" Grid.Column="1" VerticalOptions="Center" />
-								<Grid Padding="10,5"  Grid.Column="2" >
-									<Image Source="{Binding RightImage}" HeightRequest="18"/>
-								</Grid>
-								<BoxView Grid.Row="1" Color="Black" HeightRequest="1" Grid.ColumnSpan="3" VerticalOptions="Center" />
-							</Grid>
+								<BoxView Grid.Row="2" Color="Black" HeightRequest="1"/>
+							</StackLayout>
 						</ViewCell>
 					</DataTemplate>
 				</ListView.ItemTemplate>
 			</ListView>
 			<Grid Grid.Row="2" Padding="20,10" >
-				<Label TextColor="#ececec" FontSize="12"
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="auto" />
+					<ColumnDefinition Width="10" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Image Source="{Binding InfoLoactionIcon}" VerticalOptions="Center" />
+				<Label TextColor="#ececec" FontSize="12" Grid.Column="2"
 					   Text="Your account is connected with the above locations allowing you to post news, events, and information that's relevant to these feeds." />
 			</Grid>
 			<Grid Grid.Row="3" Padding="20,10" >
