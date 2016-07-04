@@ -31,49 +31,8 @@
 			<RowDefinition Height="auto"/>
 		</Grid.RowDefinitions>
 
-		<!-- Top Menu Bar -->
-		<Grid x:Name="topBar"
-			  IsVisible="{Binding IsTopBarVisible}"
-			  BackgroundColor="#484848"
-			  Padding="10, 2"
-			  VerticalOptions="Start"
-			  HeightRequest="38">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="auto" />
-				<ColumnDefinition Width="auto" />
-				<ColumnDefinition />
-				<ColumnDefinition Width="auto"/>
-				<ColumnDefinition Width="10" />
-				<ColumnDefinition Width="auto"/>
-			</Grid.ColumnDefinitions>
-			<Image Source="{Binding TopBarLeftLabel}" Grid.Column="0" HorizontalOptions="Center" HeightRequest="18">
-				<Image.GestureRecognizers>
-					<TapGestureRecognizer x:Name="LocationBtn" Command="{Binding TopBarLeftCommand}"/>
-				</Image.GestureRecognizers>
-			</Image>
-			<Label Grid.Column="1" VerticalOptions="Center" FontSize="14" FontAttributes="Bold" TextColor="#ffffff" Text="{Binding LocationName}" >
-				<Label.GestureRecognizers>
-					<TapGestureRecognizer x:Name="LocationLbl" Command="{Binding TopBarLeftCommand}"/>
-				</Label.GestureRecognizers>
-			</Label>
-			<Label VerticalOptions="Center"
-				   HorizontalOptions="Center"
-				   TextColor="#ffffff"
-				   FontSize="16"
-				   FontAttributes="Bold"
-				   Grid.Column="2"
-				   Text="{Binding PageTitle}" />
-			<Image Source="{Binding TopBarRightLabel}" Grid.Column="3" HorizontalOptions="Center" HeightRequest="18">
-				<Image.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
-				</Image.GestureRecognizers>
-			</Image>
-			<Image Source="{Binding TopBarRight1Label}" Grid.Column="5" HorizontalOptions="Center" HeightRequest="18">
-				<Image.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
-				</Image.GestureRecognizers>
-			</Image>
-		</Grid>
+		<!-- WebView -->
+		<xamify:UberWebView x:Name="webView" Grid.Row="2" Source="{Binding Source}" VerticalOptions="Fill" HorizontalOptions="Fill" />
 
 		<!-- Top bar Sub -->
 		<Grid Grid.Row="1"
@@ -118,47 +77,6 @@
 				</Image>
 			</Grid>
 		</Grid>
-
-		<!-- Top form -->
-		<Grid RowSpacing="0"
-			  Grid.Row="0"
-			  IsVisible="{Binding IsTopFormBarVisible}"
-			  Padding="6,2"
-			  HeightRequest="38"
-			  VerticalOptions="Start"
-			  BackgroundColor="#484848">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="auto" />
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="auto" />
-			</Grid.ColumnDefinitions>
-			<Button Command="{Binding TopFormLeftAction}"
-					Grid.Column="0"
-					HorizontalOptions="Start"
-					TextColor="#ffffff"
-					Text="{Binding TopFormLeftActionLabel}"
-					FontSize="12"
-					BackgroundColor="#484848">
-			</Button>
-			<Label Text="{Binding PageTitle}"
-				   VerticalOptions="Center"
-				   HorizontalOptions="Center"
-				   FontSize="14"
-				   FontAttributes="Bold"
-				   TextColor="#ffffff"
-				   Grid.Column="1" />
-			<Button Command="{Binding TopFormRightAction}"
-					Grid.Column="2"
-					HorizontalOptions="End"
-					TextColor="#ffffff"
-					Text="{Binding TopFormRightActionLabel}"
-					FontSize="12"
-					BackgroundColor="#484848">
-			</Button>
-		</Grid>
-
-		<!-- WebView -->
-		<xamify:UberWebView x:Name="webView" Grid.Row="2" Source="{Binding Source}" VerticalOptions="Fill" HorizontalOptions="Fill" />
 
 		<!-- Bottom Menu Bar -->
 		<Grid Grid.Row="3" BackgroundColor="#F2F2F2" Padding="10" IsVisible="{Binding IsBottomBarVisible}">
@@ -205,10 +123,7 @@
 				</Image.GestureRecognizers>
 			</Image>
 		</Grid>
-		<!-- Loading Panel -->
-		<Grid x:Name="loadingPanel" IsVisible="{Binding IsLoading}" Grid.Row="1" Grid.RowSpan="2" BackgroundColor="#ffffff">
-			<ActivityIndicator VerticalOptions="Center" HorizontalOptions="Center" IsRunning="{Binding IsLoading}" />
-		</Grid>
+
 		<!-- Locations Panel-->
 		<Grid x:Name="LocationPanel"
 			  IsVisible="{Binding SearchPanelVisible}"
@@ -233,35 +148,37 @@
 					  x:Name="AvalLocationsListview"
 					  BackgroundColor="#444444"
 					  SeparatorVisibility="None"
+					  HasUnevenRows="True"
 					  ItemsSource="{Binding AvailableLocations}">
 				<ListView.ItemTemplate>
 					<DataTemplate>
-						<ViewCell>
-							<Grid Padding="0,5">
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="auto" />
-									<ColumnDefinition Width="*" />
-									<ColumnDefinition Width="auto" />
-								</Grid.ColumnDefinitions>
-								<Grid.RowDefinitions>
-									<RowDefinition Height="auto" />
-									<RowDefinition Height="auto" />
-								</Grid.RowDefinitions>
-								<Grid Padding="20,5">
+						<ViewCell >
+							<StackLayout Orientation="Vertical">
+								<Grid VerticalOptions="Start" Padding="20,10" RowSpacing="0">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="auto" />
+										<ColumnDefinition Width="6" />
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="auto" />
+									</Grid.ColumnDefinitions>
 									<Image Source="{Binding LeftImage}" HeightRequest="18" />
+									<Label Text="{Binding name}" TextColor="#ececec" Grid.Column="2" VerticalOptions="Center" />
+									<Image Source="{Binding RightImage}" Grid.Column="3" HeightRequest="12"/>
 								</Grid>
-								<Label Text="{Binding name}" TextColor="#ececec" Grid.Column="1" VerticalOptions="Center" />
-								<Grid Padding="10,5"  Grid.Column="2" >
-									<Image Source="{Binding RightImage}" HeightRequest="18"/>
-								</Grid>
-								<BoxView Grid.Row="1" Color="Black" HeightRequest="1" Grid.ColumnSpan="3" VerticalOptions="Center" />
-							</Grid>
+								<BoxView Grid.Row="2" Color="Black" HeightRequest="1"/>
+							</StackLayout>
 						</ViewCell>
 					</DataTemplate>
 				</ListView.ItemTemplate>
 			</ListView>
 			<Grid Grid.Row="2" Padding="20,10" >
-				<Label TextColor="#ececec" FontSize="12"
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="auto" />
+					<ColumnDefinition Width="10" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Image Source="{Binding InfoLoactionIcon}" VerticalOptions="Center" />
+				<Label TextColor="#ececec" FontSize="12" Grid.Column="2"
 					   Text="Your account is connected with the above locations allowing you to post news, events, and information that's relevant to these feeds." />
 			</Grid>
 			<Grid Grid.Row="3" Padding="20,10" >
@@ -282,54 +199,6 @@
 				<Label TextColor="#ececec" FontSize="12"
 					   Text="Note: if you change your account location you will no longer be associated with these locations or have permission to post in their newsfeeds." />
 			</Grid>
-		</Grid>
-
-
-		<!-- Search PANEL -->
-		<Grid x:Name="TopSearchPanel"
-			  BackgroundColor="#444444"
-			  Grid.Row="0"
-			  WidthRequest="400" HorizontalOptions="Start"
-			  HeightRequest="22"
-			  IsVisible="{Binding SearchPanelVisible}"
-			  Padding="10, 6">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="auto" />
-				<ColumnDefinition Width="*" />
-			</Grid.ColumnDefinitions>
-			<Image Source="{Binding TopBarLeftLabel}" Grid.Column="0" HorizontalOptions="Center">
-				<Image.GestureRecognizers>
-					<TapGestureRecognizer x:Name="SearchPanelCloseBtn" Command="{Binding TopBarLeftCommand}"/>
-				</Image.GestureRecognizers>
-			</Image>
-			<Frame BackgroundColor="#333333" Grid.Column="1" OutlineColor="#333333" Padding="1" HasShadow="False">
-				<Grid ColumnSpacing="5" BackgroundColor="#333333">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="auto" />
-						<ColumnDefinition Width="*" />
-						<ColumnDefinition Width="auto"/>
-					</Grid.ColumnDefinitions>
-					<Grid Padding="8,4,4,4" Grid.Column="0">
-						<Image Source="{Binding TopBarRightLabel}" HeightRequest="16" VerticalOptions="Center"  />
-					</Grid>
-					<Entry x:Name="SearchPanelInput"
-						   Placeholder="Type location e.g. Camden or NW1"
-						   Grid.Column="1"
-						   VerticalOptions="Center" FontSize="12"
-						   HeightRequest="40"
-						   HorizontalOptions="Fill"
-						   BackgroundColor="#333333"
-						   TextColor="#b9b9b9"
-							Text="{Binding SearchTerm}" />
-					<Grid Padding="8,4,8,4" Grid.Column="2" IsVisible="{Binding SearchHasContent}">
-						<Image Source="close.png" HeightRequest="25" VerticalOptions="Center"  >
-							<Image.GestureRecognizers>
-								<TapGestureRecognizer Command="{Binding CancelSearchCommand}"/>
-							</Image.GestureRecognizers>
-						</Image>
-					</Grid>
-				</Grid>
-			</Frame>
 		</Grid>
 
 		<!-- Location Search Results Panel -->
@@ -360,6 +229,123 @@
 					</ListView.ItemTemplate>
 				</ListView>
 			</Frame>
+		</Grid>
+
+		<!-- Top Menu Bar -->
+		<Grid x:Name="topBar"
+			  IsVisible="{Binding IsTopBarVisible}"
+			  BackgroundColor="#484848"
+			  Padding="10, 2"
+			  VerticalOptions="Start"
+			  HeightRequest="38">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="auto" />
+				<ColumnDefinition />
+				<ColumnDefinition Width="auto"/>
+				<ColumnDefinition Width="10" />
+				<ColumnDefinition Width="auto"/>
+			</Grid.ColumnDefinitions>
+			<Image Source="{Binding TopBarLeftLabel}" Grid.Column="0" HorizontalOptions="Center" HeightRequest="18">
+				<Image.GestureRecognizers>
+					<TapGestureRecognizer x:Name="LocationBtn" Command="{Binding TopBarLeftCommand}"/>
+				</Image.GestureRecognizers>
+			</Image>
+					<Label Grid.Column="1" VerticalOptions="Center" FontSize="14" FontAttributes="Bold" TextColor="#ffffff" Text="{Binding LocationName}" >
+				<Label.GestureRecognizers>
+					<TapGestureRecognizer x:Name="LocationLbl" Command="{Binding TopBarLeftCommand}"/>
+				</Label.GestureRecognizers>
+			</Label>
+			<Label VerticalOptions="Center"
+				   HorizontalOptions="Center"
+				   TextColor="#ffffff"
+				   FontSize="16"
+				   FontAttributes="Bold"
+				   Grid.Column="2"
+				   Text="{Binding PageTitle}" />
+			<Image Source="{Binding TopBarRightLabel}" Grid.Column="3" HorizontalOptions="Center" HeightRequest="18">
+				<Image.GestureRecognizers>
+					<TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
+				</Image.GestureRecognizers>
+			</Image>
+			<Image Source="{Binding TopBarRight1Label}" Grid.Column="5" HorizontalOptions="Center" HeightRequest="18">
+				<Image.GestureRecognizers>
+					<TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
+				</Image.GestureRecognizers>
+			</Image>
+			<Grid Padding="10,6" Grid.Column="1" Grid.ColumnSpan="3" IsVisible="False" BackgroundColor="#484848" x:Name="TopSearchPanelParent">
+				<Frame x:Name="TopSearchPanel" HorizontalOptions="Start" BackgroundColor="#333333" OutlineColor="#333333" Padding="1" HasShadow="False">
+					<Grid ColumnSpacing="5" BackgroundColor="#333333">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="auto" />
+							<ColumnDefinition Width="*" />
+							<ColumnDefinition Width="auto"/>
+						</Grid.ColumnDefinitions>
+						<Grid Padding="8,4,4,4" Grid.Column="0">
+							<Image Source="{Binding TopBarRightLabel}" HeightRequest="16" VerticalOptions="Center"  />
+						</Grid>
+						<Entry x:Name="SearchPanelInput"
+							   Placeholder="Type location e.g. Camden or NW1"
+							   Grid.Column="1"
+							   VerticalOptions="Center" FontSize="12"
+							   HeightRequest="40"
+							   HorizontalOptions="Fill"
+							   BackgroundColor="#333333"
+							   TextColor="#b9b9b9"
+								Text="{Binding SearchTerm}" />
+						<Grid Padding="8,4,8,4" Grid.Column="2" IsVisible="{Binding SearchHasContent}">
+							<Image Source="close.png" HeightRequest="25" VerticalOptions="Center"  >
+								<Image.GestureRecognizers>
+									<TapGestureRecognizer Command="{Binding CancelSearchCommand}"/>
+								</Image.GestureRecognizers>
+							</Image>
+						</Grid>
+					</Grid>
+				</Frame>
+			</Grid>
+		</Grid>
+
+		<!-- Top form -->
+		<Grid RowSpacing="0"
+			  Grid.Row="0"
+			  IsVisible="{Binding IsTopFormBarVisible}"
+			  Padding="6,2"
+			  HeightRequest="38"
+			  VerticalOptions="Start"
+			  BackgroundColor="#484848">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="auto" />
+			</Grid.ColumnDefinitions>
+			<Button Command="{Binding TopFormLeftAction}"
+					Grid.Column="0"
+					HorizontalOptions="Start"
+					TextColor="#ffffff"
+					Text="{Binding TopFormLeftActionLabel}"
+					FontSize="12"
+					BackgroundColor="#484848">
+			</Button>
+			<Label Text="{Binding PageTitle}"
+				   VerticalOptions="Center"
+				   HorizontalOptions="Center"
+				   FontSize="14"
+				   FontAttributes="Bold"
+				   TextColor="#ffffff"
+				   Grid.Column="1" />
+			<Button Command="{Binding TopFormRightAction}"
+					Grid.Column="2"
+					HorizontalOptions="End"
+					TextColor="#ffffff"
+					Text="{Binding TopFormRightActionLabel}"
+					FontSize="12"
+					BackgroundColor="#484848">
+			</Button>
+		</Grid>
+
+		<!-- Loading Panel -->
+		<Grid x:Name="loadingPanel" IsVisible="{Binding IsLoading}" Grid.Row="1" Grid.RowSpan="2" BackgroundColor="#ffffff">
+			<ActivityIndicator VerticalOptions="Center" HorizontalOptions="Center" IsRunning="{Binding IsLoading}" />
 		</Grid>
 
 	</Grid>
