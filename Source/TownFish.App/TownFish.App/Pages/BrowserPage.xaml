@@ -159,10 +159,14 @@
 										<ColumnDefinition Width="6" />
 										<ColumnDefinition Width="*" />
 										<ColumnDefinition Width="auto" />
+										<ColumnDefinition Width="auto" />
 									</Grid.ColumnDefinitions>
 									<Image Source="{Binding LeftImage}" HeightRequest="18" />
 									<Label Text="{Binding name}" TextColor="#ececec" Grid.Column="2" VerticalOptions="Center" />
 									<Image Source="{Binding RightImage}" Grid.Column="3" HeightRequest="12"/>
+									<Grid Padding="6,0,0,0" IsVisible="{Binding Locked}" Grid.Column="4" HorizontalOptions="Start" HeightRequest="18">
+										<Image Source="{Binding LockLocationIcon}" HeightRequest="18" />
+									</Grid>
 								</Grid>
 								<BoxView Grid.Row="2" Color="Black" HeightRequest="1"/>
 							</StackLayout>
@@ -250,7 +254,7 @@
 					<TapGestureRecognizer x:Name="LocationBtn" Command="{Binding TopBarLeftCommand}"/>
 				</Image.GestureRecognizers>
 			</Image>
-					<Label Grid.Column="1" VerticalOptions="Center" FontSize="14" FontAttributes="Bold" TextColor="#ffffff" Text="{Binding LocationName}" >
+			<Label Grid.Column="1" VerticalOptions="Center" FontSize="14" FontAttributes="Bold" TextColor="#ffffff" Text="{Binding LocationName}" >
 				<Label.GestureRecognizers>
 					<TapGestureRecognizer x:Name="LocationLbl" Command="{Binding TopBarLeftCommand}"/>
 				</Label.GestureRecognizers>

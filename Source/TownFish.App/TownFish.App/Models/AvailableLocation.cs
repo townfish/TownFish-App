@@ -8,8 +8,7 @@ using TownFish.App.ViewModels;
 namespace TownFish.App.Models
 {
 	public class AvailableLocation : BaseViewModel
-	{
-		
+	{		
 		#region Properties
 
 		public string id { get; set; }
@@ -20,7 +19,7 @@ namespace TownFish.App.Models
 
 		public bool IsSelected { get; set; }
 
-		public bool IsLocked { get; set; }
+		public bool Locked { get; set; }
 
 		public string LeftImage
 		{
@@ -42,13 +41,23 @@ namespace TownFish.App.Models
 			}
 		}
 
-		#endregion
+		public string LockLocationIcon
+		{
+			get { return mLockLocationIcon; }
+			set
+			{
+				mLockLocationIcon = value;
+				OnPropertyChanged();
+			}
+		}
 
+		#endregion
 
 		#region Fields
 
 		string mLeftImage;
 		string mRightImage;
+		string mLockLocationIcon;
 
 		#endregion
 	}

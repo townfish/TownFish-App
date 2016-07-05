@@ -708,6 +708,7 @@ namespace TownFish.App.ViewModels
 					loc.RightImage = cBaseUri + map.LocationIcons.Tick.Replace("{size}", "ldpi").Replace("{color}", "ffffff");
 				}
 
+				loc.LockLocationIcon = cBaseUri + map.LocationIcons.Lock.Replace("{size}", "ldpi").Replace("{color}", "ffffff");
 				AvailableLocations.Add(loc);
 			}
 
@@ -1169,9 +1170,9 @@ namespace TownFish.App.ViewModels
 		string mTopAction4Label;
 		ICommand mTopAction4Command;
 		FontAttributes mTopAction1Bold;
-		private FontAttributes mTopAction2Bold;
-		private FontAttributes mTopAction3Bold;
-		private FontAttributes mTopAction4Bold;
+		FontAttributes mTopAction2Bold;
+		FontAttributes mTopAction3Bold;
+		FontAttributes mTopAction4Bold;
 		string mInfoLocationIcon;
 
 		#endregion
