@@ -22,6 +22,8 @@ namespace TownFish.App.Models
 
 		public LocationIcons LocationIcons { get; set; }
 
+		public AvailableLocation currentLocation { get; set; }
+
 		#endregion
 	}
 

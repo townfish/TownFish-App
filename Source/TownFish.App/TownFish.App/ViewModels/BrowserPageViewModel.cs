@@ -702,7 +702,7 @@ namespace TownFish.App.ViewModels
 			foreach(var loc in map.AvailableLocations)
 			{
 				loc.LeftImage = cBaseUri + map.LocationIcons.Pin.Replace("{size}", "ldpi").Replace("{color}", "ffffff");
-				if (map.ActiveLocation == loc.id)
+				if (map.currentLocation.id == loc.id)
 				{
 					loc.IsSelected = true;
 					loc.RightImage = cBaseUri + map.LocationIcons.Tick.Replace("{size}", "ldpi").Replace("{color}", "ffffff");
@@ -824,7 +824,7 @@ namespace TownFish.App.ViewModels
 
 				if(isLocationItem != null)
 				{
-					var activeLoc = AvailableLocations.FirstOrDefault(i => i.id == map.ActiveLocation);
+					var activeLoc = map.currentLocation;
 
 					if (activeLoc != null)
 						LocationName = activeLoc.name;
