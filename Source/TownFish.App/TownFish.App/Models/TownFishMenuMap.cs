@@ -14,13 +14,21 @@ namespace TownFish.App.Models
 
 		public string LocationSetUrl { get; set; }
 
-		public TownFishMenuList Menus { get; set; }
+		public List<AvailableLocation> AvailableLocations { get; set; }
 
 		public string ActiveLocation { get; set; }
 
-		public List<AvailableLocation> AvailableLocations { get; set; }
-
 		public LocationIcons LocationIcons { get; set; }
+
+		public TownFishMenuList Menus { get; set; }
+
+		public bool displayStatsBar { get; set; }
+
+		public string statusBarBackgroundColor { get; set; }
+
+		public string statusBarTextColor { get; set; }
+
+		public AvailableLocation currentLocation { get; set; }
 
 		#endregion
 	}

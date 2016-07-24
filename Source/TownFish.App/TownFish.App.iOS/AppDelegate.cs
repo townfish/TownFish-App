@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 
+using Xamarin.Forms;
+
 using Foundation;
 using UIKit;
+
 
 namespace TownFish.App.iOS
 {
@@ -20,16 +23,19 @@ namespace TownFish.App.iOS
 		//
 		// You have 17 seconds to return from this method, or iOS will terminate your application.
 		//
-		public override bool FinishedLaunching(UIApplication app, NSDictionary options)
+		public override bool FinishedLaunching (UIApplication app, NSDictionary options)
 		{
-			var loadTheWebViewLibHere = new Xamify.UberWebViewLib.iOS.UberWebViewRenderer();
-			var load2 = new TownFish.App.iOS.Renderers.TownFishEntryRenderer();
-			global::Xamarin.Forms.Forms.Init();
-			UIApplication.SharedApplication.SetStatusBarStyle(UIStatusBarStyle.LightContent, false);
-			UIApplication.SharedApplication.SetStatusBarHidden(false, false);
-			LoadApplication(new App());
+			UIApplication.SharedApplication.SetStatusBarStyle (UIStatusBarStyle.LightContent, false);
+			UIApplication.SharedApplication.SetStatusBarHidden (false, false);
 
-			return base.FinishedLaunching(app, options);
+			// reference these to make sure they're included by linker (?!)
+			var load1 = new Xamify.UberWebViewLib.iOS.UberWebViewRenderer();
+			var load2 = new Renderers.TownFishEntryRenderer();
+
+			Forms.Init();
+			LoadApplication (new App());
+
+			return base.FinishedLaunching (app, options);
 		}
 	}
 }

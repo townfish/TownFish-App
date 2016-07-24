@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
+using Xamarin.Forms;
+
 using TownFish.App.ViewModels;
+
 
 namespace TownFish.App.Models
 {
-	public class AvailableLocation : BaseViewModel
-	{
-		
+	public class AvailableLocation : ViewModelBase
+	{		
 		#region Properties
 
 		public string id { get; set; }
@@ -24,33 +23,23 @@ namespace TownFish.App.Models
 
 		public string LeftImage
 		{
-			get { return mLeftImage; }
-			set
-			{
-				mLeftImage = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public string RightImage
 		{
-			get { return mRightImage; }
-			set
-			{
-				mRightImage = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
-		#endregion
+		public Color Colour
+		{
+			get { return Get<Color>(); }
+			set {  Set (value); }
+		}
 
-
-		#region Fields
-
-		string mLeftImage;
-		string mRightImage;
-
-		#endregion
+		#endregion Properties
 	}
 
 	public class LocationIcons
@@ -65,6 +54,6 @@ namespace TownFish.App.Models
 
 		public string Info { get; set; }
 
-		#endregion
+		#endregion Properties
 	}
 }
