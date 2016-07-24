@@ -13,9 +13,9 @@ namespace TownFish.App
 
 		public App()
 		{
-			var vm = BrowserPageViewModel.Create(null);			
-			vm.Source = "http://dev.townfish.tk/discussions?mode=app";
-			// The root page of your application
+			var vm = BrowserPageViewModel.Create (null);			
+			vm.SourceUrl = "http://dev.townfish.tk/?mode=app";
+
 			MainPage = new BrowserPage() { BindingContext = vm };
 		}
 
@@ -40,22 +40,26 @@ namespace TownFish.App
 
 		public void OnBackButtonPressed()
 		{
-			if(BackButtonPressed != null)
-				BackButtonPressed.Invoke(this, new EventArgs());
+			BackButtonPressed?.Invoke (this, new EventArgs());
 		}
 
-		public void OnAndroidCloseApp()
+		public void CloseApp()
 		{
-			if(AndroidAppCloseRequested != null)
-				AndroidAppCloseRequested.Invoke(this, new EventArgs());
+			AppCloseRequested?.Invoke (this, new EventArgs());
 		}
 
 		#endregion
 
+		#region Properties
+
+		public static new App Current { get { return Application.Current as App; } }
+
+		#endregion Properties
+
 		#region Events
 
 		public event EventHandler BackButtonPressed;
-		public event EventHandler AndroidAppCloseRequested;
+		public event EventHandler AppCloseRequested;
 
 		#endregion
 	}

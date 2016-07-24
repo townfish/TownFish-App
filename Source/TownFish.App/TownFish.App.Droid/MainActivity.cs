@@ -19,11 +19,11 @@ namespace TownFish.App.Droid
 
 			global::Xamarin.Forms.Forms.Init(this, bundle);
 			mApp = new App();
-			mApp.AndroidAppCloseRequested += MApp_AndroidAppCloseRequested;
+			mApp.AppCloseRequested += App_AppCloseRequested;
 			LoadApplication(mApp);
 		}
 
-		void MApp_AndroidAppCloseRequested(object sender, EventArgs e)
+		void App_AppCloseRequested (object sender, EventArgs e)
 		{
 			Finish();
 		}

@@ -1,0 +1,252 @@
+Empty Schema:
+
+{
+	"key": "schema",
+	"value": {
+		"locationsAPI": "",
+		"locationSetUrl": "",
+		"availableLocations": [],
+		"activeLocation": 0,
+		"locationIcons": [],
+		"menus": [],
+		"displayStatusBar": true,
+		"statusBarBackgroundColor": "484848",
+		"statusBarTextColor": "ffffff"
+	}
+}
+
+
+Empty Menu:
+
+{
+	"key":"menu",
+	"value":{}
+}
+
+
+Full Schema:
+
+{
+	"key": "schema",
+	"value": {
+		"locationsAPI": "/location/api/{term}",
+		"locationSetUrl": "/location/set/{id}",
+		"availableLocations": [{
+			"id": "-1",
+			"name": "Greater London",
+			"url": "/location/set/-1",
+			"locked": false
+		}, {
+			"id": "127",
+			"name": "Borough of Southwark",
+			"url": "/location/set/127",
+			"locked": false
+		}, {
+			"id": "SE1",
+			"name": "All posts in SE1",
+			"url": "/location/set/SE1",
+			"locked": false
+		}, {
+			"id": "2175",
+			"name": "Bankside",
+			"url": "/location/set/2175",
+			"locked": false
+		}],
+		"activeLocation": "-1",
+		"locationIcons": {
+			"pin": "/themes/TownFishMobile/design/menuicons/location-pin-{size}-{color}.png",
+			"lock": "/themes/TownFishMobile/design/menuicons/lock-{size}-{color}.png",
+			"tick": "/themes/TownFishMobile/design/menuicons/check-tick-{size}-{color}.png",
+			"info": "/themes/TownFishMobile/design/menuicons/information-{size}-{color}.png"
+		},
+		"menus": {
+			"top": {
+				"display": true,
+				"position": "top",
+				"items": [{
+					"type": "locationpin",
+					"kind": "icon",
+					"value": "Location",
+					"iconurl": "/themes/TownFishMobile/design/menuicons/location-pin-{size}-{color}.png",
+					"color": "ffffff",
+					"size": "ldpi",
+					"align": "left"
+				}, {
+					"type": "location",
+					"align": "left"
+				}, {
+					"type": "callback",
+					"kind": "icon",
+					"value": "Search",
+					"iconurl": "/themes/TownFishMobile/design/menuicons/magnifying-search-{size}-{color}.png",
+					"color": "ffffff",
+					"size": "ldpi",
+					"name": "search",
+					"align": "right"
+				}, {
+					"type": "callback",
+					"kind": "icon",
+					"value": "Hamburger",
+					"iconurl": "/themes/TownFishMobile/design/menuicons/menu-hamburger-{size}-{color}.png",
+					"color": "ffffff",
+					"size": "ldpi",
+					"name": "hamburger",
+					"align": "right"
+				}]
+			},
+			"topsub": {
+				"display": true,
+				"position": "topsub",
+				"items": [{
+					"type": "link",
+					"kind": "text",
+					"value": "All",
+					"href": "/",
+					"align": "left",
+					"highlight": true
+				}, {
+					"type": "link",
+					"kind": "text",
+					"value": "Questions",
+					"href": "/discussions/type/question",
+					"align": "middle",
+					"highlight": false
+				}, {
+					"type": "link",
+					"kind": "text",
+					"value": "News",
+					"href": "/discussions/type/discussion",
+					"align": "middle",
+					"highlight": false,
+					"width": 90
+				}, {
+					"type": "link",
+					"kind": "text",
+					"value": "Members",
+					"href": "/members",
+					"align": "middle",
+					"highlight": false
+				}, {
+					"type": "limitby",
+					"kind": "icon",
+					"value": "More",
+					"iconurl": "/themes/TownFishMobile/design/menuicons/circle-chevron-{size}.png",
+					"color": "b8b8b8",
+					"size": "mdpi",
+					"href": "/members",
+					"align": "middle"
+				}, {
+					"type": "link",
+					"kind": "text",
+					"value": "Badges",
+					"href": "/yaga/badges",
+					"align": "middle"
+				}, {
+					"type": "link",
+					"kind": "text",
+					"value": "Points",
+					"href": "/points/about",
+					"align": "middle"
+				}],
+				"limitby": 3
+			},
+			"topform": {
+				"display": false,
+				"position": "top",
+				"items": [{
+					"type": "callback",
+					"kind": "text",
+					"value": "Cancel",
+					"name": "cancelReply",
+					"align": "left"
+				}, {
+					"type": "callback",
+					"kind": "text",
+					"value": "Post",
+					"name": "postReply",
+					"align": "right"
+				}]
+			},
+			"topslide": {
+				"display": false,
+				"position": "top",
+				"items": [{
+					"type": "callback",
+					"kind": "icon",
+					"value": "Hamburger",
+					"iconurl": "/themes/TownFishMobile/design/menuicons/menu-hamburger-{size}-{color}.png",
+					"color": "a8a8a8",
+					"size": "ldpi",
+					"name": "hamburger",
+					"align": "right"
+				}]
+			},
+			"bottom": {
+				"display": true,
+				"position": "bottom",
+				"items": [{
+					"type": "link",
+					"kind": "icon",
+					"value": "Home",
+					"iconurl": "/themes/TownFishMobile/design/menuicons/cityscape-{size}-{color}.png",
+					"size": "mdpi",
+					"color": "ff7801",
+					"href": "/",
+					"align": "middle",
+					"highlight": true
+				}, {
+					"type": "link",
+					"kind": "icon",
+					"value": "Notifications",
+					"iconurl": "/themes/TownFishMobile/design/menuicons/notification-bell-{size}-{color}.png",
+					"size": "mdpi",
+					"color": "444444",
+					"href": "/profile/notifications/",
+					"align": "middle",
+					"hightlight": false
+				}, {
+					"type": "link",
+					"kind": "icon",
+					"value": "Messages",
+					"super": "2",
+					"iconurl": "/themes/TownFishMobile/design/menuicons/message-envelope-{size}-{color}.png",
+					"size": "mdpi",
+					"color": "444444",
+					"href": "/messages/inbox",
+					"align": "middle",
+					"highlight": false
+				}, {
+					"type": "link",
+					"kind": "icon",
+					"value": "Questions",
+					"iconurl": "/themes/TownFishMobile/design/menuicons/post-question-{size}-{color}.png",
+					"size": "mdpi",
+					"color": "444444",
+					"href": "/post/question",
+					"align": "middle",
+					"highlight": false
+				}, {
+					"type": "callback",
+					"kind": "icon",
+					"value": "Newsfeed",
+					"iconurl": "/themes/TownFishMobile/design/menuicons/post-pin-{size}-{color}.png",
+					"size": "mdpi",
+					"color": "444444",
+					"name": "locationPersmission",
+					"href": "/post/discussion",
+					"align": "middle",
+					"highlight": false
+				}]
+			}
+		},
+		"displayStatusBar": true,
+		"statusBarBackgroundColor": "484848",
+		"statusBarTextColor": "ffffff",
+		"currentLocation": {
+			"id": "-1",
+			"name": "Greater London",
+			"url": "/location/set/-1",
+			"locked": false
+		}
+	}
+}

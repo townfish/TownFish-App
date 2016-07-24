@@ -1,56 +1,111 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net.Http;
 using System.Windows.Input;
 
+using Xamarin.Forms;
+
 using Newtonsoft.Json;
 
 using TownFish.App.Models;
-using Xamarin.Forms;
+
 
 namespace TownFish.App.ViewModels
 {
-	public class BrowserPageViewModel : BaseViewModel
+	public class BrowserPageViewModel : ViewModelBase
 	{
 		#region Properties
 
-		public string Source
+		public string SourceUrl
 		{
-			get { return mSource; }
-			set
-			{
-				if (value.Equals(mSource, StringComparison.Ordinal))
-					return;
-
-				//IsLoading = true;
-
-				mSource = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public bool IsTopBarVisible
 		{
-			get { return mIsTopBarVisible; }
-			set
-			{
-				mIsTopBarVisible = value;
-				OnPropertyChanged();
-			}
+			get { return Get<bool>(); }
+			set { Set (value); }
 		}
 
 		public bool IsLoading
 		{
-			get { return mIsLoading; }
-			set
-			{
-				if (value.Equals(mIsLoading))
-					return;
+			get { return Get<bool>(); }
+			set { Set (value); }
+		}
 
-				mIsLoading = value;
-				OnPropertyChanged();
-			}
+		public Color MenuBarBackgroundColour
+		{
+			get { return Get<Color> (() => Color.FromHex ("#484848")); }
+			set { Set (value); }
+		}
+
+		public Color MenuBarTextColour
+		{
+			get { return Get<Color> (() => Color.FromHex ("#ffffff")); }
+			set { Set (value); }
+		}
+
+		public Color SubMenuBackgroundColour
+		{
+			get { return Get<Color> (() => Color.FromHex ("#e8e8e8")); }
+			set { Set (value); }
+		}
+
+		public Color BottomMenuBackgroundColour
+		{
+			get { return Get<Color> (() => Color.FromHex ("#f2f2f2")); }
+			set { Set (value); }
+		}
+
+		public Color BottomMenuCounterColour
+		{
+			get { return Get<Color> (() => Color.FromHex ("#d62327")); }
+			set { Set (value); }
+		}
+
+		public Color LocationsBackgroundColour
+		{
+			get { return Get<Color> (() => Color.FromHex ("#444444")); }
+			set { Set (value); }
+		}
+
+		public Color LocationsContrastBackgroundColour
+		{
+			get { return Get<Color> (() => Color.FromHex ("#333333")); }
+			set { Set (value); }
+		}
+
+		public Color MyLocationsTextColour
+		{
+			get { return Get<Color> (() => Color.FromHex ("#c8c8c8")); }
+			set { Set (value); }
+		}
+
+		public Color LocationsTextColour
+		{
+			get { return Get<Color> (() => Color.FromHex ("#ececec")); }
+			set { Set (value); }
+		}
+
+		public Color LocationsLinkColour
+		{
+			get { return Get<Color> (() => Color.FromHex ("#4f92eb")); }
+			set { Set (value); }
+		}
+
+		public Color LocationsSearchInputTextColour
+		{
+			get { return Get<Color> (() => Color.FromHex ("#b9b9b9")); }
+			set { Set (value); }
+		}
+
+		public Color LocationsSearchResultsTextColour
+		{
+			get { return Get<Color> (() => Color.FromHex ("#989898")); }
+			set { Set (value); }
 		}
 
 		#region Bottom Bar
@@ -59,667 +114,465 @@ namespace TownFish.App.ViewModels
 
 		public string BottomAction1Label
 		{
-			get { return mBottomAction1Label; }
-			set
-			{
-				if (value.Equals(mBottomAction1Label, StringComparison.Ordinal))
-					return;
-
-				mBottomAction1Label = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public ICommand BottomAction1Command
 		{
-			get { return mBottomAction1Command; }
-			set
-			{
-				mBottomAction1Command = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ICommand>(); }
+			set { Set (value); }
 		}
 
-		#endregion
+		#endregion Bottom Action 1
 
 		#region Bottom Action 2
 
 		public string BottomAction2Label
 		{
-			get { return mBottomAction2Label; }
-			set
-			{
-				if (value.Equals(mBottomAction2Label, StringComparison.Ordinal))
-					return;
-
-				mBottomAction2Label = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public ICommand BottomAction2Command
 		{
-			get { return mBottomAction2Command; }
-			set
-			{
-				mBottomAction2Command = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ICommand>(); }
+			set { Set (value); }
 		}
 
 		public bool BottomAction2HasNumber
 		{
-			get { return mBottomAction2HasNumber;  }
-			set
-			{
-				mBottomAction2HasNumber = value;
-				OnPropertyChanged();
-			}
+			get { return Get<bool>(); }
+			set { Set (value); }
 		}
 
 		public string BottomAction2Number
 		{
-			get { return mBottomAction2Number; }
-			set
-			{
-				mBottomAction2Number = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
-		#endregion
+		#endregion Bottom Action 2
 
 		#region Bottom Action 3
 
 		public string BottomAction3Label
 		{
-			get { return mBottomAction3Label; }
-			set
-			{
-				if (value.Equals(mBottomAction3Label, StringComparison.Ordinal))
-					return;
-
-				mBottomAction3Label = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public ICommand BottomAction3Command
 		{
-			get { return mBottomAction3Command; }
-			set
-			{
-				mBottomAction3Command = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ICommand>(); }
+			set { Set (value); }
 		}
 
 		public bool BottomAction3HasNumber
 		{
-			get { return mBottomAction3HasNumber; }
-			set
-			{
-				mBottomAction3HasNumber = value;
-				OnPropertyChanged();
-			}
+			get { return Get<bool>(); }
+			set { Set (value); }
 		}
 
 		public string BottomAction3Number
 		{
-			get { return mBottomAction3Number; }
-			set
-			{
-				mBottomAction3Number = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
-		#endregion
+		#endregion Bottom Action 3
 
 		#region Bottom Action 4
 
 		public string BottomAction4Label
 		{
-			get { return mBottomAction4Label; }
-			set
-			{
-				if (value.Equals(mBottomAction4Label, StringComparison.Ordinal))
-					return;
-
-				mBottomAction4Label = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public ICommand BottomAction4Command
 		{
-			get { return mBottomAction4Command; }
-			set
-			{
-				mBottomAction4Command = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ICommand>(); }
+			set { Set (value); }
 		}
 
-		#endregion
+		#endregion Bottom Action 4
 
 		#region Bottom Action 5
 
 		public string BottomAction5Label
 		{
-			get { return mBottomAction5Label; }
-			set
-			{
-				if (value.Equals(mBottomAction5Label, StringComparison.Ordinal))
-					return;
-
-				mBottomAction5Label = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public ICommand BottomAction5Command
 		{
-			get { return mBottomAction5Command; }
-			set
-			{
-				mBottomAction5Command = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ICommand>(); }
+			set { Set (value); }
 		}
 
-		#endregion
+		#endregion Bottom Action 5
 
 		public bool IsBottomBarVisible
 		{
-			get { return mIsBottomBarVisible; }
-			set
-			{
-				mIsBottomBarVisible = value;
-				OnPropertyChanged();
-			}
+			get { return Get<bool>(); }
+			set { Set (value); }
 		}
 
-		#endregion
+		#endregion Bottom Bar
 
 		#region Top Bar
 
 		public string TopBarLeftLabel
 		{
-			get { return mTopBarLeftLabel; }
-			set
-			{
-				if (value.Equals(mTopBarLeftLabel, StringComparison.Ordinal))
-					return;
-
-				mTopBarLeftLabel = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public ICommand TopBarLeftCommand
 		{
-			get { return mTopBarLeftCommand; }
-			set
-			{
-				mTopBarLeftCommand = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ICommand>(); }
+			set { Set (value); }
 		}
 
 		public string TopBarRightLabel
 		{
-			get { return mTopBarRightLabel; }
-			set
-			{
-				if (value.Equals(mTopBarRightLabel, StringComparison.Ordinal))
-					return;
-
-				mTopBarRightLabel = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public ICommand TopBarRightCommand
 		{
-			get { return mTopBarRightCommand; }
-			set
-			{
-				mTopBarRightCommand = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ICommand>(); }
+			set { Set (value); }
 		}
 
 		public string TopBarRight1Label
 		{
-			get { return mTopBarRight1Label; }
-			set
-			{
-				if (value.Equals(mTopBarRight1Label, StringComparison.Ordinal))
-					return;
-
-				mTopBarRight1Label = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public ICommand TopBarRight1Command
 		{
-			get { return mTopBarRight1Command; }
-			set
-			{
-				mTopBarRight1Command = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ICommand>(); }
+			set { Set (value); }
 		}
 
 		public string PageTitle
 		{
-			get { return mPageTitle; }
-			set
-			{
-				if (value.Equals(mPageTitle, StringComparison.Ordinal))
-					return;
-
-				mPageTitle = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public bool LeftActionIsLocationPin { get; set; }
 
 		public string LocationName
 		{
-			get { return mLocationName; }
-			set
-			{
-				mLocationName = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
-		#endregion
+		#endregion Top Bar
 
 		#region Top Sub
 
 		public string TopAction1Label
 		{
-			get { return mTopAction1Label; }
-			set
-			{
-				if (value.Equals(mTopAction1Label, StringComparison.Ordinal))
-					return;
-
-				mTopAction1Label = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public ICommand TopAction1Command
 		{
-			get { return mTopAction1Command; }
-			set
-			{
-				mTopAction1Command = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ICommand>(); }
+			set { Set (value); }
 		}
 
 		public FontAttributes TopAction1Bold
 		{
-			get { return mTopAction1Bold; }
-			set
-			{
-				mTopAction1Bold = value;
-				OnPropertyChanged();
-			}
+			get { return Get<FontAttributes>(); }
+			set { Set (value); }
 		}
 
 		public string TopAction2Label
 		{
-			get { return mTopAction2Label; }
-			set
-			{
-				if (value.Equals(mTopAction2Label, StringComparison.Ordinal))
-					return;
-
-				mTopAction2Label = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public FontAttributes TopAction2Bold
 		{
-			get { return mTopAction2Bold; }
-			set
-			{
-				mTopAction2Bold = value;
-				OnPropertyChanged();
-			}
+			get { return Get<FontAttributes>(); }
+			set { Set (value); }
 		}
 
 		public ICommand TopAction2Command
 		{
-			get { return mTopAction2Command; }
-			set
-			{
-				mTopAction2Command = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ICommand>(); }
+			set { Set (value); }
 		}
 
 		public string TopAction3Label
 		{
-			get { return mTopAction3Label; }
-			set
-			{
-				if (value.Equals(mTopAction3Label, StringComparison.Ordinal))
-					return;
-
-				mTopAction3Label = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public ICommand TopAction3Command
 		{
-			get { return mTopAction3Command; }
-			set
-			{
-				mTopAction3Command = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ICommand>(); }
+			set { Set (value); }
 		}
 
 		public FontAttributes TopAction3Bold
 		{
-			get { return mTopAction3Bold; }
-			set
-			{
-				mTopAction3Bold = value;
-				OnPropertyChanged();
-			}
+			get { return Get<FontAttributes>(); }
+			set { Set (value); }
 		} 
 
 		public string TopAction4Label
 		{
-			get { return mTopAction4Label; }
-			set
-			{
-				if (value.Equals(mTopAction4Label, StringComparison.Ordinal))
-					return;
-
-				mTopAction4Label = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public ICommand TopAction4Command
 		{
-			get { return mTopAction4Command; }
-			set
-			{
-				mTopAction4Command = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ICommand>(); }
+			set { Set (value); }
 		}
 
 		public FontAttributes TopAction4Bold
 		{
-			get { return mTopAction4Bold; }
-			set
-			{
-				mTopAction4Bold = value;
-				OnPropertyChanged();
-			}
+			get { return Get<FontAttributes>(); }
+			set { Set (value); }
 		}
 
 		public ICommand TopActionMoreCommand
 		{
-			get { return mTopBarMoreCommand; }
-			set
-			{
-				mTopBarMoreCommand = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ICommand>(); }
+			set { Set (value); }
 		}
 
 		public string TopActionMoreLabel
 		{
-			get { return mTopBarMoreLabel; }
-			set
-			{
-				if (value.Equals(mTopBarMoreLabel, StringComparison.Ordinal))
-					return;
-
-				mTopBarMoreLabel = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
-		public bool IsTopBarSubVisible
+		public bool IsTopSubBarVisible
 		{
-			get { return mIsTopBarSubVisible; }
-			set
-			{
-				mIsTopBarSubVisible = value;
-				OnPropertyChanged();
-			}
+			get { return Get<bool>(); }
+			set { Set (value); }
 		}
 
 		public List<TownFishMenuItem> OverflowImages { get; set; }
 
-		#endregion
+		#endregion Top Sub
 
-		#region TopForm
+		#region Top Form
 
 		public string TopFormLeftActionLabel
 		{
-			get { return mTopFormLeftActionLabel; }
-			set
-			{
-				if (value.Equals(mTopFormLeftActionLabel, StringComparison.Ordinal))
-					return;
-
-				mTopFormLeftActionLabel = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public ICommand TopFormLeftAction
 		{
-			get { return mTopFormLeftAction; }
-			set
-			{
-				mTopFormLeftAction = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ICommand>(); }
+			set { Set (value); }
 		}
 
 		public string TopFormRightActionLabel
 		{
-			get { return mTopFormRightActionLabel; }
-			set
-			{
-				mTopFormRightActionLabel = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
 		public ICommand TopFormRightAction
 		{
-			get { return mTopFormRightAction; }
-			set
-			{
-				mTopFormRightAction = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ICommand>(); }
+			set { Set (value); }
 		}
 
 		public bool IsTopFormBarVisible
 		{
-			get { return mIsTopFormBarVisible; }
-			set
-			{
-				mIsTopFormBarVisible = value;
-				OnPropertyChanged();
-			}
+			get { return Get<bool>(); }
+			set { Set (value); }
 		}
 
-		#endregion
+		#endregion Top Form
 
 		#region Search
-		public List<TownfishLocationItem> LocationSearchItems
+
+		public ObservableCollection<TownfishLocationItem> LocationSearchItems
 		{
-			get { return mLocationSearchItems; }
-			set
-			{
-				mLocationSearchItems = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ObservableCollection<TownfishLocationItem>>(); }
+			set { Set (value); }
 		}
 
-		public bool SearchPanelVisible
+		public bool IsSearchPanelVisible
 		{
-			get { return mTopSearchPanelVisible; }
-			set
-			{
-				mTopSearchPanelVisible = value;
-				OnPropertyChanged();
-			}
+			get { return Get<bool>(); }
+			set { Set (value); }
 		}
 
 		public bool SearchLocationHasResults
 		{
-			get { return mSearchLocationHasResults; }
-			set
-			{
-				mSearchLocationHasResults = value;
-				OnPropertyChanged();
-			}
+			get { return Get<bool>(); }
+			set { Set (value); }
 		}
 
 		public ICommand CancelSearchCommand
 		{
 			get
 			{
-				return new Command(() =>
-				{
-					SearchLocationHasResults = false;
-					SearchTerm = "";
-				});
+				return new Command (_ =>
+					{
+						SearchLocationHasResults = false;
+						SearchTerm = "";
+					});
 			}
 		}
 
 		public bool SearchHasContent
 		{
-			get { return mSearchHasContent; }
-			set
-			{
-				mSearchHasContent = value;
-				OnPropertyChanged();
-			}
+			get { return Get<bool>(); }
+			set { Set (value); }
 		}
 
 		public string SearchTerm
 		{
-			get { return mSearchTerm; }
-			set
-			{
-				mSearchTerm = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
-		#endregion
+		#endregion Search
 
 		#region Locations
 
-		public List<AvailableLocation> AvailableLocations
+		public ObservableCollection<AvailableLocation> AvailableLocations
 		{
-			get { return mAvailableLocations; }
-			set
-			{
-				mAvailableLocations = value;
-				OnPropertyChanged();
-			}
+			get { return Get<ObservableCollection<AvailableLocation>>(); }
+			set { Set (value); }
 		}
 
-		public AvailableLocation ActiveLocation
+		public AvailableLocation CurrentLocation
 		{
-			get { return mActiveLocation; }
-			set
-			{
-				mActiveLocation = value;
-				OnPropertyChanged();
-			}
+			get { return Get<AvailableLocation>(); }
+			set { Set (value); }
 		}
 
-		public string InfoLoactionIcon
+		public string InfoLocationIcon
 		{
-			get { return mInfoLocationIcon; }
-			set
-			{
-				mInfoLocationIcon = value;
-				OnPropertyChanged();
-			}
+			get { return Get<string>(); }
+			set { Set (value); }
 		}
 
-		#endregion
+		#endregion Locations
 
-		#endregion
+		#endregion Properties
 
 		#region Events
 
 		public event EventHandler<string> CallbackRequested;
 
-		public event EventHandler<string> MenuRendered;
+		public event EventHandler<string> MenusLoaded;
 
 		#endregion
 
 		#region Methods
 
-		void OnMenuRendered()
+		void OnMenusLoaded()
 		{
-			if(MenuRendered != null)
-				MenuRendered.Invoke(this, "");
+			MenusLoaded?.Invoke (this, "");
 		}
 
 		public void OnCallbackRequested(string callbackName)
 		{
-			if (CallbackRequested != null)
-				CallbackRequested.Invoke(this, callbackName);
+			CallbackRequested?.Invoke (this, callbackName);
 		}
 
-		public void LoadMenuMap(string baseUri, TownFishMenuMap map)
+		public void LoadMenuMap (string baseUri, TownFishMenuMap map)
 		{
 			mLocationApiFormat = map.LocationsAPI;
 			mLocationSetFormat = map.LocationSetUrl;
+
+			IsBottomBarVisible = false;
+			IsTopBarVisible = false;
+			IsTopSubBarVisible = false;
+			IsTopFormBarVisible = false;
 			LeftActionIsLocationPin = false;
-			AvailableLocations = new List<AvailableLocation>();
-			//InfoLoactionIcon = map.LocationIcons.Info.Replace
 
-			foreach(var loc in map.AvailableLocations)
+			try
 			{
-				loc.LeftImage = cBaseUri + map.LocationIcons.Pin.Replace("{size}", "ldpi").Replace("{color}", "ffffff");
-				if (map.ActiveLocation == loc.id)
-				{
-					loc.IsSelected = true;
-					loc.RightImage = cBaseUri + map.LocationIcons.Tick.Replace("{size}", "ldpi").Replace("{color}", "ffffff");
-				}
+				MenuBarBackgroundColour = Color.FromHex ("#" + map.statusBarBackgroundColor);
+				MenuBarTextColour = Color.FromHex ("#" + map.statusBarTextColor);
+			}
+			catch {} // don't care if/why it fails as we'll just use default property values
 
-				AvailableLocations.Add(loc);
+			LoadMenus (map.Menus);
+
+			// now we've parsed the menu map we can set location properties, if needed
+			if (IsTopBarVisible)
+			{
+				var locationMenuItem = map.Menus.Top.items.FirstOrDefault (i => i.type == "locationpin");
+				if (locationMenuItem != null)
+				{
+					CurrentLocation = map.currentLocation;
+					InfoLocationIcon = cBaseUri + map.LocationIcons.Info
+							.Replace ("{size}", locationMenuItem.size)
+							.Replace ("{color}", locationMenuItem.color);
+
+					var locs = new List<AvailableLocation>();
+					foreach (var loc in map.AvailableLocations)
+					{
+						loc.Colour = LocationsTextColour;
+
+						loc.LeftImage = cBaseUri + map.LocationIcons.Pin
+							.Replace ("{size}", locationMenuItem.size)
+							.Replace ("{color}", locationMenuItem.color);
+
+						if (map.ActiveLocation == loc.id)
+						{
+							// set this now that we know it
+							LocationName = loc.name;
+
+							loc.IsSelected = true;
+							loc.RightImage = cBaseUri + map.LocationIcons.Tick
+									.Replace ("{size}", locationMenuItem.size)
+									.Replace ("{color}", locationMenuItem.color);
+						}
+
+						locs.Add (loc);
+					}
+
+					// now we have them all we can trigger (re-)bindings
+					AvailableLocations = new ObservableCollection<AvailableLocation> (locs);
+				}
 			}
 
-			if (map.Menus.Bottom != null && map.Menus.Bottom.display)
-			{
-				IsBottomBarVisible = true;
+			OnMenusLoaded();
+		}
 
+		void LoadMenus (TownFishMenuList menus)
+		{
+			if (menus == null)
+				return;
+
+			var bottom = menus.Bottom;
+			IsBottomBarVisible = bottom != null && bottom.display;
+
+			if (IsBottomBarVisible)
+			{
 				// Bottom Menu
-				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[0] != null)
+				if (bottom.items.Count > 0 && bottom.items [0] != null)
 				{
-					BottomAction1Label = GenerateLabel(map.Menus.Bottom.items[0]);
-					BottomAction1Command = GenerateAction(map.Menus.Bottom.items[0]);
+					BottomAction1Label = GenerateLabel (bottom.items [0]);
+					BottomAction1Command = GenerateAction (bottom.items [0]);
 				}
 				else
 				{
@@ -727,15 +580,15 @@ namespace TownFish.App.ViewModels
 					BottomAction1Command = null;
 				}
 
-				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[1] != null)
+				if (bottom.items.Count > 0 && bottom.items [1] != null)
 				{
-					BottomAction2Label = GenerateLabel(map.Menus.Bottom.items[1]);
-					BottomAction2Command = GenerateAction(map.Menus.Bottom.items[1]);
+					BottomAction2Label = GenerateLabel (bottom.items [1]);
+					BottomAction2Command = GenerateAction (bottom.items [1]);
 
-					if(!string.IsNullOrEmpty(map.Menus.Bottom.items[1].super))
+					if (!string.IsNullOrEmpty (bottom.items [1].super))
 					{
 						BottomAction2HasNumber = true;
-						BottomAction2Number = map.Menus.Bottom.items[1].super;
+						BottomAction2Number = bottom.items [1].super;
 					}
 				}
 				else
@@ -745,15 +598,15 @@ namespace TownFish.App.ViewModels
 					BottomAction2HasNumber = false;
 				}
 
-				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[2] != null)
+				if (bottom.items.Count > 0 && bottom.items [2] != null)
 				{
-					BottomAction3Label = GenerateLabel(map.Menus.Bottom.items[2]);
-					BottomAction3Command = GenerateAction(map.Menus.Bottom.items[2]); ;
+					BottomAction3Label = GenerateLabel (bottom.items [2]);
+					BottomAction3Command = GenerateAction (bottom.items [2]); ;
 
-					if (!string.IsNullOrEmpty(map.Menus.Bottom.items[2].super))
+					if (!string.IsNullOrEmpty (bottom.items [2].super))
 					{
 						BottomAction3HasNumber = true;
-						BottomAction3Number = map.Menus.Bottom.items[2].super;
+						BottomAction3Number = bottom.items [2].super;
 					}
 				}
 				else
@@ -763,10 +616,10 @@ namespace TownFish.App.ViewModels
 					BottomAction3HasNumber = false;
 				}
 
-				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[3] != null)
+				if (bottom.items.Count > 0 && bottom.items [3] != null)
 				{
-					BottomAction4Label = GenerateLabel(map.Menus.Bottom.items[3]);
-					BottomAction4Command = GenerateAction(map.Menus.Bottom.items[3]);
+					BottomAction4Label = GenerateLabel (bottom.items [3]);
+					BottomAction4Command = GenerateAction (bottom.items [3]);
 				}
 				else
 				{
@@ -774,10 +627,10 @@ namespace TownFish.App.ViewModels
 					BottomAction4Command = null;
 				}
 
-				if (map.Menus.Bottom.items.Count > 0 && map.Menus.Bottom.items[4] != null)
+				if (bottom.items.Count > 0 && bottom.items [4] != null)
 				{
-					BottomAction5Label = GenerateLabel(map.Menus.Bottom.items[4]);
-					BottomAction5Command = GenerateAction(map.Menus.Bottom.items[4]);
+					BottomAction5Label = GenerateLabel (bottom.items [4]);
+					BottomAction5Command = GenerateAction (bottom.items [4]);
 				}
 				else
 				{
@@ -787,7 +640,6 @@ namespace TownFish.App.ViewModels
 			}
 			else
 			{
-				IsBottomBarVisible = false;
 				BottomAction1Label = "";
 				BottomAction1Command = null;
 				BottomAction2Label = "";
@@ -802,16 +654,16 @@ namespace TownFish.App.ViewModels
 				BottomAction5Command = null;
 			}
 
-			if (map.Menus.Top != null && map.Menus.Top.display)
+			var top = menus.Top;
+			IsTopBarVisible = top != null && top.display;
+
+			if (IsTopBarVisible)
 			{
-				IsTopBarVisible = true;
-
-				var topLeftItem = map.Menus.Top.items.FirstOrDefault(x => x.align == "left");
-
-				if(topLeftItem != null)
+				var topLeftItem = top.items.FirstOrDefault (i => i.align == "left");
+				if (topLeftItem != null)
 				{
-					TopBarLeftLabel = GenerateLabel(map.Menus.Top.items[0]);
-					TopBarLeftCommand = GenerateAction(map.Menus.Top.items[0]);
+					TopBarLeftLabel = GenerateLabel (top.items [0]);
+					TopBarLeftCommand = GenerateAction (top.items [0]);
 				}
 				else
 				{
@@ -819,46 +671,26 @@ namespace TownFish.App.ViewModels
 					TopBarLeftCommand = null;
 				}
 
-				var isLocationItem = map.Menus.Top.items.FirstOrDefault(x => x.type == "location");
-
-				if(isLocationItem != null)
-				{
-					var activeLoc = AvailableLocations.FirstOrDefault(i => i.id == map.ActiveLocation);
-
-					if (activeLoc != null)
-						LocationName = activeLoc.name;
-				}
+				var isHeadingItem = top.items.FirstOrDefault (i => i.type == "heading");
+				if (isHeadingItem != null)
+					PageTitle = GenerateLabel (top.items [1]);
 				else
-				{
-					LocationName = "";
-				}
-
-				var isHeadingItem = map.Menus.Top.items.FirstOrDefault(i => i.type == "heading");
-
-				if(isHeadingItem != null)
-				{
-					PageTitle = GenerateLabel(map.Menus.Top.items[1]);
-				}
-				else
-				{
 					PageTitle = "";
-				}
 
-				var rightItems = map.Menus.Top.items.Where(x => x.align == "right");
-
-				if(rightItems.Count() == 1)
+				var rightItems = top.items.Where (i => i.align == "right");
+				if (rightItems.Count() == 1)
 				{
 					TopBarRightLabel = "";
 					TopBarRightCommand = null;
-					TopBarRight1Label = GenerateLabel(rightItems.First());
-					TopBarRight1Command = GenerateAction(rightItems.First());
+					TopBarRight1Label = GenerateLabel (rightItems.First());
+					TopBarRight1Command = GenerateAction (rightItems.First());
 				}
-				else if(rightItems.Count() == 2)
+				else if (rightItems.Count() == 2)
 				{
-					TopBarRightLabel = GenerateLabel(rightItems.First());
-					TopBarRightCommand = GenerateAction(rightItems.First());
-					TopBarRight1Label = GenerateLabel(rightItems.Last());
-					TopBarRight1Command = GenerateAction(rightItems.Last());
+					TopBarRightLabel = GenerateLabel (rightItems.First());
+					TopBarRightCommand = GenerateAction (rightItems.First());
+					TopBarRight1Label = GenerateLabel (rightItems.Last());
+					TopBarRight1Command = GenerateAction (rightItems.Last());
 				}
 				else
 				{
@@ -870,7 +702,6 @@ namespace TownFish.App.ViewModels
 			}
 			else
 			{
-				IsTopBarVisible = false;
 				TopBarLeftLabel = "";
 				TopBarLeftCommand = null;
 				TopBarRight1Label = "";
@@ -879,16 +710,18 @@ namespace TownFish.App.ViewModels
 				TopBarRight1Command = null;
 			}
 
-			if (map.Menus.TopSub != null && map.Menus.TopSub.display)
-			{
-				IsTopBarSubVisible = true;
+			var topSub = menus.TopSub;
+			IsTopSubBarVisible = topSub != null && topSub.display;
 
+			if (IsTopSubBarVisible)
+			{
 				// Top Menu
-				if (map.Menus.TopSub.items.Count > 0 && map.Menus.TopSub.items[0] != null)
+				if (topSub.items.Count > 0 && topSub.items [0] != null)
 				{
-					TopAction1Label = GenerateLabel(map.Menus.TopSub.items[0]);
-					TopAction1Command = GenerateAction(map.Menus.TopSub.items[0]);
-					if (map.Menus.TopSub.items[0].highlight)
+					TopAction1Label = GenerateLabel (topSub.items [0]);
+					TopAction1Command = GenerateAction (topSub.items [0]);
+
+					if (topSub.items [0].highlight)
 						TopAction1Bold = FontAttributes.Bold;
 					else
 						TopAction1Bold = FontAttributes.None;
@@ -899,11 +732,12 @@ namespace TownFish.App.ViewModels
 					TopAction1Command = null;
 				}
 
-				if (map.Menus.TopSub.items.Count > 1 && map.Menus.TopSub.items[1] != null)
+				if (topSub.items.Count > 1 && topSub.items [1] != null)
 				{
-					TopAction2Label = GenerateLabel(map.Menus.TopSub.items[1]);
-					TopAction2Command = GenerateAction(map.Menus.TopSub.items[1]);
-					if (map.Menus.TopSub.items[1].highlight)
+					TopAction2Label = GenerateLabel (topSub.items [1]);
+					TopAction2Command = GenerateAction (topSub.items [1]);
+
+					if (topSub.items [1].highlight)
 						TopAction2Bold = FontAttributes.Bold;
 					else
 						TopAction2Bold = FontAttributes.None;
@@ -914,11 +748,12 @@ namespace TownFish.App.ViewModels
 					TopAction2Command = null;
 				}
 
-				if (map.Menus.TopSub.items.Count > 2 && map.Menus.TopSub.items[2] != null)
+				if (topSub.items.Count > 2 && topSub.items [2] != null)
 				{
-					TopAction3Label = GenerateLabel(map.Menus.TopSub.items[2]);
-					TopAction3Command = GenerateAction(map.Menus.TopSub.items[2]);
-					if (map.Menus.TopSub.items[2].highlight)
+					TopAction3Label = GenerateLabel (topSub.items [2]);
+					TopAction3Command = GenerateAction (topSub.items [2]);
+
+					if (topSub.items [2].highlight)
 						TopAction3Bold = FontAttributes.Bold;
 					else
 						TopAction3Bold = FontAttributes.None;
@@ -929,11 +764,12 @@ namespace TownFish.App.ViewModels
 					TopAction3Command = null;
 				}
 
-				if (map.Menus.TopSub.items.Count > 3 && map.Menus.TopSub.items[3] != null)
+				if (topSub.items.Count > 3 && topSub.items [3] != null)
 				{
-					TopAction4Label = GenerateLabel(map.Menus.TopSub.items[3]);
-					TopAction4Command = GenerateAction(map.Menus.TopSub.items[3]);
-					if (map.Menus.TopSub.items[3].highlight)
+					TopAction4Label = GenerateLabel (topSub.items [3]);
+					TopAction4Command = GenerateAction (topSub.items [3]);
+
+					if (topSub.items [3].highlight)
 						TopAction4Bold = FontAttributes.Bold;
 					else
 						TopAction4Bold = FontAttributes.None;
@@ -944,14 +780,13 @@ namespace TownFish.App.ViewModels
 					TopAction4Command = null;
 				}
 
-				if (map.Menus.TopSub.items.Count > 4)
+				if (topSub.items.Count > 4)
 				{
-					var moreIcon = map.Menus.TopSub.items.FirstOrDefault(x => x.type == "limitby");
-
+					var moreIcon = topSub.items.FirstOrDefault (i => i.type == "limitby");
 					if (moreIcon != null)
 					{
-						TopActionMoreLabel = GenerateLabel(moreIcon);
-						OverflowImages = map.Menus.TopSub.items.Skip(3).Where(i => i.type != "limitby").ToList();
+						TopActionMoreLabel = GenerateLabel (moreIcon);
+						OverflowImages = topSub.items.Skip (3).Where (i => i.type != "limitby").ToList();
 					}
 				}
 				else
@@ -960,46 +795,29 @@ namespace TownFish.App.ViewModels
 					OverflowImages = null;
 				}
 			}
-			else
+
+			var topForm = menus.TopForm;
+			IsTopFormBarVisible = topForm != null && topForm.display && topForm.items.Count > 0;
+
+			if (IsTopFormBarVisible)
 			{
-				IsTopBarSubVisible = false;
-			}
+				TopFormLeftActionLabel = GenerateLabel (topForm.items [0]);
+				TopFormLeftAction = GenerateAction (topForm.items [0]);
 
-			if (map.Menus.TopForm != null && map.Menus.TopForm.display)
-			{
-				if (map.Menus.TopForm.items.Count >= 1)
-				{
-					TopFormLeftActionLabel = GenerateLabel(map.Menus.TopForm.items[0]);
-					TopFormLeftAction = GenerateAction(map.Menus.TopForm.items[0]);
-					IsTopFormBarVisible = true;
-				}
-				else
-				{
-					IsTopFormBarVisible = false;
-				}
+				if (topForm.items.Count > 1)
+					PageTitle = GenerateLabel (topForm.items [1]);
 
-				if (map.Menus.TopForm.items.Count >= 2)
+				if (topForm.items.Count > 2)
 				{
-					PageTitle = GenerateLabel(map.Menus.TopForm.items[1]);
-				}
-
-				if(map.Menus.TopForm.items.Count >= 3)
-				{ 
-					TopFormRightActionLabel = GenerateLabel(map.Menus.TopForm.items[2]);
-					TopFormRightAction = GenerateAction(map.Menus.TopForm.items[2]);
+					TopFormRightActionLabel = GenerateLabel (topForm.items [2]);
+					TopFormRightAction = GenerateAction (topForm.items [2]);
 				}
 			}
-			else
-			{
-				IsTopFormBarVisible = false;
-			}
-
-			OnMenuRendered();
 		}
 
 		string GenerateLabel(TownFishMenuItem item)
 		{
-			if (item.kind == "icon" || item.type == "locationpin")
+			if (item.kind == "icon")
 			{
 				var url = item.iconurl;
 
@@ -1020,38 +838,27 @@ namespace TownFish.App.ViewModels
 
 		ICommand GenerateAction(TownFishMenuItem item)
 		{
-			if (item.type == "link")
+			switch (item.type)
 			{
-				return new Command(() =>
-				{
-					Source = cBaseUri + item.href + cBaseUriParam;
-				});
-			}
-			else if (item.type == "callback")
-			{
-				return new Command(() =>
-				{
-					OnCallbackRequested(item.name);
-				});
-			}
-			else if(item.type == "back")
-			{
-				return new Command(() =>
-				{
-					Source = cBaseUri + item.href + cBaseUriParam;
-				});
-			}
-			else if(item.type == "locationpin")
-			{
-				LeftActionIsLocationPin = true;
-				return new Command(() =>
-				{
-					SearchLocationHasResults = false;
-				});
-			}
-			else
-			{
-				return null;
+				case "link":
+					return new Command (_ =>
+						{ SourceUrl = cBaseUri + item.href + cBaseUriParam; });
+
+				case "callback":
+					return new Command (_ =>
+						OnCallbackRequested (item.name));
+
+				case "back":
+					return new Command (_ =>
+						{ SourceUrl = cBaseUri + item.href + cBaseUriParam; });
+
+				case "locationpin":
+					LeftActionIsLocationPin = true;
+					return new Command (_ =>
+						{ SearchLocationHasResults = false; });
+
+				default:
+					return null;
 			}
 		}
 
@@ -1060,11 +867,11 @@ namespace TownFish.App.ViewModels
 			var viewModel = new BrowserPageViewModel
 			{
 				OverflowImages = new List<TownFishMenuItem>(),
-				Source = cBaseUri + cBaseUriParam
+				SourceUrl = cBaseUri + cBaseUriParam
 			};
 
 			if (map != null)
-				viewModel.LoadMenuMap(cBaseUri, map);
+				viewModel.LoadMenuMap (cBaseUri, map);
 
 			return viewModel;
 		}
@@ -1082,10 +889,9 @@ namespace TownFish.App.ViewModels
 					if (!string.IsNullOrEmpty(resultJson))
 					{
 						var model = JsonConvert.DeserializeObject<TownFishLocationList>(resultJson);
-
 						if (model != null)
 						{
-							LocationSearchItems = model.items.ToList();
+							LocationSearchItems = new ObservableCollection<TownfishLocationItem> (model.items);
 							SearchLocationHasResults = true;
 						}
 					}
@@ -1100,79 +906,20 @@ namespace TownFish.App.ViewModels
 
 		public void SetLocation(string cityId)
 		{
-			Source = cBaseUri + mLocationSetFormat.Replace("{id}", cityId) + cBaseUriParam;
+			SourceUrl = cBaseUri + mLocationSetFormat.Replace("{id}", cityId) + cBaseUriParam;
 		}
 
 		#endregion
 
 		#region Fields
 
-		string mPageTitle;
-		string mSource;
-		bool mIsLoading;
-
 		public const string cBaseUri = "http://dev.townfish.tk";
-		string mLocationApiFormat = "";
-		string mLocationSetFormat = "";
 		public const string cBaseUriParam = "?mode=app";
 
-		string mTopAction1Label;
-		string mTopAction3Label;
-		string mTopAction2Label;
-		string mBottomAction1Label;
-		string mBottomAction2Label;
-		string mBottomAction3Label;
-		string mBottomAction4Label;
-		string mBottomAction5Label;
-		string mTopBarLeftLabel;
-		string mTopBarRightLabel;
-		string mTopFormPageTitle;
-		string mTopBarRight1Label;
-		string mTopFormLeftActionLabel;
-		string mTopBarMoreLabel;
-		string mTopFormRightActionLabel;
-
-		ICommand mTopBarMoreCommand;
-		ICommand mTopAction1Command;
-		ICommand mTopAction2Command;
-		ICommand mTopAction3Command;
-		ICommand mTopBarRight1Command;
-		ICommand mTopFormLeftAction;
-		ICommand mTopFormRightAction;
-		ICommand mTopBarRightCommand;
-		ICommand mTopBarLeftCommand;
-		ICommand mBottomAction5Command;
-		ICommand mBottomAction4Command;
-		ICommand mBottomAction2Command;
-		ICommand mBottomAction3Command;
-		ICommand mBottomAction1Command;
-
-		bool mIsTopFormBarVisible;
-		bool mIsTopBarSubVisible;
-		bool mIsTopBarVisible;
-		bool mIsBottomBarVisible;
-
-		bool mTopSearchPanelVisible;
-		List<TownfishLocationItem> mLocationSearchItems;
-		bool mSearchLocationHasResults;
-
 		public static string sSearchTerm = "";
-		bool mBottomAction2HasNumber;
-		string mBottomAction2Number;
-		bool mBottomAction3HasNumber;
-		string mBottomAction3Number;
-		bool mSearchHasContent;
-		string mSearchTerm;
-		List<AvailableLocation> mAvailableLocations;
-		AvailableLocation mActiveLocation;
-		string mLocationName;
-		string mTopAction4Label;
-		ICommand mTopAction4Command;
-		FontAttributes mTopAction1Bold;
-		private FontAttributes mTopAction2Bold;
-		private FontAttributes mTopAction3Bold;
-		private FontAttributes mTopAction4Bold;
-		string mInfoLocationIcon;
+
+		string mLocationApiFormat = "";
+		string mLocationSetFormat = "";
 
 		#endregion
 	}
