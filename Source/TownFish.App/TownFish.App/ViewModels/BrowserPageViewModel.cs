@@ -509,8 +509,8 @@ namespace TownFish.App.ViewModels
 
 			try
 			{
-				MenuBarBackgroundColour = Color.FromHex ("#" + map.statusBarBackgroundColor);
-				MenuBarTextColour = Color.FromHex ("#" + map.statusBarTextColor);
+				MenuBarBackgroundColour = Color.FromHex ("#" + map.StatusBarBackgroundColor);
+				MenuBarTextColour = Color.FromHex ("#" + map.StatusBarTextColor);
 			}
 			catch {} // don't care if/why it fails as we'll just use default property values
 
@@ -519,13 +519,14 @@ namespace TownFish.App.ViewModels
 			// now we've parsed the menu map we can set location properties, if needed
 			if (IsTopBarVisible)
 			{
-				var locationMenuItem = map.Menus.Top.items.FirstOrDefault (i => i.type == "locationpin");
+				var locationMenuItem = map.Menus.Top.items.FirstOrDefault (i => i.Type == "locationpin");
 				if (locationMenuItem != null)
 				{
-					CurrentLocation = map.currentLocation;
+					CurrentLocation = map.CurrentLocation;
+
 					InfoLocationIcon = cBaseUri + map.LocationIcons.Info
-							.Replace ("{size}", locationMenuItem.size)
-							.Replace ("{color}", locationMenuItem.color);
+							.Replace ("{size}", locationMenuItem.Size)
+							.Replace ("{color}", locationMenuItem.Color);
 
 					var locs = new List<AvailableLocation>();
 					foreach (var loc in map.AvailableLocations)
@@ -533,19 +534,23 @@ namespace TownFish.App.ViewModels
 						loc.Colour = LocationsTextColour;
 
 						loc.LeftImage = cBaseUri + map.LocationIcons.Pin
-							.Replace ("{size}", locationMenuItem.size)
-							.Replace ("{color}", locationMenuItem.color);
+							.Replace ("{size}", locationMenuItem.Size)
+							.Replace ("{color}", locationMenuItem.Color);
 
-						if (map.ActiveLocation == loc.id)
+						if (loc.ID == CurrentLocation.ID)
 						{
 							// set this now that we know it
-							LocationName = loc.name;
+							LocationName = loc.Name;
 
 							loc.IsSelected = true;
 							loc.RightImage = cBaseUri + map.LocationIcons.Tick
-									.Replace ("{size}", locationMenuItem.size)
-									.Replace ("{color}", locationMenuItem.color);
+									.Replace ("{size}", locationMenuItem.Size)
+									.Replace ("{color}", locationMenuItem.Color);
 						}
+
+						loc.LockLocationIcon = cBaseUri + map.LocationIcons.Lock
+								.Replace ("{size}", locationMenuItem.Size)
+								.Replace ("{color}", locationMenuItem.Color);
 
 						locs.Add (loc);
 					}
@@ -585,10 +590,10 @@ namespace TownFish.App.ViewModels
 					BottomAction2Label = GenerateLabel (bottom.items [1]);
 					BottomAction2Command = GenerateAction (bottom.items [1]);
 
-					if (!string.IsNullOrEmpty (bottom.items [1].super))
+					if (!string.IsNullOrEmpty (bottom.items [1].Super))
 					{
 						BottomAction2HasNumber = true;
-						BottomAction2Number = bottom.items [1].super;
+						BottomAction2Number = bottom.items [1].Super;
 					}
 				}
 				else
@@ -603,10 +608,10 @@ namespace TownFish.App.ViewModels
 					BottomAction3Label = GenerateLabel (bottom.items [2]);
 					BottomAction3Command = GenerateAction (bottom.items [2]); ;
 
-					if (!string.IsNullOrEmpty (bottom.items [2].super))
+					if (!string.IsNullOrEmpty (bottom.items [2].Super))
 					{
 						BottomAction3HasNumber = true;
-						BottomAction3Number = bottom.items [2].super;
+						BottomAction3Number = bottom.items [2].Super;
 					}
 				}
 				else
@@ -659,7 +664,7 @@ namespace TownFish.App.ViewModels
 
 			if (IsTopBarVisible)
 			{
-				var topLeftItem = top.items.FirstOrDefault (i => i.align == "left");
+				var topLeftItem = top.items.FirstOrDefault (i => i.Align == "left");
 				if (topLeftItem != null)
 				{
 					TopBarLeftLabel = GenerateLabel (top.items [0]);
@@ -671,13 +676,13 @@ namespace TownFish.App.ViewModels
 					TopBarLeftCommand = null;
 				}
 
-				var isHeadingItem = top.items.FirstOrDefault (i => i.type == "heading");
+				var isHeadingItem = top.items.FirstOrDefault (i => i.Type == "heading");
 				if (isHeadingItem != null)
 					PageTitle = GenerateLabel (top.items [1]);
 				else
 					PageTitle = "";
 
-				var rightItems = top.items.Where (i => i.align == "right");
+				var rightItems = top.items.Where (i => i.Align == "right");
 				if (rightItems.Count() == 1)
 				{
 					TopBarRightLabel = "";
@@ -721,7 +726,7 @@ namespace TownFish.App.ViewModels
 					TopAction1Label = GenerateLabel (topSub.items [0]);
 					TopAction1Command = GenerateAction (topSub.items [0]);
 
-					if (topSub.items [0].highlight)
+					if (topSub.items [0].Highlight)
 						TopAction1Bold = FontAttributes.Bold;
 					else
 						TopAction1Bold = FontAttributes.None;
@@ -737,7 +742,7 @@ namespace TownFish.App.ViewModels
 					TopAction2Label = GenerateLabel (topSub.items [1]);
 					TopAction2Command = GenerateAction (topSub.items [1]);
 
-					if (topSub.items [1].highlight)
+					if (topSub.items [1].Highlight)
 						TopAction2Bold = FontAttributes.Bold;
 					else
 						TopAction2Bold = FontAttributes.None;
@@ -753,7 +758,7 @@ namespace TownFish.App.ViewModels
 					TopAction3Label = GenerateLabel (topSub.items [2]);
 					TopAction3Command = GenerateAction (topSub.items [2]);
 
-					if (topSub.items [2].highlight)
+					if (topSub.items [2].Highlight)
 						TopAction3Bold = FontAttributes.Bold;
 					else
 						TopAction3Bold = FontAttributes.None;
@@ -769,7 +774,7 @@ namespace TownFish.App.ViewModels
 					TopAction4Label = GenerateLabel (topSub.items [3]);
 					TopAction4Command = GenerateAction (topSub.items [3]);
 
-					if (topSub.items [3].highlight)
+					if (topSub.items [3].Highlight)
 						TopAction4Bold = FontAttributes.Bold;
 					else
 						TopAction4Bold = FontAttributes.None;
@@ -782,11 +787,11 @@ namespace TownFish.App.ViewModels
 
 				if (topSub.items.Count > 4)
 				{
-					var moreIcon = topSub.items.FirstOrDefault (i => i.type == "limitby");
+					var moreIcon = topSub.items.FirstOrDefault (i => i.Type == "limitby");
 					if (moreIcon != null)
 					{
 						TopActionMoreLabel = GenerateLabel (moreIcon);
-						OverflowImages = topSub.items.Skip (3).Where (i => i.type != "limitby").ToList();
+						OverflowImages = topSub.items.Skip (3).Where (i => i.Type != "limitby").ToList();
 					}
 				}
 				else
@@ -817,40 +822,40 @@ namespace TownFish.App.ViewModels
 
 		string GenerateLabel(TownFishMenuItem item)
 		{
-			if (item.kind == "icon")
+			if (item.Kind == "icon")
 			{
-				var url = item.iconurl;
+				var url = item.IconUrl;
 
-				url = url.Replace("{size}", item.size);
-				url = url.Replace("{color}", item.color);
+				url = url.Replace("{size}", item.Size);
+				url = url.Replace("{color}", item.Color);
 
 				return cBaseUri + url;
 			}
-			else if (item.type == "heading")
+			else if (item.Type == "heading")
 			{
-				return item.main;
+				return item.Main;
 			}
 			else
 			{
-				return item.value;
+				return item.Value;
 			}
 		}
 
 		ICommand GenerateAction(TownFishMenuItem item)
 		{
-			switch (item.type)
+			switch (item.Type)
 			{
 				case "link":
 					return new Command (_ =>
-						{ SourceUrl = cBaseUri + item.href + cBaseUriParam; });
+						{ SourceUrl = cBaseUri + item.Href + cBaseUriParam; });
 
 				case "callback":
 					return new Command (_ =>
-						OnCallbackRequested (item.name));
+						OnCallbackRequested (item.Name));
 
 				case "back":
 					return new Command (_ =>
-						{ SourceUrl = cBaseUri + item.href + cBaseUriParam; });
+						{ SourceUrl = cBaseUri + item.Href + cBaseUriParam; });
 
 				case "locationpin":
 					LeftActionIsLocationPin = true;

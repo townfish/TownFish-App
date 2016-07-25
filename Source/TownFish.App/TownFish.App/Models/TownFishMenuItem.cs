@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace TownFish.App.Models
 {
@@ -10,18 +7,29 @@ namespace TownFish.App.Models
 	{
 		#region Properties
 
-		public string type { get; set; }
-		public string name { get; set; }
-		public string kind { get; set; }
-		public string value { get; set; }
-		public string iconurl { get; set; }
-		public string size { get; set; }
-		public string color { get; set; }
-		public string href { get; set; }
-		public string align { get; set; }
-		public bool highlight { get; set; }
-		public string main { get; set; }
-		public string super { get; set; }
+		public string Type { get; set; }
+
+		public string Name { get; set; }
+
+		public string Kind { get; set; }
+
+		public string Value { get; set; }
+
+		public string IconUrl { get; set; }
+
+		public string Size { get; set; }
+
+		public string Color { get; set; }
+
+		public string Href { get; set; }
+
+		public string Align { get; set; }
+
+		public bool Highlight { get; set; }
+
+		public string Main { get; set; }
+
+		public string Super { get; set; }
 
 		#endregion
 	}

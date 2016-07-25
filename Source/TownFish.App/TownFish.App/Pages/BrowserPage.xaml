@@ -166,12 +166,17 @@
 										<ColumnDefinition Width="6" />
 										<ColumnDefinition Width="*" />
 										<ColumnDefinition Width="auto" />
+										<ColumnDefinition Width="auto" />
 									</Grid.ColumnDefinitions>
 
 									<Image Source="{Binding LeftImage}" HeightRequest="18" />
-									<Label Grid.Column="2" VerticalOptions="Center" Text="{Binding name}"
+									<Label Grid.Column="2" VerticalOptions="Center" Text="{Binding Name}"
 										   TextColor="{Binding Colour}" />
 									<Image Source="{Binding RightImage}" Grid.Column="3" HeightRequest="12"/>
+									<Grid Padding="6,0,0,0" IsVisible="{Binding Locked}" Grid.Column="4"
+										  HorizontalOptions="Start" HeightRequest="18">
+										<Image Source="{Binding LockLocationIcon}" HeightRequest="18" />
+									</Grid>
 								</Grid>
 								<BoxView Color="Black" HeightRequest="1"/>
 							</StackLayout>
@@ -179,18 +184,21 @@
 					</DataTemplate>
 				</ListView.ItemTemplate>
 			</ListView>
-			<Grid Grid.Row="2" Padding="20,10" >
+
+			<Grid Grid.Row="2" Padding="20,6" >
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="auto" />
-					<ColumnDefinition Width="10" />
+					<ColumnDefinition Width="6" />
 					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
 
-				<Image Source="{Binding InfoLocationIcon}" VerticalOptions="Center" />
+				<Grid Padding="0,4" VerticalOptions="Start">
+					<Image Source="{Binding InfoLocationIcon}" />
+				</Grid>
 				<Label TextColor="{Binding LocationsTextColour}" FontSize="12" Grid.Column="2"
 					   Text="Your account is connected with the above locations allowing you to post news, events, and information that's relevant to these feeds." />
 			</Grid>
-			<Grid Grid.Row="3" Padding="20,10" >
+			<Grid Grid.Row="3" Padding="20,6" >
 				<Label TextColor="{Binding LocationsTextColour}" FontSize="12" >
 					<Label.FormattedText>
 						<FormattedString>
@@ -203,7 +211,7 @@
 					</Label.GestureRecognizers>
 				</Label>
 			</Grid>
-			<Grid Grid.Row="4" Padding="20,10" >
+			<Grid Grid.Row="4" Padding="20,6" >
 				<Label TextColor="{Binding LocationsTextColour}" FontSize="12"
 					   Text="Note: if you change your account location you will no longer be associated with these locations or have permission to post in their newsfeeds." />
 			</Grid>
@@ -259,7 +267,7 @@
 			<Grid x:Name="pnlTopSearchPlaceholder" Grid.Column="1" Grid.ColumnSpan="3" />
 
 			<Image Source="{Binding TopBarLeftLabel}" Grid.Column="0"
-				   HorizontalOptions="Center" HeightRequest="18">
+				   HorizontalOptions="Center" HeightRequest="24">
 				<Image.GestureRecognizers>
 					<TapGestureRecognizer x:Name="btnLocation" Command="{Binding TopBarLeftCommand}"/>
 				</Image.GestureRecognizers>
@@ -278,13 +286,13 @@
 				   Grid.Column="2"
 				   Text="{Binding PageTitle}" />
 			<Image Source="{Binding TopBarRightLabel}" Grid.Column="3"
-				   HorizontalOptions="Center" HeightRequest="18">
+				   HorizontalOptions="Center" HeightRequest="24">
 				<Image.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
 				</Image.GestureRecognizers>
 			</Image>
 			<Image Source="{Binding TopBarRight1Label}" Grid.Column="5"
-				   HorizontalOptions="Center" HeightRequest="18">
+				   HorizontalOptions="Center" HeightRequest="24">
 				<Image.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
 				</Image.GestureRecognizers>

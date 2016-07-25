@@ -88,13 +88,14 @@ namespace TownFish.App.Pages
 
 					case cMenuKey:
 						var menu = JsonConvert.DeserializeObject<List<TownFishMenuItem>> (value);
-						var action = await DisplayActionSheet (cMoreActions, cCancel, null,
-										menu.Select (i => i.value).ToArray());
 
-						var selectedItem = menu.FirstOrDefault (i => i.value == action);
-						if (selectedItem.type == cCallbackType)
-							wbvContent.InvokeJS (string.Format (
-									cCallbackFormat, selectedItem.name.ToLower()));
+						var action = await DisplayActionSheet (cMoreActions, cCancel, null,
+										menu.Select (i => i.Value).ToArray());
+
+						var selectedItem = menu.FirstOrDefault (i => i.Value == action);
+						if (selectedItem.Type == cCallbackType)
+							OnCallback (selectedItem.Name);
+
 						break;
 
 					case cPushKey:
@@ -146,14 +147,14 @@ namespace TownFish.App.Pages
 			ViewModel.TopActionMoreCommand = new Command (async _ =>
 				{
 					var action = await DisplayActionSheet (cMoreActions, cCancel, null,
-							ViewModel.OverflowImages.Select (i => i.value).ToArray<string>());
+							ViewModel.OverflowImages.Select (i => i.Value).ToArray<string>());
 
 					ViewModel.SourceUrl = ViewModel.OverflowImages.First (i =>
-							i.value == action).href + BrowserPageViewModel.cBaseUriParam;
+							i.Value == action).Href + BrowserPageViewModel.cBaseUriParam;
 				});
 
-			ViewModel.CallbackRequested += (reqstSender, callback) =>
-					wbvContent.InvokeJS (string.Format (cCallbackFormat, callback.ToLower()));
+			ViewModel.CallbackRequested += (s, name) =>
+					OnCallback (name);
 
 			ViewModel.MenusLoaded += ViewModel_MenusLoaded;
 
@@ -167,7 +168,7 @@ namespace TownFish.App.Pages
 		{
 			HideSearchPanel();
 
-			ViewModel.SetLocation ((e.Item as AvailableLocation).id);
+			ViewModel.SetLocation ((e.Item as AvailableLocation).ID);
 		}
 
 		void inpSearch_Completed (object sender, EventArgs e)
@@ -197,7 +198,7 @@ namespace TownFish.App.Pages
 
 		void BrowserPage_BackButtonPressed (object sender, EventArgs e)
 		{
-			if (ViewModel.IsSearchPanelVisible)
+			if (ViewModel.IsSearchPanelVisible || mShowingSearch)
 				HideSearchPanel();
 			else if (wbvContent.CanGoBack)
 				wbvContent.GoBack();
@@ -207,24 +208,36 @@ namespace TownFish.App.Pages
 
 		void OnMemAgreeClicked (object sender, EventArgs e)
 		{
-			ViewModel.SourceUrl = cTermsUrl;
-
 			HideSearchPanel();
+
+			ViewModel.SourceUrl = cTermsUrl;
 		}
 
 		void LocationTapped (object sender, EventArgs e)
 		{
 			if (ViewModel.LeftActionIsLocationPin)
 			{
-				if (!ViewModel.IsSearchPanelVisible)
+				if (!ViewModel.IsSearchPanelVisible && !mShowingSearch)
 					ShowSearchPanel();
 				else
 					HideSearchPanel();
 			}
 		}
 
+		void OnCallback (string name)
+		{
+			HideSearchPanel();
+
+			wbvContent.InvokeJS (string.Format (cCallbackFormat, name.ToLower()));
+		}
+
 		async void ShowSearchPanel()
 		{
+			if (ViewModel.IsSearchPanelVisible || mShowingSearch)
+				return;
+
+			mShowingSearch = true;
+
 			// first, kill any existing animations
 			ViewExtensions.CancelAnimations (pnlLocations);
 			ViewExtensions.CancelAnimations (pnlTopSearchReveal);
@@ -250,10 +263,17 @@ namespace TownFish.App.Pages
 			var tsrLayout = pnlTopSearchReveal.LayoutTo (tsp.Bounds, cLocationPanelAnimationTime, Easing.CubicInOut);
 
 			await Task.WhenAll (locXlate, tsrLayout);
+
+			mShowingSearch = false;
 		}
 
 		async void HideSearchPanel()
 		{
+			if (!ViewModel.IsSearchPanelVisible || mHidingSearch)
+				return;
+
+			mHidingSearch = true;
+
 			// first, kill any existing animations
 			ViewExtensions.CancelAnimations (pnlLocations);
 			ViewExtensions.CancelAnimations (pnlTopSearchReveal);
@@ -267,6 +287,7 @@ namespace TownFish.App.Pages
 			await Task.WhenAll (locXlate, tsrLayout);
 
 			ViewModel.IsSearchPanelVisible = false;
+			mHidingSearch = false;
 		}
 
 		void ViewModel_MenusLoaded (object sender, string e)
@@ -332,6 +353,8 @@ namespace TownFish.App.Pages
 		const string cTermsUrl = "http://www.townfish.com/terms-of-use/";
 
 		bool mFirstShowing = true;
+		bool mShowingSearch;
+		bool mHidingSearch;
 
 		#endregion Fields
 	}

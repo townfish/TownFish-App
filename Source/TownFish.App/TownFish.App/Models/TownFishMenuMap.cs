@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace TownFish.App.Models
 {
@@ -16,19 +14,17 @@ namespace TownFish.App.Models
 
 		public List<AvailableLocation> AvailableLocations { get; set; }
 
-		public string ActiveLocation { get; set; }
-
 		public LocationIcons LocationIcons { get; set; }
 
 		public TownFishMenuList Menus { get; set; }
 
-		public bool displayStatsBar { get; set; }
+		public bool DisplayStatusBar { get; set; }
 
-		public string statusBarBackgroundColor { get; set; }
+		public string StatusBarBackgroundColor { get; set; }
 
-		public string statusBarTextColor { get; set; }
+		public string StatusBarTextColor { get; set; }
 
-		public AvailableLocation currentLocation { get; set; }
+		public AvailableLocation CurrentLocation { get; set; }
 
 		#endregion
 	}

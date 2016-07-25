@@ -11,15 +11,15 @@ namespace TownFish.App.Models
 	{		
 		#region Properties
 
-		public string id { get; set; }
+		public string ID { get; set; }
 
-		public string name { get; set; }
+		public string Name { get; set; }
 
-		public string url { get; set; }
+		public string Url { get; set; }
+
+		public bool Locked { get; set; }
 
 		public bool IsSelected { get; set; }
-
-		public bool IsLocked { get; set; }
 
 		public string LeftImage
 		{
@@ -28,6 +28,12 @@ namespace TownFish.App.Models
 		}
 
 		public string RightImage
+		{
+			get { return Get<string>(); }
+			set { Set (value); }
+		}
+
+		public string LockLocationIcon
 		{
 			get { return Get<string>(); }
 			set { Set (value); }
