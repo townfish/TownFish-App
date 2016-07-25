@@ -26,8 +26,6 @@ namespace TownFish.App.Models
 
 		public AvailableLocation CurrentLocation { get; set; }
 
-		public AvailableLocation currentLocation { get; set; }
-
 		#endregion
 	}
 
