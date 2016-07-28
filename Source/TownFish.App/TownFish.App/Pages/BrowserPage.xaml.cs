@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 using Xamarin.Forms;
 
 using TownFish.App.Models;
 using TownFish.App.ViewModels;
-using System.Threading.Tasks;
+
 
 namespace TownFish.App.Pages
 {
@@ -52,6 +54,10 @@ namespace TownFish.App.Pages
 				var pad = pnlTopMenuBar.Padding;
 				pad.Top += cTopPaddingiOS;
 				pnlTopMenuBar.Padding = pad;
+
+				pad = pnlTopForm.Padding;
+				pad.Top += cTopPaddingiOS;
+				pnlTopForm.Padding = pad;
 			}
 
 			btnLocation.Tapped += LocationTapped;
@@ -67,8 +73,6 @@ namespace TownFish.App.Pages
 
 		async void WebViewAction (string json)
 		{
-			System.Diagnostics.Debug.WriteLine (json);
-
 			string key = null;
 			string value = null;
 
@@ -79,11 +83,13 @@ namespace TownFish.App.Pages
 				key = model.Key;
 				value = model.Value;
 
+				Debug.WriteLine ("WebViewAction: Parsing {0}:\n{1}", key, value);
+
 				switch (key)
 				{
 					case cSchemaKey:
 						var schema = JsonConvert.DeserializeObject<TownFishMenuMap> (value);
-						ViewModel.LoadMenuMap (BrowserPageViewModel.cBaseUri, schema);
+						ViewModel.LoadMenuMap (schema);
 						break;
 
 					case cMenuKey:
@@ -106,7 +112,7 @@ namespace TownFish.App.Pages
 			catch (Exception e)
 			{
 				// TODO: parse failed, so use a default? go to offline page?
-				System.Diagnostics.Debug.WriteLine (e.Message);
+				Debug.WriteLine ("WebViewAction: Parse of:\n{0}\nfailed with error:\n{1}", json, e.Message);
 
 				// if it was the schema, just hide everything as it might contain rubbish
 				if (key == cSchemaKey)
@@ -149,8 +155,9 @@ namespace TownFish.App.Pages
 					var action = await DisplayActionSheet (cMoreActions, cCancel, null,
 							ViewModel.OverflowImages.Select (i => i.Value).ToArray<string>());
 
-					ViewModel.SourceUrl = ViewModel.OverflowImages.First (i =>
-							i.Value == action).Href + BrowserPageViewModel.cBaseUriParam;
+					var url = ViewModel.OverflowImages.FirstOrDefault (i => i.Value == action)?.Href;
+					if (!string.IsNullOrWhiteSpace (url))
+						ViewModel.SourceUrl = App.BaseUrl + action + App.BaseUrlParam;
 				});
 
 			ViewModel.CallbackRequested += (s, name) =>

@@ -16,7 +16,11 @@ namespace TownFish.App.ViewModels
 {
 	public class BrowserPageViewModel : ViewModelBase
 	{
-		#region Properties
+		#region Properties and Events
+
+		public event EventHandler<string> CallbackRequested;
+
+		public event EventHandler<string> MenusLoaded;
 
 		public string SourceUrl
 		{
@@ -35,6 +39,8 @@ namespace TownFish.App.ViewModels
 			get { return Get<bool>(); }
 			set { Set (value); }
 		}
+
+		#region Colours
 
 		public Color MenuBarBackgroundColour
 		{
@@ -107,6 +113,8 @@ namespace TownFish.App.ViewModels
 			get { return Get<Color> (() => Color.FromHex ("#989898")); }
 			set { Set (value); }
 		}
+
+		#endregion Colours
 
 		#region Bottom Bar
 
@@ -474,29 +482,11 @@ namespace TownFish.App.ViewModels
 
 		#endregion Locations
 
-		#endregion Properties
-
-		#region Events
-
-		public event EventHandler<string> CallbackRequested;
-
-		public event EventHandler<string> MenusLoaded;
-
-		#endregion
+		#endregion Properties and Events
 
 		#region Methods
 
-		void OnMenusLoaded()
-		{
-			MenusLoaded?.Invoke (this, "");
-		}
-
-		public void OnCallbackRequested(string callbackName)
-		{
-			CallbackRequested?.Invoke (this, callbackName);
-		}
-
-		public void LoadMenuMap (string baseUri, TownFishMenuMap map)
+		public void LoadMenuMap (TownFishMenuMap map)
 		{
 			mLocationApiFormat = map.LocationsAPI;
 			mLocationSetFormat = map.LocationSetUrl;
@@ -506,6 +496,8 @@ namespace TownFish.App.ViewModels
 			IsTopSubBarVisible = false;
 			IsTopFormBarVisible = false;
 			LeftActionIsLocationPin = false;
+
+			LocationName = "";
 
 			try
 			{
@@ -524,7 +516,7 @@ namespace TownFish.App.ViewModels
 				{
 					CurrentLocation = map.CurrentLocation;
 
-					InfoLocationIcon = cBaseUri + map.LocationIcons.Info
+					InfoLocationIcon = App.BaseUrl + map.LocationIcons.Info
 							.Replace ("{size}", locationMenuItem.Size)
 							.Replace ("{color}", locationMenuItem.Color);
 
@@ -533,7 +525,7 @@ namespace TownFish.App.ViewModels
 					{
 						loc.Colour = LocationsTextColour;
 
-						loc.LeftImage = cBaseUri + map.LocationIcons.Pin
+						loc.LeftImage = App.BaseUrl + map.LocationIcons.Pin
 							.Replace ("{size}", locationMenuItem.Size)
 							.Replace ("{color}", locationMenuItem.Color);
 
@@ -543,12 +535,12 @@ namespace TownFish.App.ViewModels
 							LocationName = loc.Name;
 
 							loc.IsSelected = true;
-							loc.RightImage = cBaseUri + map.LocationIcons.Tick
+							loc.RightImage = App.BaseUrl + map.LocationIcons.Tick
 									.Replace ("{size}", locationMenuItem.Size)
 									.Replace ("{color}", locationMenuItem.Color);
 						}
 
-						loc.LockLocationIcon = cBaseUri + map.LocationIcons.Lock
+						loc.LockLocationIcon = App.BaseUrl + map.LocationIcons.Lock
 								.Replace ("{size}", locationMenuItem.Size)
 								.Replace ("{color}", locationMenuItem.Color);
 
@@ -561,6 +553,16 @@ namespace TownFish.App.ViewModels
 			}
 
 			OnMenusLoaded();
+		}
+
+		void OnMenusLoaded()
+		{
+			MenusLoaded?.Invoke (this, "");
+		}
+
+		void OnCallbackRequested (string callbackName)
+		{
+			CallbackRequested?.Invoke (this, callbackName);
 		}
 
 		void LoadMenus (TownFishMenuList menus)
@@ -829,7 +831,7 @@ namespace TownFish.App.ViewModels
 				url = url.Replace("{size}", item.Size);
 				url = url.Replace("{color}", item.Color);
 
-				return cBaseUri + url;
+				return App.BaseUrl + url;
 			}
 			else if (item.Type == "heading")
 			{
@@ -847,7 +849,7 @@ namespace TownFish.App.ViewModels
 			{
 				case "link":
 					return new Command (_ =>
-						{ SourceUrl = cBaseUri + item.Href + cBaseUriParam; });
+						{ SourceUrl = App.BaseUrl + item.Href + App.BaseUrlParam + "#" + DateTime.Now.Ticks; });
 
 				case "callback":
 					return new Command (_ =>
@@ -855,7 +857,7 @@ namespace TownFish.App.ViewModels
 
 				case "back":
 					return new Command (_ =>
-						{ SourceUrl = cBaseUri + item.Href + cBaseUriParam; });
+						{ SourceUrl = App.BaseUrl + item.Href + App.BaseUrlParam; });
 
 				case "locationpin":
 					LeftActionIsLocationPin = true;
@@ -872,11 +874,11 @@ namespace TownFish.App.ViewModels
 			var viewModel = new BrowserPageViewModel
 			{
 				OverflowImages = new List<TownFishMenuItem>(),
-				SourceUrl = cBaseUri + cBaseUriParam
+				SourceUrl = App.BaseUrl + App.BaseUrlParam
 			};
 
 			if (map != null)
-				viewModel.LoadMenuMap (cBaseUri, map);
+				viewModel.LoadMenuMap (map);
 
 			return viewModel;
 		}
@@ -889,7 +891,7 @@ namespace TownFish.App.ViewModels
 			{
 				using (var client = new HttpClient())
 				{
-					var resultJson = await client.GetStringAsync(cBaseUri + mLocationApiFormat.Replace("{term}", searchTerm));
+					var resultJson = await client.GetStringAsync(App.BaseUrl + mLocationApiFormat.Replace("{term}", searchTerm));
 
 					if (!string.IsNullOrEmpty(resultJson))
 					{
@@ -911,21 +913,18 @@ namespace TownFish.App.ViewModels
 
 		public void SetLocation(string cityId)
 		{
-			SourceUrl = cBaseUri + mLocationSetFormat.Replace("{id}", cityId) + cBaseUriParam;
+			SourceUrl = App.BaseUrl + mLocationSetFormat.Replace("{id}", cityId) + App.BaseUrlParam;
 		}
 
-		#endregion
+		#endregion Methods
 
 		#region Fields
-
-		public const string cBaseUri = "http://dev.townfish.tk";
-		public const string cBaseUriParam = "?mode=app";
 
 		public static string sSearchTerm = "";
 
 		string mLocationApiFormat = "";
 		string mLocationSetFormat = "";
 
-		#endregion
+		#endregion Fields
 	}
 }

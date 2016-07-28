@@ -19,7 +19,7 @@ namespace TownFish.App
 			MainPage = new BrowserPage() { BindingContext = vm };
 		}
 
-		#endregion
+		#endregion Construction
 
 		#region Methods
 
@@ -48,19 +48,23 @@ namespace TownFish.App
 			AppCloseRequested?.Invoke (this, new EventArgs());
 		}
 
-		#endregion
+		#endregion Methods
 
-		#region Properties
+		#region Properties and Events
+
+		public event EventHandler BackButtonPressed;
+
+		public event EventHandler AppCloseRequested;
 
 		public static new App Current { get { return Application.Current as App; } }
 
-		#endregion Properties
+		#endregion Properties and Events
 
-		#region Events
+		#region Fields
 
-		public event EventHandler BackButtonPressed;
-		public event EventHandler AppCloseRequested;
+		public const string BaseUrl = "http://dev.townfish.tk";
+		public const string BaseUrlParam = "?mode=app";
 
-		#endregion
+		#endregion Fields
 	}
 }
