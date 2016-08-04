@@ -14,9 +14,9 @@ namespace TownFish.App
 		public App()
 		{
 			var vm = BrowserPageViewModel.Create (null);			
-			vm.SourceUrl = "http://dev.townfish.tk/?mode=app";
+			vm.SourceUrl = BaseUrl + cStartPath + BaseUrlParam;
 
-			MainPage = new BrowserPage() { BindingContext = vm };
+			MainPage = new BrowserPage { BindingContext = vm };
 		}
 
 		#endregion Construction
@@ -62,7 +62,10 @@ namespace TownFish.App
 
 		#region Fields
 
-		public const string BaseUrl = "http://dev.townfish.tk";
+		// HACK: This should not be necessary!
+		const string cStartPath = ""; //"discussions";
+
+		public const string BaseUrl = "http://dev.townfish.com/";
 		public const string BaseUrlParam = "?mode=app";
 
 		#endregion Fields
