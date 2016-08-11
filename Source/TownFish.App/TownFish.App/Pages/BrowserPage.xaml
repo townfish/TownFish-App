@@ -24,7 +24,7 @@
 		</ResourceDictionary>
 	</ContentPage.Resources>
 
-	<Grid x:Name="rootGrid" RowSpacing="0" ColumnSpacing="0" BackgroundColor="#484848">
+	<Grid x:Name="rootGrid" RowSpacing="0" BackgroundColor="#484848">
 		<Grid.RowDefinitions>
 			<RowDefinition Height="auto" />
 			<RowDefinition Height="auto" />
@@ -32,21 +32,14 @@
 			<RowDefinition Height="auto"/>
 		</Grid.RowDefinitions>
 
-		<!-- Placeholder to provide dimensions for pnlLocations, below,
-				since it starts invisible (so it has no dimensions itself) -->
-		<Grid x:Name="pnlLocationsPlaceholder" Grid.Row="1" Grid.RowSpan="3"
-			  HorizontalOptions="Start" WidthRequest="420"/>
-
 		<!-- WebView -->
 		<xamify:UberWebView x:Name="wbvContent" Grid.Row="2"
 							Source="{Binding SourceUrl}"
 							VerticalOptions="Fill" HorizontalOptions="Fill" />
 
 		<!-- Top bar Sub -->
-		<Grid Grid.Row="1"
+		<Grid Grid.Row="1" Padding="10,6" ColumnSpacing="0"
 			  BackgroundColor="{Binding SubMenuBackgroundColour}"
-			  ColumnSpacing="0"
-			  Padding="12, 6"
 			  IsVisible="{Binding IsTopSubBarVisible}">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="1*" />
@@ -76,17 +69,18 @@
 					<TapGestureRecognizer Command="{Binding TopAction4Command}"/>
 				</Label.GestureRecognizers>
 			</Label>
-			<Grid Grid.Column="4">
-				<Image Source="{Binding TopActionMoreLabel}"  HorizontalOptions="End" WidthRequest="24" HeightRequest="24">
-					<Image.GestureRecognizers>
-						<TapGestureRecognizer Command="{Binding TopActionMoreCommand}"/>
-					</Image.GestureRecognizers>
-				</Image>
-			</Grid>
+			<Image Grid.Column="4" Source="{Binding TopActionMoreLabel}"
+				   HorizontalOptions="End" WidthRequest="18">
+				<Image.GestureRecognizers>
+					<TapGestureRecognizer Command="{Binding TopActionMoreCommand}"/>
+				</Image.GestureRecognizers>
+			</Image>
 		</Grid>
 
 		<!-- Bottom Menu Bar -->
-		<Grid Grid.Row="3" BackgroundColor="{Binding BottomMenuBackgroundColour}" Padding="10" IsVisible="{Binding IsBottomBarVisible}">
+		<Grid Grid.Row="3" Padding="10,6"
+			  BackgroundColor="{Binding BottomMenuBackgroundColour}"
+			  IsVisible="{Binding IsBottomBarVisible}">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="*" />
@@ -134,8 +128,7 @@
 
 		<!-- Locations Panel
 			 Note: TranslationY of -10000 ensures it's off-screen to start with -->
-		<Grid x:Name="pnlLocations" Grid.Row="1" Grid.RowSpan="3"
-			  Grid.RowSpacing="0" Grid.ColumnSpacing="0"
+		<Grid x:Name="pnlLocations" Grid.Row="1" Grid.RowSpan="3" Grid.RowSpacing="0"
 			  TranslationY="-10000"
 			  HorizontalOptions="Start" WidthRequest="420"
 			  BackgroundColor="{Binding LocationsBackgroundColour}">
@@ -153,29 +146,31 @@
 			</Grid>
 			<ListView x:Name="lstAvailableLocations" Grid.Row="1"
 					  BackgroundColor="{Binding LocationsBackgroundColour}"
-					  SeparatorVisibility="None"
-					  HasUnevenRows="True"
+					  HasUnevenRows="False" SeparatorVisibility="None"
 					  ItemsSource="{Binding AvailableLocations}">
 				<ListView.ItemTemplate>
 					<DataTemplate>
-						<ViewCell >
-							<StackLayout Orientation="Vertical">
-								<Grid VerticalOptions="Start" Padding="20,10" RowSpacing="0">
+						<ViewCell>
+							<StackLayout Orientation="Vertical" Spacing="0">
+								<Grid VerticalOptions="Center" Padding="20,12"
+									  ColumnSpacing="0" HeightRequest="24">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="auto" />
-										<ColumnDefinition Width="6" />
+										<ColumnDefinition Width="12" />
 										<ColumnDefinition Width="*" />
 										<ColumnDefinition Width="auto" />
 										<ColumnDefinition Width="auto" />
 									</Grid.ColumnDefinitions>
 
-									<Image Source="{Binding LeftImage}" HeightRequest="18" />
+									<Image Source="{Binding LeftImage}"
+										   HorizontalOptions="Center" WidthRequest="18" />
 									<Label Grid.Column="2" VerticalOptions="Center" Text="{Binding Name}"
 										   TextColor="{Binding Colour}" />
-									<Image Source="{Binding RightImage}" Grid.Column="3" HeightRequest="12"/>
-									<Grid Padding="6,0,0,0" IsVisible="{Binding Locked}" Grid.Column="4"
-										  HorizontalOptions="Start" HeightRequest="18">
-										<Image Source="{Binding LockLocationIcon}" HeightRequest="18" />
+									<Image Grid.Column="3" Source="{Binding RightImage}"
+										   HorizontalOptions="Center" WidthRequest="18" />
+									<Grid Grid.Column="4" Padding="6,0,0,0" IsVisible="{Binding Locked}">
+										<Image Source="{Binding LockLocationIcon}"
+											   HorizontalOptions="Center" WidthRequest="18"/>
 									</Grid>
 								</Grid>
 								<BoxView Color="Black" HeightRequest="1"/>
@@ -185,8 +180,8 @@
 				</ListView.ItemTemplate>
 			</ListView>
 
-			<Grid Grid.Row="2" Padding="20,6" >
-				<Grid.ColumnDefinitions>
+			<Grid Grid.Row="2" Padding="20,6">
+				<!--<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="auto" />
 					<ColumnDefinition Width="6" />
 					<ColumnDefinition Width="*" />
@@ -194,8 +189,8 @@
 
 				<Grid Padding="0,4" VerticalOptions="Start">
 					<Image Source="{Binding InfoLocationIcon}" />
-				</Grid>
-				<Label TextColor="{Binding LocationsTextColour}" FontSize="12" Grid.Column="2"
+				</Grid>-->
+				<Label TextColor="{Binding LocationsTextColour}" FontSize="12"
 					   Text="Your account is connected with the above locations allowing you to post news, events, and information that's relevant to these feeds." />
 			</Grid>
 			<Grid Grid.Row="3" Padding="20,6" >
@@ -211,7 +206,7 @@
 					</Label.GestureRecognizers>
 				</Label>
 			</Grid>
-			<Grid Grid.Row="4" Padding="20,6" >
+			<Grid Grid.Row="4" Padding="20,6,20,20" >
 				<Label TextColor="{Binding LocationsTextColour}" FontSize="12"
 					   Text="Note: if you change your account location you will no longer be associated with these locations or have permission to post in their newsfeeds." />
 			</Grid>
@@ -220,18 +215,19 @@
 		<!-- Location Search Results Panel -->
 		<Grid x:Name="pnlLocationsSearchResults"
 			  IsVisible="{Binding SearchLocationHasResults}"
-			  Grid.RowSpacing="0" Grid.ColumnSpacing="0"
 			  WidthRequest="420" HorizontalOptions="Start"
 			  HeightRequest="400" VerticalOptions="Start"
 			  Grid.RowSpan="3" Grid.Row="1">
-			<Frame Padding="2,0,2,2" BackgroundColor="{Binding BottomMenuBackgroundColour}">
+			<Grid Padding="2,0,2,2" BackgroundColor="{Binding BottomMenuBackgroundColour}">
 				<ListView x:Name="lstLocationSearchResults"
-						  BackgroundColor="{Binding MenuBarTextColour}" SeparatorColor="{Binding BottomMenuBackgroundColour}" HasUnevenRows="True" SeparatorVisibility="None"
+						  BackgroundColor="{Binding MenuBarTextColour}"
+						  SeparatorColor="{Binding BottomMenuBackgroundColour}"
+						  HasUnevenRows="False" SeparatorVisibility="None"
 						  ItemsSource="{Binding LocationSearchItems}">
 					<ListView.ItemTemplate>
 						<DataTemplate>
 							<ViewCell>
-								<StackLayout Orientation="Vertical">
+								<StackLayout Orientation="Vertical" Spacing="0">
 									<Grid Padding="10,10,10,6">
 										<Label FormattedText="{Binding LocationFormat, Converter={StaticResource searchCon}, ConverterParameter='lon'}"
 											   VerticalOptions="Center"
@@ -243,139 +239,135 @@
 						</DataTemplate>
 					</ListView.ItemTemplate>
 				</ListView>
-			</Frame>
+				<Label HorizontalOptions="Center" Margin="0,20"
+					   IsVisible="{Binding SearchLocationHasNoItems}"
+					   TextColor="{Binding LocationsSearchResultsTextColour}"
+					   Text="No matching locations found" />
+			</Grid>
 		</Grid>
 
-		<!-- Top Menu Bar -->
-		<Grid x:Name="pnlTopMenuBar"
+		<!-- Top Menu Bar
+			 this goes *after* locations panel to cover the ingress and egress of same -->
+		<Grid x:Name="pnlTopMenuBar" ColumnSpacing="0"
 			  IsVisible="{Binding IsTopBarVisible}"
 			  BackgroundColor="{Binding MenuBarBackgroundColour}"
-			  Padding="10, 2"
-			  VerticalOptions="Start"
-			  HeightRequest="38">
+			  HeightRequest="26" Padding="0,4,10,4" VerticalOptions="Start">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="auto" />
 				<ColumnDefinition Width="auto" />
 				<ColumnDefinition />
 				<ColumnDefinition Width="auto"/>
-				<ColumnDefinition Width="10" />
 				<ColumnDefinition Width="auto"/>
 			</Grid.ColumnDefinitions>
 
-			<!-- Placeholder to provide dimensions for pnlTopSearchReveal, below,
-				 since it starts invisible (so it has no dimensions itself) -->
-			<Grid x:Name="pnlTopSearchPlaceholder" Grid.Column="1" Grid.ColumnSpan="3" />
+			<Grid Grid.Column="1" Padding="10,0,0,0">
+				<Label VerticalOptions="Center" FontSize="16" FontAttributes="Bold"
+					   TextColor="{Binding MenuBarTextColour}" Text="{Binding LocationName}" >
+					<Label.GestureRecognizers>
+						<TapGestureRecognizer x:Name="gstLocationLabel" Command="{Binding TopBarLeftCommand}"/>
+					</Label.GestureRecognizers>
+				</Label>
+			</Grid>
+			<Label Grid.Column="2" VerticalOptions="Center" HorizontalOptions="Center"
+				   FontSize="16" FontAttributes="Bold"
+				   TextColor="{Binding MenuBarTextColour}" Text="{Binding PageTitle}" />
+			<Grid Grid.Column="3" Padding="0,0,10,0">
+				<Image Source="{Binding TopBarRightLabel}"
+					   HorizontalOptions="Center" WidthRequest="18">
+					<Image.GestureRecognizers>
+						<TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
+					</Image.GestureRecognizers>
+				</Image>
+			</Grid>
+			<Grid Grid.Column="4" Padding="10,0,0,0">
+				<Image Source="{Binding TopBarRight1Label}"
+					   HorizontalOptions="Center" WidthRequest="18">
+					<Image.GestureRecognizers>
+						<TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
+					</Image.GestureRecognizers>
+				</Image>
+			</Grid>
 
-			<Image Source="{Binding TopBarLeftLabel}" Grid.Column="0"
-				   HorizontalOptions="Center" HeightRequest="24">
-				<Image.GestureRecognizers>
-					<TapGestureRecognizer x:Name="btnLocation" Command="{Binding TopBarLeftCommand}"/>
-				</Image.GestureRecognizers>
-			</Image>
-			<Label Grid.Column="1" VerticalOptions="Center" FontSize="16" FontAttributes="Bold"
-				   TextColor="{Binding MenuBarTextColour}" Text="{Binding LocationName}" >
-				<Label.GestureRecognizers>
-					<TapGestureRecognizer x:Name="gstLocation" Command="{Binding TopBarLeftCommand}"/>
-				</Label.GestureRecognizers>
-			</Label>
-			<Label VerticalOptions="Center"
-				   HorizontalOptions="Center"
-				   TextColor="{Binding MenuBarTextColour}"
-				   FontSize="16"
-				   FontAttributes="Bold"
-				   Grid.Column="2"
-				   Text="{Binding PageTitle}" />
-			<Image Source="{Binding TopBarRightLabel}" Grid.Column="3"
-				   HorizontalOptions="Center" HeightRequest="24">
-				<Image.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
-				</Image.GestureRecognizers>
-			</Image>
-			<Image Source="{Binding TopBarRight1Label}" Grid.Column="5"
-				   HorizontalOptions="Center" HeightRequest="24">
-				<Image.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
-				</Image.GestureRecognizers>
-			</Image>
+			<!-- Top search panel (overlays top menu bar)
+				 Note: TranslationX of -10000 ensures it's off-screen to start with -->
+			<Frame x:Name="pnlTopSearch" Grid.Column="1" Grid.ColumnSpan="3"
+				   TranslationX="-10000"
+				   BackgroundColor="{Binding LocationsContrastBackgroundColour}"
+				   OutlineColor="{Binding LocationsContrastBackgroundColour}"
+				   Padding="1" HasShadow="False">
+				<Grid ColumnSpacing="0"
+					  BackgroundColor="{Binding LocationsContrastBackgroundColour}">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="auto" />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="auto"/>
+					</Grid.ColumnDefinitions>
 
-			<!-- Top search panel (overlays top menu bar) -->
-			<Grid x:Name="pnlTopSearchReveal" Grid.Column="1" Grid.ColumnSpan="3"
-				  BackgroundColor="{Binding MenuBarBackgroundColour}"
-				  HorizontalOptions="Start" Padding="10,6"
-				  IsVisible="{Binding IsSearchPanelVisible}">
-				<Frame x:Name="pnlTopSearch"
-						BackgroundColor="{Binding LocationsContrastBackgroundColour}"
-						OutlineColor="{Binding LocationsContrastBackgroundColour}"
-						Padding="1" HasShadow="False">
-					<Grid ColumnSpacing="5"
-							BackgroundColor="{Binding LocationsContrastBackgroundColour}">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="auto" />
-							<ColumnDefinition Width="*" />
-							<ColumnDefinition Width="auto"/>
-						</Grid.ColumnDefinitions>
-
-						<Grid Padding="8,4,4,4">
-							<Image Source="{Binding TopBarRightLabel}"
-									HeightRequest="16" VerticalOptions="Center" />
-						</Grid>
-						<Entry x:Name="inpSearch" Grid.Column="1"
-								Placeholder="Location e.g. Camden or NW1"
-								VerticalOptions="Center" FontSize="12"
-								HeightRequest="40"
-								HorizontalOptions="Fill"
-								BackgroundColor="{Binding LocationsContrastBackgroundColour}"
-								TextColor="{Binding LocationsSearchInputTextColour}"
-								Text="{Binding SearchTerm}" />
-						<Grid Padding="8,4,8,4" Grid.Column="2" IsVisible="{Binding SearchHasContent}">
-							<Image Source="close.png" HeightRequest="25" VerticalOptions="Center">
-								<Image.GestureRecognizers>
-									<TapGestureRecognizer Command="{Binding CancelSearchCommand}" />
-								</Image.GestureRecognizers>
-							</Image>
-						</Grid>
+					<Grid Grid.Column="0" Padding="8,4">
+						<Image Source="{Binding TopBarRightLabel}"
+								VerticalOptions="Center" WidthRequest="16" />
 					</Grid>
-				</Frame>
+					<Entry x:Name="ebxSearch" Grid.Column="1"
+							Placeholder="Location e.g. Camden or NW1"
+							HorizontalOptions="Fill" VerticalOptions="Center"
+							BackgroundColor="{Binding LocationsContrastBackgroundColour}"
+							TextColor="{Binding LocationsSearchInputTextColour}"
+							FontSize="13" Text="{Binding SearchTerm}" />
+					<Grid Grid.Column="2" Padding="8,4" IsVisible="{Binding SearchHasContent}">
+						<Image Source="close.png"
+								VerticalOptions="Center" WidthRequest="16">
+							<Image.GestureRecognizers>
+								<TapGestureRecognizer Command="{Binding CancelSearchCommand}" />
+							</Image.GestureRecognizers>
+						</Image>
+					</Grid>
+				</Grid>
+			</Frame>
+
+			<!-- this goes here to cover ingress and egress of search panel -->
+			<Grid Grid.Column="0" Padding="10,0" BackgroundColor="{Binding MenuBarBackgroundColour}">
+				<Image Source="{Binding TopBarLeftLabel}" HorizontalOptions="Center" WidthRequest="18">
+					<Image.GestureRecognizers>
+						<TapGestureRecognizer x:Name="gstLocationImage" Command="{Binding TopBarLeftCommand}"/>
+					</Image.GestureRecognizers>
+				</Image>
 			</Grid>
 		</Grid>
 
 		<!-- Top form -->
 		<Grid x:Name="pnlTopForm"
-			  RowSpacing="0"
 			  IsVisible="{Binding IsTopFormBarVisible}"
-			  Padding="6,2"
-			  HeightRequest="38"
-			  VerticalOptions="Start"
-			  BackgroundColor="{Binding MenuBarBackgroundColour}">
+			  BackgroundColor="{Binding MenuBarBackgroundColour}"
+			  HeightRequest="26" Padding="10,4" VerticalOptions="Start">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="auto" />
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="auto" />
 			</Grid.ColumnDefinitions>
 
-			<Button Command="{Binding TopFormLeftAction}"
-					Grid.Column="0"
-					HorizontalOptions="Start"
-					TextColor="{Binding MenuBarTextColour}"
-					Text="{Binding TopFormLeftActionLabel}"
-					FontSize="16"
-					BackgroundColor="{Binding MenuBarBackgroundColour}">
-			</Button>
-			<Label Text="{Binding PageTitle}"
-				   VerticalOptions="Center"
-				   HorizontalOptions="Center"
-				   FontSize="16"
-				   FontAttributes="Bold"
+			<Label Grid.Column="0" Margin="0,0"
+				   HorizontalOptions="Start" VerticalOptions="Center"
 				   TextColor="{Binding MenuBarTextColour}"
-				   Grid.Column="1" />
-			<Button Command="{Binding TopFormRightAction}"
-					Grid.Column="2"
-					HorizontalOptions="End"
-					TextColor="{Binding MenuBarTextColour}"
-					Text="{Binding TopFormRightActionLabel}"
-					FontSize="16"
-					BackgroundColor="{Binding MenuBarBackgroundColour}">
-			</Button>
+				   Text="{Binding TopFormLeftActionLabel}"
+				   FontSize="16">
+				<Label.GestureRecognizers>
+					<TapGestureRecognizer Command="{Binding TopFormLeftAction}" />
+				</Label.GestureRecognizers>
+			</Label>
+			<Label Grid.Column="1"
+				   VerticalOptions="Center" HorizontalOptions="Center"
+				   TextColor="{Binding MenuBarTextColour}"
+				   Text="{Binding PageTitle}"
+				   FontSize="16" FontAttributes="Bold" />
+			<Label Grid.Column="2" Margin="0,0"
+				   HorizontalOptions="End" VerticalOptions="Center"
+				   TextColor="{Binding MenuBarTextColour}"
+				   Text="{Binding TopFormRightActionLabel}"
+				   FontSize="16">
+				<Label.GestureRecognizers>
+					<TapGestureRecognizer Command="{Binding TopFormRightAction}" />
+				</Label.GestureRecognizers>
+			</Label>
 		</Grid>
 
 		<!-- Loading Panel -->

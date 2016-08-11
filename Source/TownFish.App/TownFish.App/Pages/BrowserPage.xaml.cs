@@ -60,8 +60,8 @@ namespace TownFish.App.Pages
 				pnlTopForm.Padding = pad;
 			}
 
-			btnLocation.Tapped += LocationTapped;
-			gstLocation.Tapped += LocationTapped;
+			gstLocationImage.Tapped += LocationTapped;
+			gstLocationLabel.Tapped += LocationTapped;
 
 			// continue initialisation below once caller has set binding context
 			BindingContextChanged += BrowserPage_BindingContextChanged;
@@ -99,7 +99,7 @@ namespace TownFish.App.Pages
 										menu.Select (i => i.Value).ToArray());
 
 						var selectedItem = menu.FirstOrDefault (i => i.Value == action);
-						if (selectedItem.Type == cCallbackType)
+						if (selectedItem?.Type == cCallbackType)
 							OnCallback (selectedItem.Name);
 
 						break;
@@ -125,16 +125,11 @@ namespace TownFish.App.Pages
 			}
 		}
 
-		void WebView_Navigated (object sender, EventArgs e)
-		{
-			// don't reveal page until menu has been rendered, to avoid the 'jump' down problem
-			//await pnlLoading.FadeTo (0);
-			//ViewModel.IsLoading = false;
-		}
-
 		void WebView_Navigating (object sender, EventArgs e)
 		{
-			if (ViewModel.IsLoading == false)
+			mNavigating = true;
+
+			if (!ViewModel.IsLoading)
 			{
 				ViewModel.IsLoading = true;
 
@@ -144,10 +139,22 @@ namespace TownFish.App.Pages
 			}
 		}
 
+		void WebView_Navigated (object sender, EventArgs e)
+		{
+			mNavigating = false;
+
+			// don't reveal page until menu has been rendered, to avoid the 'jump' down problem
+			//await pnlLoading.FadeTo (0);
+			//ViewModel.IsLoading = false;
+		}
+
 		void BrowserPage_BindingContextChanged (object sender, EventArgs e)
 		{
 			if (ViewModel == null)
 				return;
+
+			// manually set this as span isn't bindable
+			spnMemberAgreementLink.ForegroundColor = ViewModel.LocationsLinkColour;
 
 			// Because we use DisplayActionSheet
 			ViewModel.TopActionMoreCommand = new Command (async _ =>
@@ -165,8 +172,8 @@ namespace TownFish.App.Pages
 
 			ViewModel.MenusLoaded += ViewModel_MenusLoaded;
 
-			inpSearch.TextChanged += inpSearch_TextChanged;
-			inpSearch.Completed += inpSearch_Completed;
+			ebxSearch.TextChanged += ebxSearch_TextChanged;
+			ebxSearch.Completed += ebxSearch_Completed;
 			lstLocationSearchResults.ItemTapped += lstLocationSearchResults_ItemTapped;
 			lstAvailableLocations.ItemTapped += lstAvailableLocations_ItemTapped;
 		}
@@ -178,21 +185,20 @@ namespace TownFish.App.Pages
 			ViewModel.SetLocation ((e.Item as AvailableLocation).ID);
 		}
 
-		void inpSearch_Completed (object sender, EventArgs e)
+		void ebxSearch_Completed (object sender, EventArgs e)
 		{
-			if (inpSearch.Text.Length > 2)
-				ViewModel.UpdateLocationList(inpSearch.Text);
+			if (ebxSearch.Text.Length > 2)
+				ViewModel.UpdateLocationList(ebxSearch.Text);
 		}
 
 		void lstLocationSearchResults_ItemTapped (object sender, ItemTappedEventArgs e)
 		{
 			HideSearchPanel();
 
-			ViewModel.SearchLocationHasResults = false;
 			ViewModel.SetLocation ((e.Item as TownfishLocationItem).CityID);
 		}
 
-		void inpSearch_TextChanged (object sender, TextChangedEventArgs e)
+		void ebxSearch_TextChanged (object sender, TextChangedEventArgs e)
 		{
 			if (e.NewTextValue.Length > 0)
 				ViewModel.SearchHasContent = true;
@@ -205,7 +211,7 @@ namespace TownFish.App.Pages
 
 		void BrowserPage_BackButtonPressed (object sender, EventArgs e)
 		{
-			if (ViewModel.IsSearchPanelVisible || mShowingSearch)
+			if (mIsSearchVisible || mShowingSearch)
 				HideSearchPanel();
 			else if (wbvContent.CanGoBack)
 				wbvContent.GoBack();
@@ -224,7 +230,7 @@ namespace TownFish.App.Pages
 		{
 			if (ViewModel.LeftActionIsLocationPin)
 			{
-				if (!ViewModel.IsSearchPanelVisible && !mShowingSearch)
+				if (!mIsSearchVisible && !mShowingSearch)
 					ShowSearchPanel();
 				else
 					HideSearchPanel();
@@ -235,65 +241,65 @@ namespace TownFish.App.Pages
 		{
 			HideSearchPanel();
 
-			wbvContent.InvokeJS (string.Format (cCallbackFormat, name.ToLower()));
+			Device.BeginInvokeOnMainThread (() =>
+				wbvContent.InvokeJS (string.Format (cCallbackFormat, name.ToLower())));
 		}
 
 		async void ShowSearchPanel()
 		{
-			if (ViewModel.IsSearchPanelVisible || mShowingSearch)
+			if (mIsSearchVisible || mShowingSearch)
 				return;
 
 			mShowingSearch = true;
 
 			// first, kill any existing animations
 			ViewExtensions.CancelAnimations (pnlLocations);
-			ViewExtensions.CancelAnimations (pnlTopSearchReveal);
+			ViewExtensions.CancelAnimations (pnlTopSearch);
 
-			var tsp = pnlTopSearchPlaceholder;
-
-			// first time through we need to put panels in their initial (concealed) positions
+			// first time through we need to put panels in their initial positions
 			if (mFirstShowing)
 			{
 				mFirstShowing = false;
 
-				pnlLocations.TranslationY = -pnlLocationsPlaceholder.Height;
+				pnlLocations.TranslationY = -pnlLocations.Height;
+				pnlTopSearch.TranslationX = -pnlTopSearch.Width;
 
-				var tspRC = new Rectangle (tsp.X, tsp.Y, 0, tsp.Height);
-				await pnlTopSearchReveal.LayoutTo (tspRC, 0);
-
-				// now we have them properly concealed, we can reveal all below!
+				// now we have them properly positioned, we can reveal all below!
 			}
 
-			ViewModel.IsSearchPanelVisible = true;
+			mIsSearchVisible = true;
 
 			var locXlate = pnlLocations.TranslateTo (0, 0, cLocationPanelAnimationTime, Easing.CubicInOut);
-			var tsrLayout = pnlTopSearchReveal.LayoutTo (tsp.Bounds, cLocationPanelAnimationTime, Easing.CubicInOut);
+			var tsXlate = pnlTopSearch.TranslateTo (0, 0, cLocationPanelAnimationTime, Easing.CubicInOut);
 
-			await Task.WhenAll (locXlate, tsrLayout);
+			await Task.WhenAll (locXlate, tsXlate);
 
 			mShowingSearch = false;
 		}
 
 		async void HideSearchPanel()
 		{
-			if (!ViewModel.IsSearchPanelVisible || mHidingSearch)
+			if (ViewModel.SearchLocationHasResults)
+			{
+				ViewModel.CancelLocationSearch();
+				return;
+			}
+
+			if (!mIsSearchVisible || mHidingSearch)
 				return;
 
 			mHidingSearch = true;
 
 			// first, kill any existing animations
 			ViewExtensions.CancelAnimations (pnlLocations);
-			ViewExtensions.CancelAnimations (pnlTopSearchReveal);
+			ViewExtensions.CancelAnimations (pnlTopSearch);
 
-			var tsp = pnlTopSearchPlaceholder;
-			var tspRC = new Rectangle (tsp.X, tsp.Y, 0, tsp.Height);
+			var locXlate = pnlLocations.TranslateTo (0, -pnlLocations.Height, cLocationPanelAnimationTime, Easing.CubicInOut);
+			var tsXlate = pnlTopSearch.TranslateTo (-pnlTopSearch.Width, 0, cLocationPanelAnimationTime, Easing.CubicInOut);
 
-			var locXlate = pnlLocations.TranslateTo (0, -pnlLocationsPlaceholder.Height, cLocationPanelAnimationTime, Easing.CubicInOut);
-			var tsrLayout = pnlTopSearchReveal.LayoutTo (tspRC, cLocationPanelAnimationTime, Easing.CubicInOut);
+			await Task.WhenAll (locXlate, tsXlate);
 
-			await Task.WhenAll (locXlate, tsrLayout);
-
-			ViewModel.IsSearchPanelVisible = false;
+			mIsSearchVisible = false;
 			mHidingSearch = false;
 		}
 
@@ -303,9 +309,6 @@ namespace TownFish.App.Pages
 			{
 				Device.BeginInvokeOnMainThread (async () =>
 					{
-						// manually set this as span isn't bindable
-						spnMemberAgreementLink.ForegroundColor = ViewModel.LocationsLinkColour;
-
 						await pnlLoading.FadeTo(0);
 						ViewModel.IsLoading = false;
 					});
@@ -359,7 +362,9 @@ namespace TownFish.App.Pages
 
 		const string cTermsUrl = "http://www.townfish.com/terms-of-use/";
 
+		bool mNavigating;
 		bool mFirstShowing = true;
+		bool mIsSearchVisible;
 		bool mShowingSearch;
 		bool mHidingSearch;
 

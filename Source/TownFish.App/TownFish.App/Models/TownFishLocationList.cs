@@ -8,7 +8,7 @@ namespace TownFish.App.Models
 {
 	public class TownFishLocationList
 	{
-		public List<TownfishLocationItem> items { get; set; }
+		public List<TownfishLocationItem> Items { get; set; }
 	}
 
 	public class TownfishLocationItem

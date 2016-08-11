@@ -419,32 +419,28 @@ namespace TownFish.App.ViewModels
 		public ObservableCollection<TownfishLocationItem> LocationSearchItems
 		{
 			get { return Get<ObservableCollection<TownfishLocationItem>>(); }
-			set { Set (value); }
-		}
 
-		public bool IsSearchPanelVisible
-		{
-			get { return Get<bool>(); }
-			set { Set (value); }
+			set
+			{
+				// if collection changes, we may or may not have any items in the new one
+				if (Set (value))
+					OnPropertyChanged (() => SearchLocationHasNoItems);
+			}
 		}
 
 		public bool SearchLocationHasResults
 		{
-			get { return Get<bool>(); }
+			get { return Get<bool> () && !string.IsNullOrWhiteSpace (SearchTerm) && SearchTerm.Length > 2; }
 			set { Set (value); }
 		}
 
-		public ICommand CancelSearchCommand
+		public bool SearchLocationHasNoItems
 		{
-			get
-			{
-				return new Command (_ =>
-					{
-						SearchLocationHasResults = false;
-						SearchTerm = "";
-					});
-			}
+			get { return LocationSearchItems?.Count == 0; }
 		}
+
+		public ICommand CancelSearchCommand
+			{ get { return new Command (_ => CancelLocationSearch()); } }
 
 		public bool SearchHasContent
 		{
@@ -455,7 +451,13 @@ namespace TownFish.App.ViewModels
 		public string SearchTerm
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+
+			set
+			{
+				// if text changes, we may want to hide search results
+				if (Set (value))
+					OnPropertyChanged (() => SearchLocationHasResults);
+			}
 		}
 
 		#endregion Search
@@ -486,6 +488,54 @@ namespace TownFish.App.ViewModels
 
 		#region Methods
 
+		public static BrowserPageViewModel Create (TownFishMenuMap map)
+		{
+			var viewModel = new BrowserPageViewModel
+			{
+				OverflowImages = new List<TownFishMenuItem>(),
+				SourceUrl = App.BaseUrl + App.BaseUrlParam
+			};
+
+			if (map != null)
+				viewModel.LoadMenuMap (map);
+
+			return viewModel;
+		}
+
+		public async void UpdateLocationList (string searchTerm)
+		{
+			sSearchTerm = searchTerm;
+
+			try
+			{
+				using (var client = new HttpClient())
+				{
+					var resultJson = await client.GetStringAsync (
+							App.BaseUrl + mLocationApiFormat.Replace ("{term}", searchTerm));
+
+					if (!string.IsNullOrEmpty (resultJson))
+					{
+						var model = JsonConvert.DeserializeObject<TownFishLocationList> (resultJson);
+						if (model?.Items != null)
+						{
+							LocationSearchItems = new ObservableCollection<TownfishLocationItem> (model.Items);
+							SearchLocationHasResults = true;
+						}
+					}
+				}
+			}
+			catch (Exception)
+			{
+				// TODO Alert the user of this crap up the wall
+				CancelLocationSearch();
+			}
+		}
+
+		public void SetLocation (string cityId)
+		{
+			SourceUrl = App.BaseUrl + mLocationSetFormat.Replace("{id}", cityId) + App.BaseUrlParam;
+		}
+
 		public void LoadMenuMap (TownFishMenuMap map)
 		{
 			mLocationApiFormat = map.LocationsAPI;
@@ -514,11 +564,14 @@ namespace TownFish.App.ViewModels
 				var locationMenuItem = map.Menus.Top.items.FirstOrDefault (i => i.Type == "locationpin");
 				if (locationMenuItem != null)
 				{
+					var size = "mdpi"; // HACK: force sizes for now; should be locationMenuItem.Size;
+					var colour = locationMenuItem.Color;
+
 					CurrentLocation = map.CurrentLocation;
 
 					InfoLocationIcon = App.BaseUrl + map.LocationIcons.Info
-							.Replace ("{size}", locationMenuItem.Size)
-							.Replace ("{color}", locationMenuItem.Color);
+							.Replace ("{size}", size)
+							.Replace ("{color}", colour);
 
 					var locs = new List<AvailableLocation>();
 					foreach (var loc in map.AvailableLocations)
@@ -526,8 +579,8 @@ namespace TownFish.App.ViewModels
 						loc.Colour = LocationsTextColour;
 
 						loc.LeftImage = App.BaseUrl + map.LocationIcons.Pin
-							.Replace ("{size}", locationMenuItem.Size)
-							.Replace ("{color}", locationMenuItem.Color);
+							.Replace ("{size}", size)
+							.Replace ("{color}", colour);
 
 						if (loc.ID == CurrentLocation.ID)
 						{
@@ -536,13 +589,13 @@ namespace TownFish.App.ViewModels
 
 							loc.IsSelected = true;
 							loc.RightImage = App.BaseUrl + map.LocationIcons.Tick
-									.Replace ("{size}", locationMenuItem.Size)
-									.Replace ("{color}", locationMenuItem.Color);
+									.Replace ("{size}", size)
+									.Replace ("{color}", colour);
 						}
 
 						loc.LockLocationIcon = App.BaseUrl + map.LocationIcons.Lock
-								.Replace ("{size}", locationMenuItem.Size)
-								.Replace ("{color}", locationMenuItem.Color);
+								.Replace ("{size}", size)
+								.Replace ("{color}", colour);
 
 						locs.Add (loc);
 					}
@@ -553,6 +606,12 @@ namespace TownFish.App.ViewModels
 			}
 
 			OnMenusLoaded();
+		}
+
+		public void CancelLocationSearch()
+		{
+			SearchLocationHasResults = false;
+			SearchTerm = "";
 		}
 
 		void OnMenusLoaded()
@@ -822,13 +881,13 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		string GenerateLabel(TownFishMenuItem item)
+		string GenerateLabel (TownFishMenuItem item)
 		{
 			if (item.Kind == "icon")
 			{
 				var url = item.IconUrl;
 
-				url = url.Replace("{size}", item.Size);
+				url = url.Replace("{size}", "hdpi"); // HACK: force sizes for now; should be item.Size);
 				url = url.Replace("{color}", item.Color);
 
 				return App.BaseUrl + url;
@@ -843,77 +902,28 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		ICommand GenerateAction(TownFishMenuItem item)
+		ICommand GenerateAction (TownFishMenuItem item)
 		{
 			switch (item.Type)
 			{
-				case "link":
-					return new Command (_ =>
-						{ SourceUrl = App.BaseUrl + item.Href + App.BaseUrlParam + "#" + DateTime.Now.Ticks; });
+				case "locationpin":
+					LeftActionIsLocationPin = true;
+					return new Command (_ => CancelLocationSearch());
 
 				case "callback":
+					return new Command (_ => OnCallbackRequested (item.Name));
+
+				case "link":
 					return new Command (_ =>
-						OnCallbackRequested (item.Name));
+						{ SourceUrl = App.BaseUrl + item.Href + App.BaseUrlParam + "#" + DateTime.Now.Ticks; }); // TODO: remove cache bust hash!
 
 				case "back":
 					return new Command (_ =>
 						{ SourceUrl = App.BaseUrl + item.Href + App.BaseUrlParam; });
 
-				case "locationpin":
-					LeftActionIsLocationPin = true;
-					return new Command (_ =>
-						{ SearchLocationHasResults = false; });
-
 				default:
 					return null;
 			}
-		}
-
-		public static BrowserPageViewModel Create(TownFishMenuMap map)
-		{
-			var viewModel = new BrowserPageViewModel
-			{
-				OverflowImages = new List<TownFishMenuItem>(),
-				SourceUrl = App.BaseUrl + App.BaseUrlParam
-			};
-
-			if (map != null)
-				viewModel.LoadMenuMap (map);
-
-			return viewModel;
-		}
-
-		public async void UpdateLocationList(string searchTerm)
-		{
-			sSearchTerm = searchTerm;
-
-			try
-			{
-				using (var client = new HttpClient())
-				{
-					var resultJson = await client.GetStringAsync(App.BaseUrl + mLocationApiFormat.Replace("{term}", searchTerm));
-
-					if (!string.IsNullOrEmpty(resultJson))
-					{
-						var model = JsonConvert.DeserializeObject<TownFishLocationList>(resultJson);
-						if (model != null)
-						{
-							LocationSearchItems = new ObservableCollection<TownfishLocationItem> (model.items);
-							SearchLocationHasResults = true;
-						}
-					}
-				}
-			}
-			catch (Exception)
-			{
-				// TODO Alert the user of this crap up the wall
-				SearchLocationHasResults = false;
-			}
-		}
-
-		public void SetLocation(string cityId)
-		{
-			SourceUrl = App.BaseUrl + mLocationSetFormat.Replace("{id}", cityId) + App.BaseUrlParam;
 		}
 
 		#endregion Methods

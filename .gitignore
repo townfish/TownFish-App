@@ -133,7 +133,7 @@ publish/
 # Publish Web Output
 *.[Pp]ublish.xml
 *.azurePubxml
-## TODO: Comment the next line if you want to checkin your
+## TODO: Uncomment the next line if you want to checkin your
 ## web deploy settings but do note that will include unencrypted
 ## passwords
 #*.pubxml
@@ -210,5 +210,6 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
-/Source/TownFish.App/TownFish.App.Droid/Resources/android-icons.zip
-/Source/TownFish.App/TownFish.App.iOS/Resources/iOS icons.zip
+
+# Mono debug symbols
+*.mdb
