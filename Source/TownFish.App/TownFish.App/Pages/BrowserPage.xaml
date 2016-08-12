@@ -42,34 +42,42 @@
 			  BackgroundColor="{Binding SubMenuBackgroundColour}"
 			  IsVisible="{Binding IsTopSubBarVisible}">
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="1*" />
-				<ColumnDefinition Width="2*" />
-				<ColumnDefinition Width="2*" />
-				<ColumnDefinition Width="2*" />
-				<ColumnDefinition Width="1*" />
+				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="auto" />
 			</Grid.ColumnDefinitions>
 
-			<Label Text="{Binding TopAction1Label}" Style="{StaticResource TopNavBtnStyle}" HorizontalOptions="Start" FontAttributes="{Binding TopAction1Bold}" >
+			<Label Grid.Column="0" Text="{Binding TopAction1Label}"
+				   Style="{StaticResource TopNavBtnStyle}" HorizontalOptions="Start" FontAttributes="{Binding TopAction1Bold}" >
 				<Label.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding TopAction1Command}"/>
 				</Label.GestureRecognizers>
 			</Label>
-			<Label Grid.Column="1" Text="{Binding TopAction2Label}" Style="{StaticResource TopNavBtnStyle}"  FontAttributes="{Binding TopAction2Bold}" >
+			<Label Grid.Column="2" Text="{Binding TopAction2Label}"
+				   Style="{StaticResource TopNavBtnStyle}"  FontAttributes="{Binding TopAction2Bold}" >
 				<Label.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding TopAction2Command}"/>
 				</Label.GestureRecognizers>
 			</Label>
-			<Label Grid.Column="2" Text="{Binding TopAction3Label}" Style="{StaticResource TopNavBtnStyle}"  FontAttributes="{Binding TopAction3Bold}" >
+			<Label Grid.Column="4" Text="{Binding TopAction3Label}"
+				   Style="{StaticResource TopNavBtnStyle}"  FontAttributes="{Binding TopAction3Bold}" >
 				<Label.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding TopAction3Command}"/>
 				</Label.GestureRecognizers>
 			</Label>
-			<Label Grid.Column="3" Text="{Binding TopAction4Label}" Style="{StaticResource TopNavBtnStyle}"  FontAttributes="{Binding TopAction4Bold}" >
+			<Label Grid.Column="6" Text="{Binding TopAction4Label}"
+				   Style="{StaticResource TopNavBtnStyle}"  FontAttributes="{Binding TopAction4Bold}" >
 				<Label.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding TopAction4Command}"/>
 				</Label.GestureRecognizers>
 			</Label>
-			<Image Grid.Column="4" Source="{Binding TopActionMoreLabel}"
+			<Image Grid.Column="8" Source="{Binding TopActionMoreLabel}"
 				   HorizontalOptions="End" WidthRequest="18">
 				<Image.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding TopActionMoreCommand}"/>
@@ -140,7 +148,7 @@
 				<RowDefinition Height="auto" />
 			</Grid.RowDefinitions>
 
-			<Grid BackgroundColor="{Binding LocationsContrastBackgroundColour}" Padding="20,5">
+			<Grid BackgroundColor="{Binding LocationsContrastBackgroundColour}" Padding="10,5">
 				<Label Text="MY LOCATIONS" TextColor="{Binding MyLocationsTextColour}"
 					   FontSize="12" HorizontalOptions="Fill" />
 			</Grid>
@@ -152,7 +160,7 @@
 					<DataTemplate>
 						<ViewCell>
 							<StackLayout Orientation="Vertical" Spacing="0">
-								<Grid VerticalOptions="Center" Padding="20,12"
+								<Grid VerticalOptions="Center" Padding="10,12"
 									  ColumnSpacing="0" HeightRequest="24">
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="auto" />
@@ -251,7 +259,7 @@
 		<Grid x:Name="pnlTopMenuBar" ColumnSpacing="0"
 			  IsVisible="{Binding IsTopBarVisible}"
 			  BackgroundColor="{Binding MenuBarBackgroundColour}"
-			  HeightRequest="26" Padding="0,4,10,4" VerticalOptions="Start">
+			  HeightRequest="26" Padding="0,4" VerticalOptions="Start">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="auto" />
 				<ColumnDefinition Width="auto" />
@@ -260,33 +268,31 @@
 				<ColumnDefinition Width="auto"/>
 			</Grid.ColumnDefinitions>
 
-			<Grid Grid.Column="1" Padding="10,0,0,0">
-				<Label VerticalOptions="Center" FontSize="16" FontAttributes="Bold"
-					   TextColor="{Binding MenuBarTextColour}" Text="{Binding LocationName}" >
-					<Label.GestureRecognizers>
-						<TapGestureRecognizer x:Name="gstLocationLabel" Command="{Binding TopBarLeftCommand}"/>
-					</Label.GestureRecognizers>
-				</Label>
-			</Grid>
-			<Label Grid.Column="2" VerticalOptions="Center" HorizontalOptions="Center"
+			<Label Grid.Column="1" VerticalOptions="Center" FontSize="16" FontAttributes="Bold"
+					TextColor="{Binding MenuBarTextColour}" Text="{Binding LocationName}" >
+				<Label.GestureRecognizers>
+					<TapGestureRecognizer x:Name="gstLocationLabel" Command="{Binding TopBarLeftCommand}"/>
+				</Label.GestureRecognizers>
+			</Label>
+			<!-- span all cols so we can properly centre this -->
+			<Label Grid.Column="0" Grid.ColumnSpan="5"
+				   VerticalOptions="Center" HorizontalOptions="Center"
 				   FontSize="16" FontAttributes="Bold"
 				   TextColor="{Binding MenuBarTextColour}" Text="{Binding PageTitle}" />
-			<Grid Grid.Column="3" Padding="0,0,10,0">
-				<Image Source="{Binding TopBarRightLabel}"
-					   HorizontalOptions="Center" WidthRequest="18">
-					<Image.GestureRecognizers>
-						<TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
-					</Image.GestureRecognizers>
-				</Image>
-			</Grid>
-			<Grid Grid.Column="4" Padding="10,0,0,0">
-				<Image Source="{Binding TopBarRight1Label}"
-					   HorizontalOptions="Center" WidthRequest="18">
-					<Image.GestureRecognizers>
-						<TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
-					</Image.GestureRecognizers>
-				</Image>
-			</Grid>
+			<Image Grid.Column="3"
+					Source="{Binding TopBarRightLabel}"
+					HorizontalOptions="Center" WidthRequest="18">
+				<Image.GestureRecognizers>
+					<TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
+				</Image.GestureRecognizers>
+			</Image>
+			<Image Grid.Column="4" Margin="10,0"
+				   Source="{Binding TopBarRight1Label}"
+				   HorizontalOptions="Center" WidthRequest="18">
+				<Image.GestureRecognizers>
+					<TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
+				</Image.GestureRecognizers>
+			</Image>
 
 			<!-- Top search panel (overlays top menu bar)
 				 Note: TranslationX of -10000 ensures it's off-screen to start with -->
@@ -303,34 +309,30 @@
 						<ColumnDefinition Width="auto"/>
 					</Grid.ColumnDefinitions>
 
-					<Grid Grid.Column="0" Padding="8,4">
-						<Image Source="{Binding TopBarRightLabel}"
-								VerticalOptions="Center" WidthRequest="16" />
-					</Grid>
+					<Image Grid.Column="0" Margin="8,4" Source="{Binding TopBarRightLabel}"
+							VerticalOptions="Center" WidthRequest="16" />
 					<Entry x:Name="ebxSearch" Grid.Column="1"
 							Placeholder="Location e.g. Camden or NW1"
 							HorizontalOptions="Fill" VerticalOptions="Center"
 							BackgroundColor="{Binding LocationsContrastBackgroundColour}"
 							TextColor="{Binding LocationsSearchInputTextColour}"
 							FontSize="13" Text="{Binding SearchTerm}" />
-					<Grid Grid.Column="2" Padding="8,4" IsVisible="{Binding SearchHasContent}">
-						<Image Source="close.png"
-								VerticalOptions="Center" WidthRequest="16">
-							<Image.GestureRecognizers>
-								<TapGestureRecognizer Command="{Binding CancelSearchCommand}" />
-							</Image.GestureRecognizers>
-						</Image>
-					</Grid>
+					<Image Grid.Column="2" Margin="8,4" IsVisible="{Binding SearchHasContent}"
+							Source="close.png"
+							VerticalOptions="Center" WidthRequest="16">
+						<Image.GestureRecognizers>
+							<TapGestureRecognizer Command="{Binding CancelSearchCommand}" />
+						</Image.GestureRecognizers>
+					</Image>
 				</Grid>
 			</Frame>
 
 			<!-- this goes here to cover ingress and egress of search panel -->
 			<Grid Grid.Column="0" Padding="10,0" BackgroundColor="{Binding MenuBarBackgroundColour}">
-				<Image Source="{Binding TopBarLeftLabel}" HorizontalOptions="Center" WidthRequest="18">
-					<Image.GestureRecognizers>
-						<TapGestureRecognizer x:Name="gstLocationImage" Command="{Binding TopBarLeftCommand}"/>
-					</Image.GestureRecognizers>
-				</Image>
+				<Grid.GestureRecognizers>
+					<TapGestureRecognizer x:Name="gstLocationImage" Command="{Binding TopBarLeftCommand}"/>
+				</Grid.GestureRecognizers>
+				<Image Source="{Binding TopBarLeftLabel}" HorizontalOptions="Center" WidthRequest="18" />
 			</Grid>
 		</Grid>
 
@@ -354,7 +356,8 @@
 					<TapGestureRecognizer Command="{Binding TopFormLeftAction}" />
 				</Label.GestureRecognizers>
 			</Label>
-			<Label Grid.Column="1"
+			<!-- span all cols so we can properly centre this -->
+			<Label Grid.Column="0" Grid.ColumnSpan="3"
 				   VerticalOptions="Center" HorizontalOptions="Center"
 				   TextColor="{Binding MenuBarTextColour}"
 				   Text="{Binding PageTitle}"

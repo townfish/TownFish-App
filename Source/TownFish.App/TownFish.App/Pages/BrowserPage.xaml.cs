@@ -164,7 +164,7 @@ namespace TownFish.App.Pages
 
 					var url = ViewModel.OverflowImages.FirstOrDefault (i => i.Value == action)?.Href;
 					if (!string.IsNullOrWhiteSpace (url))
-						ViewModel.SourceUrl = App.BaseUrl + action + App.BaseUrlParam;
+						ViewModel.SourceUrl = App.BaseUrl + url + App.BaseUrlParam;
 				});
 
 			ViewModel.CallbackRequested += (s, name) =>

@@ -26,7 +26,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.townfish.app</string>
 	<key>CFBundleVersion</key>
-	<string>160809</string>
+	<string>160812</string>
 	<key>CFBundleIconFiles</key>
 	<array>
 		<string>Icon-60@2x.png</string>
@@ -36,7 +36,7 @@
 		<string>Icon-Small@2x.png</string>
 	</array>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.4</string>
+	<string>1.0.5</string>
 	<key>UIStatusBarTintParameters</key>
 	<dict>
 		<key>UINavigationBar</key>

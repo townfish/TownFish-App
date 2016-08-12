@@ -12,7 +12,7 @@ using Android.Widget;
 
 namespace TownFish.App.Droid
 {
-	[Activity(Label = "Townfish", Theme = "@style/townfishSplash", MainLauncher = true, NoHistory = true)]
+	[Activity(Label = "TownFish", Theme = "@style/townfishSplash", MainLauncher = true, NoHistory = true)]
 	public class SpashActivity : Activity
 	{
 		protected override void OnCreate(Bundle savedInstanceState)
