@@ -13,10 +13,11 @@ namespace TownFish.App
 
 		public App()
 		{
-			var vm = BrowserPageViewModel.Create (null);			
-			vm.SourceUrl = BaseUrl + cStartPath + BaseUrlParam;
-
+			var vm = new BrowserPageViewModel();
 			MainPage = new BrowserPage { BindingContext = vm };
+
+			// now everything's wired up, kick off initial page load
+			vm.SourceUrl = BaseUrl + StartPath + QueryString;
 		}
 
 		#endregion Construction
@@ -62,11 +63,16 @@ namespace TownFish.App
 
 		#region Fields
 
-		// HACK: This should not be necessary!
-		const string cStartPath = ""; //"discussions";
+		// all magic URLs and paths used in this app
+		public const string SiteDomain = "dev.townfish.com";
+		public const string BaseUrl = "http://" + SiteDomain;
+		public const string TermsUrl = BaseUrl + "/terms-of-use/";
+		public const string StartPath = "/";
 
-		public const string BaseUrl = "http://dev.townfish.com/";
-		public const string BaseUrlParam = "?mode=app";
+		public const string QueryParam = "mode=app"; // parameter added to every request
+		public const string QueryString = "?" + QueryParam;
+
+		public const string TwitterApiDomain = "api.twitter.com";
 
 		#endregion Fields
 	}

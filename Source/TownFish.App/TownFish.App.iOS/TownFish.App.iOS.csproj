@@ -200,9 +200,13 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Xamarin.iOS" />
-    <Reference Include="Xamify.UberWebViewLib.iOS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="Xamify.UberWebView, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\References\Xamify.UberWebViewLib.iOS.dll</HintPath>
+      <HintPath>..\..\References\Xamify.UberWebView.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamify.UberWebView.iOS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\References\Xamify.UberWebView.iOS.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

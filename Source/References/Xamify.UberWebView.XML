@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Xamify.UberWebView</name>
+    </assembly>
+    <members>
+        <member name="T:Xamify.UberWebViewLib.UberWebView">
+            <summary>
+            Implements an enhanced <see cref="T:Xamarin.Forms.WebView"/> with error handling and optional
+            auto-addition of query parameters
+            </summary>
+            <seealso cref="T:Xamarin.Forms.WebView" />
+        </member>
+        <member name="M:Xamify.UberWebViewLib.UberWebView.InvokeScript(System.String)">
+            <summary>
+            Invokes the given script in the underlying native WebView.
+            </summary>
+            <param name="script">The script to invoke.</param>
+        </member>
+        <member name="M:Xamify.UberWebViewLib.UberWebView.OnPropertyChanged(System.String)">
+            <inheritdoc />
+        </member>
+        <member name="M:Xamify.UberWebViewLib.UberWebView.OnNavigationStarting(System.String)">
+            <summary>
+            Called when a new navigation has been requested.
+            </summary>
+            <param name="url">The URL.</param>
+            <returns>True to allow navigation, false to cancel.</returns>
+        </member>
+        <member name="E:Xamify.UberWebViewLib.UberWebView.NavigationStarting">
+            <summary>
+            Occurs when navigation is about to start, giving subscribers the option to cancel.
+            </summary>
+        </member>
+        <member name="E:Xamify.UberWebViewLib.UberWebView.NavigationStarted">
+            <summary>
+            Occurs when navigation has actually started.
+            </summary>
+        </member>
+        <member name="E:Xamify.UberWebViewLib.UberWebView.NavigationFinished">
+            <summary>
+            Occurs when navigation has finished successfully.
+            </summary>
+        </member>
+        <member name="E:Xamify.UberWebViewLib.UberWebView.NavigationFailed">
+            <summary>
+            Occurs when navigation has failed.
+            </summary>
+        </member>
+        <member name="E:Xamify.UberWebViewLib.UberWebView.ScriptMessageReceived">
+            <summary>
+            Occurs when a script message is received.
+            </summary>
+        </member>
+        <member name="E:Xamify.UberWebViewLib.UberWebView.SourceChanged">
+            <summary>
+            Occurs to inform renderer that the <see cref="P:Xamarin.Forms.WebView.Source"/> has Changed.
+            </summary>
+        </member>
+        <member name="E:Xamify.UberWebViewLib.UberWebView.InvokeScriptRequested">
+            <summary>
+            Occurs when a script execution is requested.
+            </summary>
+        </member>
+        <member name="E:Xamify.UberWebViewLib.UberWebView.InvokeUberActionScriptRequested">
+            <summary>
+            Occurs when an uber action script execution is requested.
+            </summary>
+        </member>
+        <member name="P:Xamify.UberWebViewLib.UberWebView.QueryParam">
+            <summary>
+            Gets or sets the query parameter(s) to add to all requests.
+            </summary>
+        </member>
+        <member name="P:Xamify.UberWebViewLib.UberWebView.QueryParamDomain">
+            <summary>
+            Gets or sets the domain for which the query parameter will be added, or
+            leave empty to add parameter to queries for all domains.
+            </summary>
+        </member>
+        <member name="P:Xamify.UberWebViewLib.UberWebView.PageLoadedScript">
+            <summary>
+            Gets or sets the script to inject on each page load.
+            </summary>
+        </member>
+        <member name="P:Xamify.UberWebViewLib.UberWebView.FragmentActions">
+            <summary>
+            Collection of scripts to invoke on URL fragment changes.
+            </summary>
+        </member>
+    </members>
+</doc>

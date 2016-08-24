@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,30 +24,26 @@ namespace TownFish.App.Pages
 
 			App.Current.BackButtonPressed += BrowserPage_BackButtonPressed;
 
-			wbvContent.NavigationStarted += WebView_Navigating;
-			wbvContent.NavigationFinished += WebView_Navigated;
-			//wbvContent.LoadFailed // TODO: implement error handling!
+			// set up JS bridge fragment actions
+			var schemaJS = string.Format (cKVFormat, cSchemaKey, cSchemaMethod);
+			var menuJS = string.Format (cKVFormat, cMenuKey, cMenuMethod);
+			var pushJS = string.Format (cKVFormat, cPushKey, cPushMethod);
 
-			wbvContent.AffixedUrlParam = cAppMode;
 			wbvContent.FragmentActions = new Dictionary<string, string>();
-
-			// set up JS bridge callbacks and fragment notifications
-			var invokeMethod = Device.OS == TargetPlatform.iOS ? cJSInvokeMethodiOS : cJSInvokeMethodDroid;
-
-			var invokeReloadJS = string.Format (cStringifyFormat, cSchemaKey, cSchemaMethod);
-			var invokePopupJS = string.Format (cStringifyFormat, cMenuKey, cMenuMethod);
-			var invokePushJS = string.Format (cStringifyFormat, cPushKey, cPushMethod);
-
-			var reloadJS = string.Format (cInvokeFormat, invokeMethod, invokeReloadJS);
-			var popupJS = string.Format (cInvokeFormat, invokeMethod, invokePopupJS);
-			var pushJS = string.Format (cInvokeFormat, invokeMethod, invokePushJS);
-
-			wbvContent.FragmentActions.Add (cSchemaAction, reloadJS);
-			wbvContent.FragmentActions.Add (cMenuAction, popupJS);
+			wbvContent.FragmentActions.Add (cSchemaAction, schemaJS);
+			wbvContent.FragmentActions.Add (cMenuAction, menuJS);
 			wbvContent.FragmentActions.Add (cPushAction, pushJS);
 
-			wbvContent.OnLoadJSScript = reloadJS;
-			wbvContent.RegisterAction (WebViewAction);
+			wbvContent.PageLoadedScript = schemaJS;
+
+			wbvContent.ScriptMessageReceived += UberWebView_ScriptMessageReceived;
+			wbvContent.NavigationStarting += UberWebView_NavigationStarting;
+			wbvContent.NavigationStarted += UberWebView_NavigationStarted;
+			wbvContent.NavigationFinished += UberWebView_NavigationFinished;
+			wbvContent.NavigationFailed += UberWebView_NavigationFailed;
+
+			wbvContent.QueryParamDomain = App.SiteDomain;
+			wbvContent.QueryParam = App.QueryParam;
 
 			// on iOS we have to allow for the overlapping status bar at top of layout
 			if (Device.OS == TargetPlatform.iOS)
@@ -71,14 +68,14 @@ namespace TownFish.App.Pages
 
 		#region Methods
 
-		async void WebViewAction (string json)
+		async void UberWebView_ScriptMessageReceived (object sender, string msg)
 		{
 			string key = null;
 			string value = null;
 
 			try
 			{
-				var model = JsonConvert.DeserializeObject<TownFishTopLevelMenu>(json);
+				var model = JsonConvert.DeserializeObject<TownFishTopLevelMenu>(msg);
 
 				key = model.Key;
 				value = model.Value;
@@ -96,7 +93,7 @@ namespace TownFish.App.Pages
 						var menu = JsonConvert.DeserializeObject<List<TownFishMenuItem>> (value);
 
 						var action = await DisplayActionSheet (cMoreActions, cCancel, null,
-										menu.Select (i => i.Value).ToArray());
+								menu.Select (i => i.Value).ToArray());
 
 						var selectedItem = menu.FirstOrDefault (i => i.Value == action);
 						if (selectedItem?.Type == cCallbackType)
@@ -112,7 +109,7 @@ namespace TownFish.App.Pages
 			catch (Exception e)
 			{
 				// TODO: parse failed, so use a default? go to offline page?
-				Debug.WriteLine ("WebViewAction: Parse of:\n{0}\nfailed with error:\n{1}", json, e.Message);
+				Debug.WriteLine ("WebViewAction: Parse of:\n{0}\nfailed with error:\n{1}", msg, e.Message);
 
 				// if it was the schema, just hide everything as it might contain rubbish
 				if (key == cSchemaKey)
@@ -125,10 +122,23 @@ namespace TownFish.App.Pages
 			}
 		}
 
-		void WebView_Navigating (object sender, EventArgs e)
+		void UberWebView_NavigationStarting (object sender, WebNavigatingEventArgs e)
 		{
-			mNavigating = true;
+			// launch non-TownFish URLs in external browser
+			var uri = new Uri (e.Url);
+			if (uri.Host != App.SiteDomain && uri.Host != App.TwitterApiDomain)
+			{
+				e.Cancel = true;
 
+				Device.OpenUri (uri);
+
+				return;
+			}
+		}
+
+		void UberWebView_NavigationStarted (object sender, string url)
+		{
+			var uri = new Uri (url);
 			if (!ViewModel.IsLoading)
 			{
 				ViewModel.IsLoading = true;
@@ -139,13 +149,31 @@ namespace TownFish.App.Pages
 			}
 		}
 
-		void WebView_Navigated (object sender, EventArgs e)
+		async void UberWebView_NavigationFinished (object sender, string url)
 		{
-			mNavigating = false;
+			var uri = new Uri (url);
+			if (uri.Host != App.SiteDomain)
+			{
+				// for our site, don't reveal page until menu has been rendered,
+				// to avoid the 'jump' down problem; other sites show now as
+				// obviously there's no menu on them!
 
-			// don't reveal page until menu has been rendered, to avoid the 'jump' down problem
-			//await pnlLoading.FadeTo (0);
-			//ViewModel.IsLoading = false;
+				await pnlLoading.FadeTo (0);
+				ViewModel.IsLoading = false;
+			}
+		}
+
+		void UberWebView_NavigationFailed (object sender, Exception ex)
+		{
+			ViewModel.IsLoading = false;
+
+#if DEBUG
+			var msg = ex.Message;
+#else
+			var msg = "Please try again or go to a different page";
+#endif
+			App.Current.MainPage.DisplayAlert ("TownFish", string.Format (
+					"Failed to load the page.\n\n{0}", msg), "Cancel");
 		}
 
 		void BrowserPage_BindingContextChanged (object sender, EventArgs e)
@@ -164,11 +192,10 @@ namespace TownFish.App.Pages
 
 					var url = ViewModel.OverflowImages.FirstOrDefault (i => i.Value == action)?.Href;
 					if (!string.IsNullOrWhiteSpace (url))
-						ViewModel.SourceUrl = App.BaseUrl + url + App.BaseUrlParam;
+						ViewModel.SourceUrl = App.BaseUrl + url + App.QueryString;
 				});
 
-			ViewModel.CallbackRequested += (s, name) =>
-					OnCallback (name);
+			ViewModel.CallbackRequested += (s, name) => OnCallback (name);
 
 			ViewModel.MenusLoaded += ViewModel_MenusLoaded;
 
@@ -176,13 +203,19 @@ namespace TownFish.App.Pages
 			ebxSearch.Completed += ebxSearch_Completed;
 			lstLocationSearchResults.ItemTapped += lstLocationSearchResults_ItemTapped;
 			lstAvailableLocations.ItemTapped += lstAvailableLocations_ItemTapped;
+
+			ViewModel.PropertyChanged += ViewModel_PropertyChanged;
 		}
 
-		void lstAvailableLocations_ItemTapped (object sender, ItemTappedEventArgs e)
+		void ebxSearch_TextChanged (object sender, TextChangedEventArgs e)
 		{
-			HideSearchPanel();
+			if (e.NewTextValue.Length > 0)
+				ViewModel.SearchHasContent = true;
+			else
+				ViewModel.SearchHasContent = false;
 
-			ViewModel.SetLocation ((e.Item as AvailableLocation).ID);
+			if (e.NewTextValue.Length > 2)
+				ViewModel.UpdateLocationList(e.NewTextValue);
 		}
 
 		void ebxSearch_Completed (object sender, EventArgs e)
@@ -198,15 +231,18 @@ namespace TownFish.App.Pages
 			ViewModel.SetLocation ((e.Item as TownfishLocationItem).CityID);
 		}
 
-		void ebxSearch_TextChanged (object sender, TextChangedEventArgs e)
+		void lstAvailableLocations_ItemTapped (object sender, ItemTappedEventArgs e)
 		{
-			if (e.NewTextValue.Length > 0)
-				ViewModel.SearchHasContent = true;
-			else
-				ViewModel.SearchHasContent = false;
+			HideSearchPanel();
 
-			if (e.NewTextValue.Length > 2)
-				ViewModel.UpdateLocationList(e.NewTextValue);
+			ViewModel.SetLocation ((e.Item as AvailableLocation).ID);
+		}
+
+		void ViewModel_PropertyChanged (object sender, PropertyChangedEventArgs pcea)
+		{ 
+			// WebView Source binding is unreliable, so we do it manually here
+			if (pcea.PropertyName == "SourceUrl")
+				wbvContent.Source = ViewModel.SourceUrl;
 		}
 
 		void BrowserPage_BackButtonPressed (object sender, EventArgs e)
@@ -223,7 +259,7 @@ namespace TownFish.App.Pages
 		{
 			HideSearchPanel();
 
-			ViewModel.SourceUrl = cTermsUrl;
+			ViewModel.SourceUrl = App.TermsUrl + App.QueryString;
 		}
 
 		void LocationTapped (object sender, EventArgs e)
@@ -242,7 +278,7 @@ namespace TownFish.App.Pages
 			HideSearchPanel();
 
 			Device.BeginInvokeOnMainThread (() =>
-				wbvContent.InvokeJS (string.Format (cCallbackFormat, name.ToLower())));
+				wbvContent.InvokeScript (string.Format (cCallbackFormat, name.ToLower())));
 		}
 
 		async void ShowSearchPanel()
@@ -309,7 +345,7 @@ namespace TownFish.App.Pages
 			{
 				Device.BeginInvokeOnMainThread (async () =>
 					{
-						await pnlLoading.FadeTo(0);
+						await pnlLoading.FadeTo (0);
 						ViewModel.IsLoading = false;
 					});
 			}
@@ -335,11 +371,7 @@ namespace TownFish.App.Pages
 		// apparently iOS status bar height is always 20 in XF (apparently, I said)
 		const double cTopPaddingiOS = 20;
 
-		const string cJSInvokeMethodiOS = "window.webkit.messageHandlers.invokeAction.postMessage";
-		const string cJSInvokeMethodDroid = "jsBridge.invokeAction";
-
-		const string cInvokeFormat = "{0}({1});";
-		const string cStringifyFormat = "JSON.stringify({{ key: '{0}', value: JSON.stringify({1})}})";
+		const string cKVFormat = "JSON.stringify({{ key: '{0}', value: JSON.stringify({1})}})";
 
 		const string cSchemaKey = "schema";
 		const string cSchemaMethod = "twnfsh.getSchema()";
@@ -356,13 +388,9 @@ namespace TownFish.App.Pages
 		const string cCallbackFormat = "twnfsh.runCallback('{0}')";
 		const string cCallbackType = "callback";
 
-		const string cAppMode = "mode=app";
 		const string cMoreActions = "More Actions";
 		const string cCancel = "Cancel";
 
-		const string cTermsUrl = "http://www.townfish.com/terms-of-use/";
-
-		bool mNavigating;
 		bool mFirstShowing = true;
 		bool mIsSearchVisible;
 		bool mShowingSearch;

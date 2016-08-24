@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Xamify.UberWebView.iOS</name>
+    </assembly>
+    <members>
+        <member name="T:Xamify.UberWebViewLib.iOS.UberWebViewRenderer">
+            <summary>
+            Renders the <see cref="T:Xamify.UberWebViewLib.UberWebView"/> on iOS.
+            </summary>
+        </member>
+        <member name="M:Xamify.UberWebViewLib.iOS.UberWebViewRenderer.DidReceiveScriptMessage(WebKit.WKUserContentController,WebKit.WKScriptMessage)">
+            <summary>
+            Raises <see cref="E:Xamify.UberWebViewLib.UberWebView.ScriptMessageReceived"/>.
+            </summary>
+            <param name="userContentController"></param>
+            <param name="message"></param>
+        </member>
+        <member name="M:Xamify.UberWebViewLib.iOS.UberWebViewRenderer.OnElementChanged(Xamarin.Forms.Platform.iOS.ElementChangedEventArgs{Xamify.UberWebViewLib.UberWebView})">
+            <summary>
+            Connects and/or disconnects an <see cref="T:Xamify.UberWebViewLib.UberWebView"/> instance to this renderer.
+            </summary>
+            <param name="e"></param>
+        </member>
+    </members>
+</doc>

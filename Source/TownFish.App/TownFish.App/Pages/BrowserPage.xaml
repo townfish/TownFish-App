@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-			 xmlns:xamify="clr-namespace:Xamify.UberWebViewLib;assembly=Xamify.UberWebViewLib"
-			 xmlns:cons="clr-namespace:TownFish.App;assembly=TownFish.App"
+			 xmlns:xamify="clr-namespace:Xamify.UberWebViewLib;assembly=Xamify.UberWebView"
+			 xmlns:converters="clr-namespace:TownFish.App;assembly=TownFish.App"
 			 Title="TownFish"
 			 x:Class="TownFish.App.Pages.BrowserPage">
 	<ContentPage.Resources>
 		<ResourceDictionary>
-			<cons:SearchFormatConverter x:Key="searchCon"></cons:SearchFormatConverter>
+			<converters:SearchFormatConverter x:Key="searchCon"></converters:SearchFormatConverter>
 			<Style x:Key="BottomNavBtnStyle" TargetType="Button">
 				<Setter Property="TextColor" Value="#8b8b8b" />
 				<Setter Property="BackgroundColor" Value="White" />
@@ -34,8 +34,11 @@
 
 		<!-- WebView -->
 		<xamify:UberWebView x:Name="wbvContent" Grid.Row="2"
-							Source="{Binding SourceUrl}"
 							VerticalOptions="Fill" HorizontalOptions="Fill" />
+							<!--
+							**Source binding is unreliable, so we do it manually in code-behind**
+							Source="{Binding SourceUrl}"
+							-->
 
 		<!-- Top bar Sub -->
 		<Grid Grid.Row="1" Padding="10,6" ColumnSpacing="0"
@@ -137,6 +140,7 @@
 		<!-- Locations Panel
 			 Note: TranslationY of -10000 ensures it's off-screen to start with -->
 		<Grid x:Name="pnlLocations" Grid.Row="1" Grid.RowSpan="3" Grid.RowSpacing="0"
+			  IsVisible="{Binding IsTopBarVisible}"
 			  TranslationY="-10000"
 			  HorizontalOptions="Start" WidthRequest="420"
 			  BackgroundColor="{Binding LocationsBackgroundColour}">

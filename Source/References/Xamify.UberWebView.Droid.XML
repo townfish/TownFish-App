@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Xamify.UberWebView.Droid</name>
+    </assembly>
+    <members>
+        <member name="T:Xamify.UberWebViewLib.Droid.UberWebViewRenderer">
+            <summary>
+            Renders the <see cref="T:Xamify.UberWebViewLib.UberWebView"/> on Android.
+            </summary>
+        </member>
+        <member name="M:Xamify.UberWebViewLib.Droid.UberWebViewRenderer.UberWebViewClient.OnReceivedError(Android.Webkit.WebView,Android.Webkit.ClientError,System.String,System.String)">
+            <summary>
+            Raises the <see cref="E:Xamify.UberWebViewLib.UberWebView.NavigationFailed"/> event.
+            </summary>
+            <param name="webView"></param>
+            <param name="errorCode"></param>
+            <param name="description"></param>
+            <param name="failingUrl"></param>
+        </member>
+        <member name="M:Xamify.UberWebViewLib.Droid.UberWebViewRenderer.OnElementChanged(Xamarin.Forms.Platform.Android.ElementChangedEventArgs{Xamarin.Forms.WebView})">
+            <summary>
+            Connects and/or disconnects an <see cref="T:Xamify.UberWebViewLib.UberWebView"/> instance to this renderer.
+            </summary>
+            <param name="e"></param>
+        </member>
+    </members>
+</doc>

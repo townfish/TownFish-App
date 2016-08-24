@@ -488,20 +488,6 @@ namespace TownFish.App.ViewModels
 
 		#region Methods
 
-		public static BrowserPageViewModel Create (TownFishMenuMap map)
-		{
-			var viewModel = new BrowserPageViewModel
-			{
-				OverflowImages = new List<TownFishMenuItem>(),
-				SourceUrl = App.BaseUrl + App.BaseUrlParam
-			};
-
-			if (map != null)
-				viewModel.LoadMenuMap (map);
-
-			return viewModel;
-		}
-
 		public async void UpdateLocationList (string searchTerm)
 		{
 			sSearchTerm = searchTerm;
@@ -531,9 +517,9 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		public void SetLocation (string cityId)
+		public void SetLocation (string cityID)
 		{
-			SourceUrl = App.BaseUrl + mLocationSetFormat.Replace("{id}", cityId) + App.BaseUrlParam;
+			SourceUrl = App.BaseUrl + mLocationSetFormat.Replace ("{id}", cityID) + App.QueryString;
 		}
 
 		public void LoadMenuMap (TownFishMenuMap map)
@@ -915,11 +901,11 @@ namespace TownFish.App.ViewModels
 
 				case "link":
 					return new Command (_ =>
-						{ SourceUrl = App.BaseUrl + item.Href + App.BaseUrlParam + "#" + DateTime.Now.Ticks; }); // TODO: remove cache bust hash!
+						{ SourceUrl = App.BaseUrl + item.Href + App.QueryString + "#" + DateTime.Now.Ticks; }); // TODO: remove nav hash!
 
 				case "back":
 					return new Command (_ =>
-						{ SourceUrl = App.BaseUrl + item.Href + App.BaseUrlParam; });
+						{ SourceUrl = App.BaseUrl + item.Href + App.QueryString; });
 
 				default:
 					return null;

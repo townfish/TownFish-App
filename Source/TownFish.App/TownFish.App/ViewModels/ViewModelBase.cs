@@ -114,6 +114,8 @@ namespace TownFish.App.ViewModels
 
 			bag [name] = value;
 
+			System.Diagnostics.Debug.WriteLine ("ViewModelBase.Set: Property {0} changed to {1}", name, value);
+
 			OnPropertyChanged (name);
 
 			return true;
