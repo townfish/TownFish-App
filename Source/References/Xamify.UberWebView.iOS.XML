@@ -9,6 +9,16 @@
             Renders the <see cref="T:Xamify.UberWebViewLib.UberWebView"/> on iOS.
             </summary>
         </member>
+        <member name="M:Xamify.UberWebViewLib.iOS.UberWebViewRenderer.UberNavigationDelegate.DidFailNavigation(WebKit.WKWebView,WebKit.WKNavigation,Foundation.NSError)">
+            <summary>
+            When a request fails, raises the <see cref="E:Xamify.UberWebViewLib.UberWebView.NavigationFailed"/>
+            event with an <see cref="T:System.ArgumentException"/> indicating the failure reason in
+            the message and the error code in the parameter name.
+            </summary>
+            <param name="webView"></param>
+            <param name="navigation"></param>
+            <param name="error"></param>
+        </member>
         <member name="M:Xamify.UberWebViewLib.iOS.UberWebViewRenderer.DidReceiveScriptMessage(WebKit.WKUserContentController,WebKit.WKScriptMessage)">
             <summary>
             Raises <see cref="E:Xamify.UberWebViewLib.UberWebView.ScriptMessageReceived"/>.

@@ -11,12 +11,26 @@
         </member>
         <member name="M:Xamify.UberWebViewLib.Droid.UberWebViewRenderer.UberWebViewClient.OnReceivedError(Android.Webkit.WebView,Android.Webkit.ClientError,System.String,System.String)">
             <summary>
-            Raises the <see cref="E:Xamify.UberWebViewLib.UberWebView.NavigationFailed"/> event.
+            When an HTTP request fails, raises the
+            <see cref="E:Xamify.UberWebViewLib.UberWebView.NavigationFailed"/> event with an
+            <see cref="T:System.ArgumentException"/> indicating the error description in
+            the message and the error code in the parameter name.
             </summary>
-            <param name="webView"></param>
-            <param name="errorCode"></param>
-            <param name="description"></param>
-            <param name="failingUrl"></param>
+            <param name="webView">The web view.</param>
+            <param name="errorCode">The error code.</param>
+            <param name="description">The description.</param>
+            <param name="failingUrl">The failing URL.</param>
+        </member>
+        <member name="M:Xamify.UberWebViewLib.Droid.UberWebViewRenderer.UberWebViewClient.OnReceivedHttpError(Android.Webkit.WebView,Android.Webkit.IWebResourceRequest,Android.Webkit.WebResourceResponse)">
+            <summary>
+            When an HTTP error is received from the server, raises the
+            <see cref="E:Xamify.UberWebViewLib.UberWebView.NavigationFailed"/> event with an
+            <see cref="T:System.ArgumentException"/> indicating the error reason in
+            the message and the status code in the parameter name.
+            </summary>
+            <param name="webView">The view.</param>
+            <param name="request">The request.</param>
+            <param name="errorResponse">The error response.</param>
         </member>
         <member name="M:Xamify.UberWebViewLib.Droid.UberWebViewRenderer.OnElementChanged(Xamarin.Forms.Platform.Android.ElementChangedEventArgs{Xamarin.Forms.WebView})">
             <summary>

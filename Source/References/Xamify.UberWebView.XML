@@ -46,6 +46,11 @@
             <summary>
             Occurs when navigation has failed.
             </summary>
+            <remarks>
+            The <see cref="P:System.ArgumentException.Message"/> property contains the navigation
+            failure reason or description and the <see cref="P:System.ArgumentException.ParamName"/>
+            property contains the error code or status value as a string.
+            </remarks>
         </member>
         <member name="E:Xamify.UberWebViewLib.UberWebView.ScriptMessageReceived">
             <summary>
@@ -60,11 +65,6 @@
         <member name="E:Xamify.UberWebViewLib.UberWebView.InvokeScriptRequested">
             <summary>
             Occurs when a script execution is requested.
-            </summary>
-        </member>
-        <member name="E:Xamify.UberWebViewLib.UberWebView.InvokeUberActionScriptRequested">
-            <summary>
-            Occurs when an uber action script execution is requested.
             </summary>
         </member>
         <member name="P:Xamify.UberWebViewLib.UberWebView.QueryParam">
@@ -83,9 +83,10 @@
             Gets or sets the script to inject on each page load.
             </summary>
         </member>
-        <member name="P:Xamify.UberWebViewLib.UberWebView.FragmentActions">
+        <member name="P:Xamify.UberWebViewLib.UberWebView.Actions">
             <summary>
-            Collection of scripts to invoke on URL fragment changes.
+            Collection of action methods to invoke on certain actions, where key is the action
+            and value is the method to invoke on that action occurring.
             </summary>
         </member>
     </members>

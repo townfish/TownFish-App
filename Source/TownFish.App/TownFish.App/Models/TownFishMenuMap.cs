@@ -29,10 +29,10 @@ namespace TownFish.App.Models
 		#endregion
 	}
 
-	public class TownFishTopLevelMenu
+	public class UberWebViewMessage
 	{
-		public string Key { get; set; }
+		public string Action { get; set; }
 
-		public string Value { get; set;}
+		public string Result { get; set;}
 	}
 }

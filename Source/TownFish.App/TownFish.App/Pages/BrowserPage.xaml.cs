@@ -24,17 +24,15 @@ namespace TownFish.App.Pages
 
 			App.Current.BackButtonPressed += BrowserPage_BackButtonPressed;
 
-			// set up JS bridge fragment actions
-			var schemaJS = string.Format (cKVFormat, cSchemaKey, cSchemaMethod);
-			var menuJS = string.Format (cKVFormat, cMenuKey, cMenuMethod);
-			var pushJS = string.Format (cKVFormat, cPushKey, cPushMethod);
+			// set up JS bridge action scripts
+			wbvContent.PageLoadedScript = cPageLoadScript;
 
-			wbvContent.FragmentActions = new Dictionary<string, string>();
-			wbvContent.FragmentActions.Add (cSchemaAction, schemaJS);
-			wbvContent.FragmentActions.Add (cMenuAction, menuJS);
-			wbvContent.FragmentActions.Add (cPushAction, pushJS);
-
-			wbvContent.PageLoadedScript = schemaJS;
+			wbvContent.Actions = new Dictionary<string, string>
+			{
+				{ cSchemaAction, cSchemaMethod },
+				{ cMenuAction, cMenuMethod },
+				{ cPushAction, cPushMethod }
+			};
 
 			wbvContent.ScriptMessageReceived += UberWebView_ScriptMessageReceived;
 			wbvContent.NavigationStarting += UberWebView_NavigationStarting;
@@ -70,38 +68,38 @@ namespace TownFish.App.Pages
 
 		async void UberWebView_ScriptMessageReceived (object sender, string msg)
 		{
-			string key = null;
-			string value = null;
+			string action = null;
+			string result = null;
 
 			try
 			{
-				var model = JsonConvert.DeserializeObject<TownFishTopLevelMenu>(msg);
+				var model = JsonConvert.DeserializeObject<UberWebViewMessage>(msg);
 
-				key = model.Key;
-				value = model.Value;
+				action = model.Action;
+				result = model.Result;
 
-				Debug.WriteLine ("WebViewAction: Parsing {0}:\n{1}", key, value);
+				Debug.WriteLine ("WebViewAction: Parsing {0}:\n{1}", action, result);
 
-				switch (key)
+				switch (action)
 				{
-					case cSchemaKey:
-						var schema = JsonConvert.DeserializeObject<TownFishMenuMap> (value);
+					case cSchemaAction:
+						var schema = JsonConvert.DeserializeObject<TownFishMenuMap> (result);
 						ViewModel.LoadMenuMap (schema);
 						break;
 
-					case cMenuKey:
-						var menu = JsonConvert.DeserializeObject<List<TownFishMenuItem>> (value);
+					case cMenuAction:
+						var menu = JsonConvert.DeserializeObject<List<TownFishMenuItem>> (result);
 
-						var action = await DisplayActionSheet (cMoreActions, cCancel, null,
+						var selection = await DisplayActionSheet (cMoreActions, cCancel, null,
 								menu.Select (i => i.Value).ToArray());
 
-						var selectedItem = menu.FirstOrDefault (i => i.Value == action);
+						var selectedItem = menu.FirstOrDefault (i => i.Value == selection);
 						if (selectedItem?.Type == cCallbackType)
 							OnCallback (selectedItem.Name);
 
 						break;
 
-					case cPushKey:
+					case cPushAction:
 						// TODO: implement push!
 						break;
 				}
@@ -112,7 +110,7 @@ namespace TownFish.App.Pages
 				Debug.WriteLine ("WebViewAction: Parse of:\n{0}\nfailed with error:\n{1}", msg, e.Message);
 
 				// if it was the schema, just hide everything as it might contain rubbish
-				if (key == cSchemaKey)
+				if (action == cSchemaAction)
 				{
 					ViewModel.IsBottomBarVisible = false;
 					ViewModel.IsTopSubBarVisible = false;
@@ -187,10 +185,10 @@ namespace TownFish.App.Pages
 			// Because we use DisplayActionSheet
 			ViewModel.TopActionMoreCommand = new Command (async _ =>
 				{
-					var action = await DisplayActionSheet (cMoreActions, cCancel, null,
+					var selection = await DisplayActionSheet (cMoreActions, cCancel, null,
 							ViewModel.OverflowImages.Select (i => i.Value).ToArray<string>());
 
-					var url = ViewModel.OverflowImages.FirstOrDefault (i => i.Value == action)?.Href;
+					var url = ViewModel.OverflowImages.FirstOrDefault (i => i.Value == selection)?.Href;
 					if (!string.IsNullOrWhiteSpace (url))
 						ViewModel.SourceUrl = App.BaseUrl + url + App.QueryString;
 				});
@@ -278,7 +276,7 @@ namespace TownFish.App.Pages
 			HideSearchPanel();
 
 			Device.BeginInvokeOnMainThread (() =>
-				wbvContent.InvokeScript (string.Format (cCallbackFormat, name.ToLower())));
+				wbvContent.InvokeScript (string.Format (cCallbackFormat, name)));
 		}
 
 		async void ShowSearchPanel()
@@ -315,14 +313,14 @@ namespace TownFish.App.Pages
 
 		async void HideSearchPanel()
 		{
-			if (ViewModel.SearchLocationHasResults)
-			{
-				ViewModel.CancelLocationSearch();
-				return;
-			}
-
 			if (!mIsSearchVisible || mHidingSearch)
 				return;
+
+			if (ViewModel.SearchLocationHasResults)
+				ViewModel.CancelLocationSearch();
+
+			// remove focus from search input
+			wbvContent.Focus();
 
 			mHidingSearch = true;
 
@@ -371,24 +369,21 @@ namespace TownFish.App.Pages
 		// apparently iOS status bar height is always 20 in XF (apparently, I said)
 		const double cTopPaddingiOS = 20;
 
-		const string cKVFormat = "JSON.stringify({{ key: '{0}', value: JSON.stringify({1})}})";
+		const string cPageLoadScript = "UberWebView.onAction ('" + cSchemaAction + "');";
 
-		const string cSchemaKey = "schema";
+		const string cSchemaAction = "app_schema_reload";
 		const string cSchemaMethod = "twnfsh.getSchema()";
-		const string cSchemaAction = "#app_schema_reload";
 
-		const string cMenuKey = "menu";
+		const string cMenuAction = "app_schema_popup_menu";
 		const string cMenuMethod = "twnfsh.getPopupMenuSchema()";
-		const string cMenuAction = "#app_schema_popup_menu";
 
-		const string cPushKey = "push";
+		const string cPushAction = "app_schema_push_messages";
 		const string cPushMethod = "twnfsh.getPushMessages()";
-		const string cPushAction = "#app_schema_push_messages";
 
 		const string cCallbackFormat = "twnfsh.runCallback('{0}')";
 		const string cCallbackType = "callback";
 
-		const string cMoreActions = "More Actions";
+		const string cMoreActions = null;//Please Select:";
 		const string cCancel = "Cancel";
 
 		bool mFirstShowing = true;
