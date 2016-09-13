@@ -22,7 +22,7 @@ namespace TownFish.App.Pages
 		{
 			InitializeComponent();
 
-			App.Current.BackButtonPressed += BrowserPage_BackButtonPressed;
+			App.Current.BackButtonPressed += App_BackButtonPressed;
 
 			// set up JS bridge action scripts
 			wbvContent.PageLoadedScript = cPageLoadScript;
@@ -30,7 +30,8 @@ namespace TownFish.App.Pages
 			wbvContent.Actions = new Dictionary<string, string>
 			{
 				{ cSchemaAction, cSchemaMethod },
-				{ cMenuAction, cMenuMethod },
+				{ cMenusVisibleAction, cMenusVisibleMethod },
+				{ cPopupMenuAction, cPopupMenuMethod },
 				{ cPushAction, cPushMethod }
 			};
 
@@ -83,11 +84,27 @@ namespace TownFish.App.Pages
 				switch (action)
 				{
 					case cSchemaAction:
-						var schema = JsonConvert.DeserializeObject<TownFishMenuMap> (result);
-						ViewModel.LoadMenuMap (schema);
+						if (mCurrentSchema != null)
+							break; // only allow one per page load
+
+						mCurrentSchema = JsonConvert.DeserializeObject<TownFishMenuMap> (result);
+						ViewModel.LoadMenuMap (mCurrentSchema);
+
 						break;
 
-					case cMenuAction:
+					case cMenusVisibleAction:
+						if (mCurrentSchema == null)
+							break;
+
+						var visibleMenus = JsonConvert.DeserializeObject<string[]> (result);
+						mCurrentSchema.SetMenuVisibility (visibleMenus);
+
+						// now reload with new visibility settings
+						ViewModel.LoadMenuMap (mCurrentSchema);
+
+						break;
+
+					case cPopupMenuAction:
 						var menu = JsonConvert.DeserializeObject<List<TownFishMenuItem>> (result);
 
 						var selection = await DisplayActionSheet (cMoreActions, cCancel, null,
@@ -112,9 +129,11 @@ namespace TownFish.App.Pages
 				// if it was the schema, just hide everything as it might contain rubbish
 				if (action == cSchemaAction)
 				{
-					ViewModel.IsBottomBarVisible = false;
-					ViewModel.IsTopSubBarVisible = false;
 					ViewModel.IsTopBarVisible = false;
+					ViewModel.IsTopSubBarVisible = false;
+					ViewModel.IsTopFormBarVisible = false;
+					ViewModel.IsBottomBarVisible = false;
+
 					ViewModel.IsLoading = false;
 				}
 			}
@@ -143,12 +162,26 @@ namespace TownFish.App.Pages
 
 				pnlLoading.Opacity = 1;
 				pnlLoading.TranslationX = pnlLoading.Width;
-				pnlLoading.TranslateTo(0, 0);
+				pnlLoading.TranslateTo (0, 0, 500, Easing.CubicInOut);
 			}
 		}
 
 		async void UberWebView_NavigationFinished (object sender, string url)
 		{
+			/* TODO: Paul said the menus should be hidden at the start of each
+			   page load, but this gives a very 'flashy' experience (and not in
+			   a good way), so I'm removing it for now
+
+			// if we're showing menus, hide them all and then kill the schema
+			if (mCurrentSchema != null)
+			{
+				mCurrentSchema.SetMenuVisibility (null);
+				ViewModel.LoadMenuMap (mCurrentSchema);
+
+				mCurrentSchema = null;
+			}
+			*/
+
 			var uri = new Uri (url);
 			if (uri.Host != App.SiteDomain)
 			{
@@ -156,7 +189,7 @@ namespace TownFish.App.Pages
 				// to avoid the 'jump' down problem; other sites show now as
 				// obviously there's no menu on them!
 
-				await pnlLoading.FadeTo (0);
+				await pnlLoading.FadeTo (0, 500, Easing.CubicIn);
 				ViewModel.IsLoading = false;
 			}
 		}
@@ -243,7 +276,7 @@ namespace TownFish.App.Pages
 				wbvContent.Source = ViewModel.SourceUrl;
 		}
 
-		void BrowserPage_BackButtonPressed (object sender, EventArgs e)
+		void App_BackButtonPressed (object sender, EventArgs e)
 		{
 			if (mIsSearchVisible || mShowingSearch)
 				HideSearchPanel();
@@ -343,7 +376,7 @@ namespace TownFish.App.Pages
 			{
 				Device.BeginInvokeOnMainThread (async () =>
 					{
-						await pnlLoading.FadeTo (0);
+						await pnlLoading.FadeTo (0, 500, Easing.CubicIn);
 						ViewModel.IsLoading = false;
 					});
 			}
@@ -369,13 +402,18 @@ namespace TownFish.App.Pages
 		// apparently iOS status bar height is always 20 in XF (apparently, I said)
 		const double cTopPaddingiOS = 20;
 
+		// TODO: when Paul is calling onAction (cSchemaAction) from his side,
+		// this will no longer be necessary and should be set to ""
 		const string cPageLoadScript = "UberWebView.onAction ('" + cSchemaAction + "');";
 
 		const string cSchemaAction = "app_schema_reload";
 		const string cSchemaMethod = "twnfsh.getSchema()";
 
-		const string cMenuAction = "app_schema_popup_menu";
-		const string cMenuMethod = "twnfsh.getPopupMenuSchema()";
+		const string cMenusVisibleAction = "app_schema_visible";
+		const string cMenusVisibleMethod = "twnfsh.visibleMenus()";
+
+		const string cPopupMenuAction = "app_schema_popup_menu";
+		const string cPopupMenuMethod = "twnfsh.getPopupMenuSchema()";
 
 		const string cPushAction = "app_schema_push_messages";
 		const string cPushMethod = "twnfsh.getPushMessages()";
@@ -390,6 +428,8 @@ namespace TownFish.App.Pages
 		bool mIsSearchVisible;
 		bool mShowingSearch;
 		bool mHidingSearch;
+
+		TownFishMenuMap mCurrentSchema;
 
 		#endregion Fields
 	}

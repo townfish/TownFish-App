@@ -527,10 +527,11 @@ namespace TownFish.App.ViewModels
 			mLocationApiFormat = map.LocationsAPI;
 			mLocationSetFormat = map.LocationSetUrl;
 
-			IsBottomBarVisible = false;
 			IsTopBarVisible = false;
 			IsTopSubBarVisible = false;
 			IsTopFormBarVisible = false;
+			IsBottomBarVisible = false;
+
 			LeftActionIsLocationPin = false;
 
 			LocationName = "";
@@ -555,6 +556,9 @@ namespace TownFish.App.ViewModels
 
 					CurrentLocation = map.CurrentLocation;
 
+					// set this now that we know it
+					LocationName = CurrentLocation.Name;
+
 					InfoLocationIcon = App.BaseUrl + map.LocationIcons.Info
 							.Replace ("{size}", size)
 							.Replace ("{color}", colour);
@@ -570,9 +574,6 @@ namespace TownFish.App.ViewModels
 
 						if (loc.ID == CurrentLocation.ID)
 						{
-							// set this now that we know it
-							LocationName = loc.Name;
-
 							loc.IsSelected = true;
 							loc.RightImage = App.BaseUrl + map.LocationIcons.Tick
 									.Replace ("{size}", size)
@@ -765,14 +766,16 @@ namespace TownFish.App.ViewModels
 				TopFormLeftActionLabel = GenerateMenuItem (topForm.items [0]);
 				TopFormLeftAction = GenerateMenuAction (topForm.items [0]);
 
-				if (topForm.items.Count > 1)
-					PageTitle = GenerateMenuItem (topForm.items [1]);
-
-				if (topForm.items.Count > 2)
+				var topFormRightItem = topForm.items.FirstOrDefault (i => i.Align == "right");
+				if (topFormRightItem != null)
 				{
-					TopFormRightActionLabel = GenerateMenuItem (topForm.items [2]);
-					TopFormRightAction = GenerateMenuAction (topForm.items [2]);
+					TopFormRightActionLabel = GenerateMenuItem (topFormRightItem);
+					TopFormRightAction = GenerateMenuAction (topFormRightItem);
 				}
+
+				// if 3 items, item 1 is title (we hope!)
+				if (topForm.items.Count > 2 && topForm.items [1] != null)
+					PageTitle = GenerateMenuItem (topForm.items [1]);
 			}
 
 			var bottom = menus.Bottom;
@@ -894,10 +897,12 @@ namespace TownFish.App.ViewModels
 			{
 				case "locationpin":
 					LeftActionIsLocationPin = true;
-					return new Command (_ => CancelLocationSearch());
+					return new Command (_ =>
+						CancelLocationSearch());
 
 				case "callback":
-					return new Command (_ => OnCallbackRequested (item.Name));
+					return new Command (_ =>
+						OnCallbackRequested (item.Name));
 
 				case "link":
 					return new Command (_ =>

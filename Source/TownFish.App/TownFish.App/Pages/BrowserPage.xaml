@@ -283,7 +283,7 @@
 				   VerticalOptions="Center" HorizontalOptions="Center"
 				   FontSize="16" FontAttributes="Bold"
 				   TextColor="{Binding MenuBarTextColour}" Text="{Binding PageTitle}" />
-			<Image Grid.Column="3"
+			<Image Grid.Column="3" Margin="10,0"
 					Source="{Binding TopBarRightLabel}"
 					HorizontalOptions="Center" WidthRequest="18">
 				<Image.GestureRecognizers>

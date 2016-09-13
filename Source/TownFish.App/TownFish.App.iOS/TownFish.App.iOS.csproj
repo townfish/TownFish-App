@@ -124,7 +124,6 @@
     <MtouchFloat32>False</MtouchFloat32>
     <MtouchI18n />
     <CodesignKey>iPhone Distribution</CodesignKey>
-    <CodesignProvision>b00a80bb-824b-453f-b002-ff14d77a2ecb</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
     <DebugType>none</DebugType>

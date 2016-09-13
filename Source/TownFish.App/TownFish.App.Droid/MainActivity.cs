@@ -47,12 +47,12 @@ namespace TownFish.App.Droid
 			}
 		}
 
-		#endregion
+		#endregion Methods
 
 		#region Fields
 
 		App mApp;
 
-		#endregion
+		#endregion Fields
 	}
 }

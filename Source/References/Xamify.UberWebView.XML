@@ -11,6 +11,23 @@
             </summary>
             <seealso cref="T:Xamarin.Forms.WebView" />
         </member>
+        <member name="M:Xamify.UberWebViewLib.UberWebView.BackForwardEventArgs.#ctor(System.Boolean)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Xamify.UberWebViewLib.UberWebView.BackForwardEventArgs"/> class.
+            </summary>
+            <param name="goingBack">Set to <c>true</c> if wanting to go back.</param>
+        </member>
+        <member name="P:Xamify.UberWebViewLib.UberWebView.BackForwardEventArgs.GoingBack">
+            <summary>
+            Indicates whether we want to go back (true) or forward (false).
+            </summary>
+        </member>
+        <member name="F:Xamify.UberWebViewLib.UberWebView.BackForwardEventArgs.CanGoBackForward">
+            <summary>
+            Returns true if <see cref="P:Xamify.UberWebViewLib.UberWebView.BackForwardEventArgs.GoingBack"/> and we can go back,
+            or if !<see cref="P:Xamify.UberWebViewLib.UberWebView.BackForwardEventArgs.GoingBack"/> and we can go forward.
+            </summary>
+        </member>
         <member name="M:Xamify.UberWebViewLib.UberWebView.InvokeScript(System.String)">
             <summary>
             Invokes the given script in the underlying native WebView.
@@ -65,6 +82,21 @@
         <member name="E:Xamify.UberWebViewLib.UberWebView.InvokeScriptRequested">
             <summary>
             Occurs when a script execution is requested.
+            </summary>
+        </member>
+        <member name="E:Xamify.UberWebViewLib.UberWebView.CanGoBackForwardRequested">
+            <summary>
+            Occurs to ask the renderer whether we can go back or forward.
+            </summary>
+        </member>
+        <member name="P:Xamify.UberWebViewLib.UberWebView.CanGoBack">
+            <summary>
+            Gets a value that indicates whether the user can navigate to previous pages.
+            </summary>
+        </member>
+        <member name="P:Xamify.UberWebViewLib.UberWebView.CanGoForward">
+            <summary>
+            Gets a value that indicates whether the user can navigate forward.
             </summary>
         </member>
         <member name="P:Xamify.UberWebViewLib.UberWebView.QueryParam">

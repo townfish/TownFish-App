@@ -9,13 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TownFish.App.iOS", "TownFis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TownFish.App", "TownFish.App\TownFish.App\TownFish.App.csproj", "{4318E404-A1B4-4028-AC6E-D2673530AF49}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Releases", "Releases", "{AF4BD88A-FEB8-4F61-BE78-722655FD21B5}"
-	ProjectSection(SolutionItems) = preProject
-		..\Releases\1.0.4.0 - 160809.zip = ..\Releases\1.0.4.0 - 160809.zip
-		..\Releases\1.0.5.0 - 160812.zip = ..\Releases\1.0.5.0 - 160812.zip
-		..\Releases\1.0.6.0 - 160824.zip = ..\Releases\1.0.6.0 - 160824.zip
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|Any CPU = Ad-Hoc|Any CPU
