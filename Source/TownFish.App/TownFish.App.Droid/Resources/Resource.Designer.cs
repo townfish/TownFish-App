@@ -1828,6 +1828,25 @@ namespace TownFish.App.Droid
 			}
 		}
 		
+		public partial class Dimension
+		{
+			
+			// aapt resource value: 0x7f050000
+			public const int activity_horizontal_margin = 2131034112;
+			
+			// aapt resource value: 0x7f050001
+			public const int activity_vertical_margin = 2131034113;
+			
+			static Dimension()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Dimension()
+			{
+			}
+		}
+		
 		public partial class Drawable
 		{
 			
@@ -1838,10 +1857,361 @@ namespace TownFish.App.Droid
 			public const int icon = 2130837505;
 			
 			// aapt resource value: 0x7f020002
-			public const int splash = 2130837506;
+			public const int shaccept = 2130837506;
 			
 			// aapt resource value: 0x7f020003
-			public const int splash_screen = 2130837507;
+			public const int shaccount = 2130837507;
+			
+			// aapt resource value: 0x7f020004
+			public const int shairport_shuttle = 2130837508;
+			
+			// aapt resource value: 0x7f020005
+			public const int shalarm = 2130837509;
+			
+			// aapt resource value: 0x7f020006
+			public const int shapppage = 2130837510;
+			
+			// aapt resource value: 0x7f020007
+			public const int shaudio = 2130837511;
+			
+			// aapt resource value: 0x7f020008
+			public const int shbad_mood = 2130837512;
+			
+			// aapt resource value: 0x7f020009
+			public const int shbalance = 2130837513;
+			
+			// aapt resource value: 0x7f02000a
+			public const int shbar = 2130837514;
+			
+			// aapt resource value: 0x7f02000b
+			public const int shbeach_access = 2130837515;
+			
+			// aapt resource value: 0x7f02000c
+			public const int shbike = 2130837516;
+			
+			// aapt resource value: 0x7f02000d
+			public const int shbluetooth = 2130837517;
+			
+			// aapt resource value: 0x7f02000e
+			public const int shboat = 2130837518;
+			
+			// aapt resource value: 0x7f02000f
+			public const int shbookmark = 2130837519;
+			
+			// aapt resource value: 0x7f020010
+			public const int shbreakfast = 2130837520;
+			
+			// aapt resource value: 0x7f020011
+			public const int shbus = 2130837521;
+			
+			// aapt resource value: 0x7f020012
+			public const int shcafe = 2130837522;
+			
+			// aapt resource value: 0x7f020013
+			public const int shcake = 2130837523;
+			
+			// aapt resource value: 0x7f020014
+			public const int shcall = 2130837524;
+			
+			// aapt resource value: 0x7f020015
+			public const int shcamera = 2130837525;
+			
+			// aapt resource value: 0x7f020016
+			public const int shcancel = 2130837526;
+			
+			// aapt resource value: 0x7f020017
+			public const int shcar = 2130837527;
+			
+			// aapt resource value: 0x7f020018
+			public const int shcasino = 2130837528;
+			
+			// aapt resource value: 0x7f020019
+			public const int shcast = 2130837529;
+			
+			// aapt resource value: 0x7f02001a
+			public const int shcharts = 2130837530;
+			
+			// aapt resource value: 0x7f02001b
+			public const int shchat = 2130837531;
+			
+			// aapt resource value: 0x7f02001c
+			public const int shchild_care = 2130837532;
+			
+			// aapt resource value: 0x7f02001d
+			public const int shchild_friendly = 2130837533;
+			
+			// aapt resource value: 0x7f02001e
+			public const int shcloud = 2130837534;
+			
+			// aapt resource value: 0x7f02001f
+			public const int shcloud_download = 2130837535;
+			
+			// aapt resource value: 0x7f020020
+			public const int shcloud_upload = 2130837536;
+			
+			// aapt resource value: 0x7f020021
+			public const int shcreditcard = 2130837537;
+			
+			// aapt resource value: 0x7f020022
+			public const int shdelete = 2130837538;
+			
+			// aapt resource value: 0x7f020023
+			public const int shdinning = 2130837539;
+			
+			// aapt resource value: 0x7f020024
+			public const int shdislike = 2130837540;
+			
+			// aapt resource value: 0x7f020025
+			public const int shdissatisfied = 2130837541;
+			
+			// aapt resource value: 0x7f020026
+			public const int shdo_not_disturb = 2130837542;
+			
+			// aapt resource value: 0x7f020027
+			public const int shenablepush = 2130837543;
+			
+			// aapt resource value: 0x7f020028
+			public const int sheuro = 2130837544;
+			
+			// aapt resource value: 0x7f020029
+			public const int shfastforward = 2130837545;
+			
+			// aapt resource value: 0x7f02002a
+			public const int shfeedback = 2130837546;
+			
+			// aapt resource value: 0x7f02002b
+			public const int shfile_download = 2130837547;
+			
+			// aapt resource value: 0x7f02002c
+			public const int shfile_upload = 2130837548;
+			
+			// aapt resource value: 0x7f02002d
+			public const int shflag = 2130837549;
+			
+			// aapt resource value: 0x7f02002e
+			public const int shflight = 2130837550;
+			
+			// aapt resource value: 0x7f02002f
+			public const int shgiftcard = 2130837551;
+			
+			// aapt resource value: 0x7f020030
+			public const int shgrocery_store = 2130837552;
+			
+			// aapt resource value: 0x7f020031
+			public const int shgroup = 2130837553;
+			
+			// aapt resource value: 0x7f020032
+			public const int shhand = 2130837554;
+			
+			// aapt resource value: 0x7f020033
+			public const int shheart = 2130837555;
+			
+			// aapt resource value: 0x7f020034
+			public const int shhome = 2130837556;
+			
+			// aapt resource value: 0x7f020035
+			public const int shhospital = 2130837557;
+			
+			// aapt resource value: 0x7f020036
+			public const int shhotel = 2130837558;
+			
+			// aapt resource value: 0x7f020037
+			public const int shhourglass = 2130837559;
+			
+			// aapt resource value: 0x7f020038
+			public const int shitness_center = 2130837560;
+			
+			// aapt resource value: 0x7f020039
+			public const int shkey = 2130837561;
+			
+			// aapt resource value: 0x7f02003a
+			public const int shlater = 2130837562;
+			
+			// aapt resource value: 0x7f02003b
+			public const int shlibrary = 2130837563;
+			
+			// aapt resource value: 0x7f02003c
+			public const int shlightbulb = 2130837564;
+			
+			// aapt resource value: 0x7f02003d
+			public const int shlike = 2130837565;
+			
+			// aapt resource value: 0x7f02003e
+			public const int shlocation = 2130837566;
+			
+			// aapt resource value: 0x7f02003f
+			public const int shloyalty = 2130837567;
+			
+			// aapt resource value: 0x7f020040
+			public const int shmembership = 2130837568;
+			
+			// aapt resource value: 0x7f020041
+			public const int shmic = 2130837569;
+			
+			// aapt resource value: 0x7f020042
+			public const int shmoney = 2130837570;
+			
+			// aapt resource value: 0x7f020043
+			public const int shmood = 2130837571;
+			
+			// aapt resource value: 0x7f020044
+			public const int shmovies = 2130837572;
+			
+			// aapt resource value: 0x7f020045
+			public const int shneutral = 2130837573;
+			
+			// aapt resource value: 0x7f020046
+			public const int shoffer = 2130837574;
+			
+			// aapt resource value: 0x7f020047
+			public const int shpause = 2130837575;
+			
+			// aapt resource value: 0x7f020048
+			public const int shpayment = 2130837576;
+			
+			// aapt resource value: 0x7f020049
+			public const int shperson = 2130837577;
+			
+			// aapt resource value: 0x7f02004a
+			public const int shpets = 2130837578;
+			
+			// aapt resource value: 0x7f02004b
+			public const int shpizza = 2130837579;
+			
+			// aapt resource value: 0x7f02004c
+			public const int shplay = 2130837580;
+			
+			// aapt resource value: 0x7f02004d
+			public const int shplay_circle = 2130837581;
+			
+			// aapt resource value: 0x7f02004e
+			public const int shpool = 2130837582;
+			
+			// aapt resource value: 0x7f02004f
+			public const int shquestionmark = 2130837583;
+			
+			// aapt resource value: 0x7f020050
+			public const int shradio = 2130837584;
+			
+			// aapt resource value: 0x7f020051
+			public const int shrailway = 2130837585;
+			
+			// aapt resource value: 0x7f020052
+			public const int shrate = 2130837586;
+			
+			// aapt resource value: 0x7f020053
+			public const int shrecord = 2130837587;
+			
+			// aapt resource value: 0x7f020054
+			public const int shredeem = 2130837588;
+			
+			// aapt resource value: 0x7f020055
+			public const int shreply = 2130837589;
+			
+			// aapt resource value: 0x7f020056
+			public const int shrestaurant = 2130837590;
+			
+			// aapt resource value: 0x7f020057
+			public const int shrestaurant_menu = 2130837591;
+			
+			// aapt resource value: 0x7f020058
+			public const int shrun = 2130837592;
+			
+			// aapt resource value: 0x7f020059
+			public const int shsatisfied = 2130837593;
+			
+			// aapt resource value: 0x7f02005a
+			public const int shschool = 2130837594;
+			
+			// aapt resource value: 0x7f02005b
+			public const int shsettings = 2130837595;
+			
+			// aapt resource value: 0x7f02005c
+			public const int shshare = 2130837596;
+			
+			// aapt resource value: 0x7f02005d
+			public const int shshipping = 2130837597;
+			
+			// aapt resource value: 0x7f02005e
+			public const int shshoppingcart = 2130837598;
+			
+			// aapt resource value: 0x7f02005f
+			public const int shsimplepush = 2130837599;
+			
+			// aapt resource value: 0x7f020060
+			public const int shsms = 2130837600;
+			
+			// aapt resource value: 0x7f020061
+			public const int shsnooz = 2130837601;
+			
+			// aapt resource value: 0x7f020062
+			public const int shstar = 2130837602;
+			
+			// aapt resource value: 0x7f020063
+			public const int shsubway = 2130837603;
+			
+			// aapt resource value: 0x7f020064
+			public const int shsupport = 2130837604;
+			
+			// aapt resource value: 0x7f020065
+			public const int shsync = 2130837605;
+			
+			// aapt resource value: 0x7f020066
+			public const int shtaxi = 2130837606;
+			
+			// aapt resource value: 0x7f020067
+			public const int shtoy = 2130837607;
+			
+			// aapt resource value: 0x7f020068
+			public const int shtram = 2130837608;
+			
+			// aapt resource value: 0x7f020069
+			public const int shtravelcard = 2130837609;
+			
+			// aapt resource value: 0x7f02006a
+			public const int shtrendingdown = 2130837610;
+			
+			// aapt resource value: 0x7f02006b
+			public const int shtv = 2130837611;
+			
+			// aapt resource value: 0x7f02006c
+			public const int shupdate = 2130837612;
+			
+			// aapt resource value: 0x7f02006d
+			public const int shvery_satisfied = 2130837613;
+			
+			// aapt resource value: 0x7f02006e
+			public const int shvolume = 2130837614;
+			
+			// aapt resource value: 0x7f02006f
+			public const int shwalk = 2130837615;
+			
+			// aapt resource value: 0x7f020070
+			public const int shwallet = 2130837616;
+			
+			// aapt resource value: 0x7f020071
+			public const int shwarning = 2130837617;
+			
+			// aapt resource value: 0x7f020072
+			public const int shwatch = 2130837618;
+			
+			// aapt resource value: 0x7f020073
+			public const int shwebsite = 2130837619;
+			
+			// aapt resource value: 0x7f020074
+			public const int shweekend = 2130837620;
+			
+			// aapt resource value: 0x7f020075
+			public const int shwhatshot = 2130837621;
+			
+			// aapt resource value: 0x7f020076
+			public const int shwork = 2130837622;
+			
+			// aapt resource value: 0x7f020077
+			public const int splash = 2130837623;
+			
+			// aapt resource value: 0x7f020078
+			public const int splash_screen = 2130837624;
 			
 			static Drawable()
 			{
@@ -1853,14 +2223,147 @@ namespace TownFish.App.Droid
 			}
 		}
 		
+		public partial class Layout
+		{
+			
+			// aapt resource value: 0x7f030000
+			public const int activity_shfeedback = 2130903040;
+			
+			static Layout()
+			{
+				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
+			}
+			
+			private Layout()
+			{
+			}
+		}
+		
 		public partial class String
 		{
 			
-			// aapt resource value: 0x7f030001
-			public const int ApplicationName = 2130903041;
+			// aapt resource value: 0x7f040001
+			public const int ApplicationName = 2130968577;
 			
-			// aapt resource value: 0x7f030000
-			public const int Hello = 2130903040;
+			// aapt resource value: 0x7f040002
+			public const int BLUETOOTH_ENABLE_TOAST = 2130968578;
+			
+			// aapt resource value: 0x7f040000
+			public const int Hello = 2130968576;
+			
+			// aapt resource value: 0x7f040003
+			public const int STREETHAWK_BLUETOOTH_NEGATIVE = 2130968579;
+			
+			// aapt resource value: 0x7f040004
+			public const int STREETHAWK_BLUETOOTH_POSITIVE = 2130968580;
+			
+			// aapt resource value: 0x7f040005
+			public const int STREETHAWK_CALL_NEGATIVE = 2130968581;
+			
+			// aapt resource value: 0x7f040006
+			public const int STREETHAWK_CALL_POSITIVE = 2130968582;
+			
+			// aapt resource value: 0x7f040007
+			public const int STREETHAWK_FEEDBACK_CANCEL = 2130968583;
+			
+			// aapt resource value: 0x7f040008
+			public const int STREETHAWK_FEEDBACK_HINT_CONTENT = 2130968584;
+			
+			// aapt resource value: 0x7f040009
+			public const int STREETHAWK_FEEDBACK_HINT_TITLE = 2130968585;
+			
+			// aapt resource value: 0x7f04000a
+			public const int STREETHAWK_FEEDBACK_NEGATIVE = 2130968586;
+			
+			// aapt resource value: 0x7f04000b
+			public const int STREETHAWK_FEEDBACK_POSITIVE = 2130968587;
+			
+			// aapt resource value: 0x7f04000c
+			public const int STREETHAWK_FEEDBACK_SUBMIT = 2130968588;
+			
+			// aapt resource value: 0x7f04000d
+			public const int STREETHAWK_FEEDBACK_TOAST_ERROR = 2130968589;
+			
+			// aapt resource value: 0x7f04000e
+			public const int STREETHAWK_FEEDBACK_TOAST_SUCCESS = 2130968590;
+			
+			// aapt resource value: 0x7f04000f
+			public const int STREETHAWK_GROWTH_DEFAULT_EMAIL_BODY = 2130968591;
+			
+			// aapt resource value: 0x7f040010
+			public const int STREETHAWK_GROWTH_DEFAULT_EMAIL_SUBJECT = 2130968592;
+			
+			// aapt resource value: 0x7f040011
+			public const int STREETHAWK_LOCATION_NEGATIVE = 2130968593;
+			
+			// aapt resource value: 0x7f040012
+			public const int STREETHAWK_LOCATION_POSITIVE = 2130968594;
+			
+			// aapt resource value: 0x7f040013
+			public const int STREETHAWK_OPEN_APP_NEGATIVE = 2130968595;
+			
+			// aapt resource value: 0x7f040014
+			public const int STREETHAWK_OPEN_APP_POSITIVE = 2130968596;
+			
+			// aapt resource value: 0x7f040015
+			public const int STREETHAWK_PUSH_NEGATIVE = 2130968597;
+			
+			// aapt resource value: 0x7f040016
+			public const int STREETHAWK_PUSH_POSITIVE = 2130968598;
+			
+			// aapt resource value: 0x7f040017
+			public const int STREETHAWK_RATE_NEGATIVE = 2130968599;
+			
+			// aapt resource value: 0x7f040018
+			public const int STREETHAWK_RATE_NEUTRAL = 2130968600;
+			
+			// aapt resource value: 0x7f040019
+			public const int STREETHAWK_RATE_POSITIVE = 2130968601;
+			
+			// aapt resource value: 0x7f04001a
+			public const int STREETHAWK_RAW_JSON_NEGATIVE = 2130968602;
+			
+			// aapt resource value: 0x7f04001b
+			public const int STREETHAWK_RAW_JSON_POSITIVE = 2130968603;
+			
+			// aapt resource value: 0x7f04001c
+			public const int STREETHAWK_SHOW_URL_CLOSE = 2130968604;
+			
+			// aapt resource value: 0x7f04001d
+			public const int STREETHAWK_SHOW_URL_NEGATIVE = 2130968605;
+			
+			// aapt resource value: 0x7f04001e
+			public const int STREETHAWK_SHOW_URL_POSITIVE = 2130968606;
+			
+			// aapt resource value: 0x7f040023
+			public const int STREETHAWK_SIMPLE_CANCEL = 2130968611;
+			
+			// aapt resource value: 0x7f04001f
+			public const int STREETHAWK_SIMPLE_MESSAGE_NOTIFICATION_POSITIVE = 2130968607;
+			
+			// aapt resource value: 0x7f040020
+			public const int STREETHAWK_SIMPLE_MESSAGE_POSITIVE = 2130968608;
+			
+			// aapt resource value: 0x7f040024
+			public const int STREETHAWK_SIMPLE_OK = 2130968612;
+			
+			// aapt resource value: 0x7f040021
+			public const int STREETHAWK_UPDATE_NEGATIVE = 2130968609;
+			
+			// aapt resource value: 0x7f040022
+			public const int STREETHAWK_UPDATE_POSITIVE = 2130968610;
+			
+			// aapt resource value: 0x7f040025
+			public const int action_settings = 2130968613;
+			
+			// aapt resource value: 0x7f040026
+			public const int app_name = 2130968614;
+			
+			// aapt resource value: 0x7f040027
+			public const int hello_world = 2130968615;
+			
+			// aapt resource value: 0x7f040028
+			public const int title_activity_shfeedback = 2130968616;
 			
 			static String()
 			{
@@ -1875,14 +2378,14 @@ namespace TownFish.App.Droid
 		public partial class Style
 		{
 			
-			// aapt resource value: 0x7f040001
-			public const int App_EditTextStyle = 2130968577;
+			// aapt resource value: 0x7f060001
+			public const int App_EditTextStyle = 2131099649;
 			
-			// aapt resource value: 0x7f040002
-			public const int townfishSplash = 2130968578;
+			// aapt resource value: 0x7f060002
+			public const int townfishSplash = 2131099650;
 			
-			// aapt resource value: 0x7f040000
-			public const int townfishTheme = 2130968576;
+			// aapt resource value: 0x7f060000
+			public const int townfishTheme = 2131099648;
 			
 			static Style()
 			{

@@ -7,6 +7,9 @@ using Xamarin.Forms;
 using Foundation;
 using UIKit;
 
+using StreethawkIOS.Core;
+using StreethawkIOS.Push;
+
 
 namespace TownFish.App.iOS
 {
@@ -25,6 +28,18 @@ namespace TownFish.App.iOS
 		//
 		public override bool FinishedLaunching (UIApplication app, NSDictionary options)
 		{
+			#region StreetHawk
+
+			SHApp.instance().appKey = "TownFish";
+			SHApp.instance().enableLogs = true;
+			SHApp.instance().iTunesId = ""; // TODO: insert iTunes ID
+			SHApp.instance().streethawkinit();
+
+			//Simply call one function of Push module to make sure linking to it.
+			SHPush.instance().isDefaultNotificationEnabled = true;
+
+			#endregion StreetHawk
+
 			UIApplication.SharedApplication.SetStatusBarStyle (UIStatusBarStyle.LightContent, false);
 			UIApplication.SharedApplication.SetStatusBarHidden (false, false);
 

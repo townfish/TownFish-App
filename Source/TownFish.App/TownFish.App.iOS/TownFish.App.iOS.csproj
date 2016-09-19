@@ -147,6 +147,8 @@
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="Renderers\EntryRenderer.cs" />
+    <Compile Include="StreetHawkIOS\StreetHawkAnalytics.cs" />
+    <Compile Include="StreetHawkIOS\StreetHawkPush.cs" />
     <None Include="app.config" />
     <None Include="Entitlements.plist">
       <SubType>Designer</SubType>
@@ -179,6 +181,12 @@
     <BundleResource Include="Resources\Icon-Small%403x.png" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Streethawk.IOS.Core-Unified">
+      <HintPath>..\..\Components\streethawkanalytics-1.8.4\lib\ios-unified\Streethawk.IOS.Core-Unified.dll</HintPath>
+    </Reference>
+    <Reference Include="Streethawk.IOS.Push-Unified">
+      <HintPath>..\..\Components\streethawkpush-1.8.4\lib\ios-unified\Streethawk.IOS.Push-Unified.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -210,6 +218,16 @@
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\close.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <XamarinComponentReference Include="streethawkanalytics">
+      <Visible>False</Visible>
+      <Version>1.8.4</Version>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="streethawkpush">
+      <Visible>False</Visible>
+      <Version>1.8.4</Version>
+    </XamarinComponentReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\..\packages\Xamarin.Forms.2.3.1.114\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets" Condition="Exists('..\..\packages\Xamarin.Forms.2.3.1.114\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets')" />

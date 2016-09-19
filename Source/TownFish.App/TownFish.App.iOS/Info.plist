@@ -26,7 +26,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.townfish.app</string>
 	<key>CFBundleVersion</key>
-	<string>160905</string>
+	<string>160919</string>
 	<key>CFBundleIconFiles</key>
 	<array>
 		<string>Icon-60@2x.png</string>
@@ -36,7 +36,7 @@
 		<string>Icon-Small@2x.png</string>
 	</array>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.7</string>
+	<string>1.0.8</string>
 	<key>UIStatusBarTintParameters</key>
 	<dict>
 		<key>UINavigationBar</key>
@@ -62,5 +62,9 @@
 	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch.Storyboard</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+	</array>
 </dict>
 </plist>

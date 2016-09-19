@@ -6,6 +6,10 @@ using Android.Runtime;
 using Android.OS;
 using Android.Views;
 
+using Com.Streethawk.Library.Core;
+using Com.Streethawk.Library.Push;
+
+
 namespace TownFish.App.Droid
 {
 	[Activity(Label = "TownFish.App", Icon = "@drawable/icon", Theme = "@style/townfishTheme", MainLauncher = false, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
@@ -17,7 +21,12 @@ namespace TownFish.App.Droid
 		{
 			base.OnCreate(bundle);
 
+			StreetHawk.Instance.SetAppKey ("TownFish");
+			StreetHawk.Instance.Init (Application);
+			Push.GetInstance (this).RegisterForPushMessaging (""); // TODO: add Google Project Number
+
 			global::Xamarin.Forms.Forms.Init(this, bundle);
+
 			mApp = new App();
 			mApp.AppCloseRequested += App_AppCloseRequested;
 			LoadApplication(mApp);

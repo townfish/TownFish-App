@@ -84,9 +84,6 @@ namespace TownFish.App.Pages
 				switch (action)
 				{
 					case cSchemaAction:
-						if (mCurrentSchema != null)
-							break; // only allow one per page load
-
 						mCurrentSchema = JsonConvert.DeserializeObject<TownFishMenuMap> (result);
 						ViewModel.LoadMenuMap (mCurrentSchema);
 
@@ -402,9 +399,7 @@ namespace TownFish.App.Pages
 		// apparently iOS status bar height is always 20 in XF (apparently, I said)
 		const double cTopPaddingiOS = 20;
 
-		// TODO: when Paul is calling onAction (cSchemaAction) from his side,
-		// this will no longer be necessary and should be set to ""
-		const string cPageLoadScript = "UberWebView.onAction ('" + cSchemaAction + "');";
+		const string cPageLoadScript = "twnfsh.appReady();";
 
 		const string cSchemaAction = "app_schema_reload";
 		const string cSchemaMethod = "twnfsh.getSchema()";

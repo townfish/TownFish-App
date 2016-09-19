@@ -17,7 +17,7 @@
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <AndroidUseLatestPlatformSdk>true</AndroidUseLatestPlatformSdk>
-    <TargetFrameworkVersion>v6.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v7.0</TargetFrameworkVersion>
     <AndroidSupportedAbis>armeabi,armeabi-v7a,x86</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
     <MandroidI18n />
@@ -60,6 +60,12 @@
     <Reference Include="Mono.Android" />
     <Reference Include="Mono.Android.Export" />
     <Reference Include="mscorlib" />
+    <Reference Include="StreetHawkAnalytics">
+      <HintPath>..\..\Components\streethawkanalytics-1.8.4\lib\android\StreetHawkAnalytics.dll</HintPath>
+    </Reference>
+    <Reference Include="StreetHawkPush">
+      <HintPath>..\..\Components\streethawkpush-1.8.4\lib\android\StreetHawkPush.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -124,6 +130,8 @@
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpashActivity.cs" />
+    <Compile Include="StreetHawkDroid\StreetHawkAnalytics.cs" />
+    <Compile Include="StreetHawkDroid\StreetHawkPush.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -156,6 +164,16 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\splash_screen.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <XamarinComponentReference Include="streethawkanalytics">
+      <Visible>False</Visible>
+      <Version>1.8.4</Version>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="streethawkpush">
+      <Visible>False</Visible>
+      <Version>1.8.4</Version>
+    </XamarinComponentReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="..\..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets" Condition="Exists('..\..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets')" />

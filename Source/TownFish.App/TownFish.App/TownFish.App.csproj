@@ -37,6 +37,8 @@
   <ItemGroup>
     <Compile Include="App.cs" />
     <Compile Include="Command.cs" />
+    <Compile Include="IStreetHawk\IStreetHawkAnalytics.cs" />
+    <Compile Include="IStreetHawk\IStreetHawkPush.cs" />
     <Compile Include="Models\AvailableLocation.cs" />
     <Compile Include="Models\BottomMenu.cs" />
     <Compile Include="Models\NavMenuItem.cs" />
