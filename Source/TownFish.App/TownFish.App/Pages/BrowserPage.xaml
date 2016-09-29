@@ -40,7 +40,7 @@
 							Source="{Binding SourceUrl}"
 							-->
 
-		<!-- Top bar Sub -->
+		<!-- Top Sub-Menu Bar -->
 		<Grid Grid.Row="1" Padding="10,6" ColumnSpacing="0"
 			  BackgroundColor="{Binding SubMenuBackgroundColour}"
 			  IsVisible="{Binding IsTopSubBarVisible}">
@@ -278,25 +278,32 @@
 					<TapGestureRecognizer x:Name="gstLocationLabel" Command="{Binding TopBarLeftCommand}"/>
 				</Label.GestureRecognizers>
 			</Label>
+			
 			<!-- span all cols so we can properly centre this -->
 			<Label Grid.Column="0" Grid.ColumnSpan="5"
 				   VerticalOptions="Center" HorizontalOptions="Center"
 				   FontSize="16" FontAttributes="Bold"
 				   TextColor="{Binding MenuBarTextColour}" Text="{Binding PageTitle}" />
-			<Image Grid.Column="3" Margin="10,0"
-					Source="{Binding TopBarRightLabel}"
-					HorizontalOptions="Center" WidthRequest="18">
-				<Image.GestureRecognizers>
+
+			<!-- 1st right button, with solid background and padding to expand tap area -->
+			<Grid Grid.Column="3" Padding="10,0"
+				  BackgroundColor="{Binding MenuBarBackgroundColour}">
+				<Grid.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
-				</Image.GestureRecognizers>
-			</Image>
-			<Image Grid.Column="4" Margin="10,0"
-				   Source="{Binding TopBarRight1Label}"
-				   HorizontalOptions="Center" WidthRequest="18">
-				<Image.GestureRecognizers>
+				</Grid.GestureRecognizers>
+				<Image Source="{Binding TopBarRightLabel}"
+					   HorizontalOptions="Center" WidthRequest="18" />
+			</Grid>
+
+			<!-- 2nd right button, with solid background and padding to expand tap area -->
+			<Grid Grid.Column="4" Padding="10,0"
+				  BackgroundColor="{Binding MenuBarBackgroundColour}">
+				<Grid.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
-				</Image.GestureRecognizers>
-			</Image>
+				</Grid.GestureRecognizers>
+				<Image Source="{Binding TopBarRight1Label}"
+					   HorizontalOptions="Center" WidthRequest="18" />
+			</Grid>
 
 			<!-- Top search panel (overlays top menu bar)
 				 Note: TranslationX of -10000 ensures it's off-screen to start with -->
@@ -332,11 +339,13 @@
 			</Frame>
 
 			<!-- this goes here to cover ingress and egress of search panel -->
-			<Grid Grid.Column="0" Padding="10,0" BackgroundColor="{Binding MenuBarBackgroundColour}">
+			<Grid Grid.Column="0" Padding="10,0"
+				  BackgroundColor="{Binding MenuBarBackgroundColour}">
 				<Grid.GestureRecognizers>
-					<TapGestureRecognizer x:Name="gstLocationImage" Command="{Binding TopBarLeftCommand}"/>
+					<TapGestureRecognizer x:Name="gstLocationImage" Command="{Binding TopBarLeftCommand}" />
 				</Grid.GestureRecognizers>
-				<Image Source="{Binding TopBarLeftLabel}" HorizontalOptions="Center" WidthRequest="18" />
+				<Image Source="{Binding TopBarLeftLabel}"
+					   HorizontalOptions="Center" WidthRequest="18" />
 			</Grid>
 		</Grid>
 
@@ -382,6 +391,10 @@
 			  BackgroundColor="{Binding MenuBarTextColour}">
 			<ActivityIndicator VerticalOptions="Center" HorizontalOptions="Center"
 							   IsRunning="{Binding IsLoading}" />
+
+			<!-- splash image for first-time loading -->
+			<Image x:Name="imgSplash" Source="splash.png" HorizontalOptions="Center"
+				   VerticalOptions="Center" />
 		</Grid>
 	</Grid>
 </ContentPage>

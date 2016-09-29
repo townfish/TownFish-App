@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Xamarin.Forms;
 
+using Xamify.UberWebViewLib;
+
 using TownFish.App.Models;
 using TownFish.App.ViewModels;
 
@@ -24,11 +26,15 @@ namespace TownFish.App.Pages
 
 			App.Current.BackButtonPressed += App_BackButtonPressed;
 
+			// set my user agent string
+			wbvContent.CustomUserAgent = cCustomUserAgent;
+
 			// set up JS bridge action scripts
 			wbvContent.PageLoadedScript = cPageLoadScript;
 
 			wbvContent.Actions = new Dictionary<string, string>
 			{
+				{ cBeginLoadingAction, cBeginLoadingValue },
 				{ cSchemaAction, cSchemaMethod },
 				{ cMenusVisibleAction, cMenusVisibleMethod },
 				{ cPopupMenuAction, cPopupMenuMethod },
@@ -83,6 +89,10 @@ namespace TownFish.App.Pages
 
 				switch (action)
 				{
+					case cBeginLoadingAction:
+						ShowLoading();
+						break;
+
 					case cSchemaAction:
 						mCurrentSchema = JsonConvert.DeserializeObject<TownFishMenuMap> (result);
 						ViewModel.LoadMenuMap (mCurrentSchema);
@@ -131,7 +141,7 @@ namespace TownFish.App.Pages
 					ViewModel.IsTopFormBarVisible = false;
 					ViewModel.IsBottomBarVisible = false;
 
-					ViewModel.IsLoading = false;
+					HideLoading();
 				}
 			}
 		}
@@ -152,18 +162,10 @@ namespace TownFish.App.Pages
 
 		void UberWebView_NavigationStarted (object sender, string url)
 		{
-			var uri = new Uri (url);
-			if (!ViewModel.IsLoading)
-			{
-				ViewModel.IsLoading = true;
-
-				pnlLoading.Opacity = 1;
-				pnlLoading.TranslationX = pnlLoading.Width;
-				pnlLoading.TranslateTo (0, 0, 500, Easing.CubicInOut);
-			}
+			ShowLoading();
 		}
 
-		async void UberWebView_NavigationFinished (object sender, string url)
+		void UberWebView_NavigationFinished (object sender, string url)
 		{
 			/* TODO: Paul said the menus should be hidden at the start of each
 			   page load, but this gives a very 'flashy' experience (and not in
@@ -183,17 +185,20 @@ namespace TownFish.App.Pages
 			if (uri.Host != App.SiteDomain)
 			{
 				// for our site, don't reveal page until menu has been rendered,
-				// to avoid the 'jump' down problem; other sites show now as
+				// to avoid the 'jump' down problem; other sites show immediately as
 				// obviously there's no menu on them!
 
-				await pnlLoading.FadeTo (0, 500, Easing.CubicIn);
-				ViewModel.IsLoading = false;
+				HideLoading();
 			}
 		}
 
-		void UberWebView_NavigationFailed (object sender, Exception ex)
+		void UberWebView_NavigationFailed (object sender, UberWebView.NavigationException ex)
 		{
-			ViewModel.IsLoading = false;
+			// HACK! ignore iOS -999 (nav cancelled?) error; appears harmless
+			if (Device.OS == TargetPlatform.iOS && ex.ErrorCode == -999)
+				return;
+
+			HideLoading();
 
 #if DEBUG
 			var msg = ex.Message;
@@ -208,6 +213,9 @@ namespace TownFish.App.Pages
 		{
 			if (ViewModel == null)
 				return;
+
+			// start in loading state
+			ShowLoading();
 
 			// manually set this as span isn't bindable
 			spnMemberAgreementLink.ForegroundColor = ViewModel.LocationsLinkColour;
@@ -367,16 +375,40 @@ namespace TownFish.App.Pages
 			mHidingSearch = false;
 		}
 
-		void ViewModel_MenusLoaded (object sender, string e)
+		void ShowLoading()
 		{
 			if (ViewModel.IsLoading)
+				return;
+
+			if (!mFirstLoading)
 			{
-				Device.BeginInvokeOnMainThread (async () =>
-					{
-						await pnlLoading.FadeTo (0, 500, Easing.CubicIn);
-						ViewModel.IsLoading = false;
-					});
+				pnlLoading.Opacity = 1;
+				pnlLoading.TranslationX = pnlLoading.Width;
+				pnlLoading.TranslateTo (0, 0, cLoadingPanelAnimationTime, Easing.CubicInOut);
 			}
+
+			ViewModel.IsLoading = true;
+		}
+
+		async void HideLoading()
+		{
+			if (!ViewModel.IsLoading)
+				return;
+
+			await pnlLoading.FadeTo (0, cLoadingPanelAnimationTime, Easing.CubicIn);
+			ViewModel.IsLoading = false;
+
+			// make sure we only show splash loading once
+			if (mFirstLoading)
+			{
+				mFirstLoading = false;
+				imgSplash.IsVisible = false;
+			}
+		}
+
+		void ViewModel_MenusLoaded (object sender, string e)
+		{
+			Device.BeginInvokeOnMainThread (() => HideLoading());
 		}
 
 		#endregion Methods
@@ -392,14 +424,19 @@ namespace TownFish.App.Pages
 
 #if DEBUG
 		const uint cLocationPanelAnimationTime = 250;
+		const uint cLoadingPanelAnimationTime = 250;
 #else
 		const uint cLocationPanelAnimationTime = 250;
+		const uint cLoadingPanelAnimationTime = 250;
 #endif
 
 		// apparently iOS status bar height is always 20 in XF (apparently, I said)
 		const double cTopPaddingiOS = 20;
 
 		const string cPageLoadScript = "twnfsh.appReady();";
+
+		const string cBeginLoadingAction = "app_schema_loading";
+		const string cBeginLoadingValue = "true";
 
 		const string cSchemaAction = "app_schema_reload";
 		const string cSchemaMethod = "twnfsh.getSchema()";
@@ -416,10 +453,14 @@ namespace TownFish.App.Pages
 		const string cCallbackFormat = "twnfsh.runCallback('{0}')";
 		const string cCallbackType = "callback";
 
-		const string cMoreActions = null;//Please Select:";
+		const string cMoreActions = null; // e.g. "Please Select:";
 		const string cCancel = "Cancel";
 
+		const string cCustomUserAgent = "com.townfish.app";
+
+		bool mFirstLoading = true;
 		bool mFirstShowing = true;
+
 		bool mIsSearchVisible;
 		bool mShowingSearch;
 		bool mHidingSearch;

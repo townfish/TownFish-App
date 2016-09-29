@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="5">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6204"/>
@@ -11,11 +11,9 @@
                         <viewControllerLayoutGuide type="top" id="2"/>
                         <viewControllerLayoutGuide type="bottom" id="3"/>
                     </layoutGuides>
-                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" id="43" translatesAutoresizingMaskIntoConstraints="NO" key="view" image="Default.png">
+                    <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" id="43" translatesAutoresizingMaskIntoConstraints="NO" key="view" image="splash.png">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <variation key="heightClass=regular-widthClass=compact">
-                            <rect key="frame" x="-62" y="305" width="160" height="240"/>
-                        </variation>
+                        <color key="backgroundColor" colorSpace="calibratedWhite" white="1" alpha="1"/>
                     </imageView>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -25,10 +23,14 @@
     </scenes>
     <resources>
         <image name="close.png" width="36" height="36"/>
-        <image name="Default.png" width="320" height="480"/>
+        <image name="splash.png" width="640" height="960"/>
         <image name="Icon-60.png" width="60" height="60"/>
         <image name="Icon-76.png" width="76" height="76"/>
         <image name="Icon-Small-40.png" width="40" height="40"/>
         <image name="Icon-Small.png" width="29" height="29"/>
     </resources>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedScreenMetrics key="destination"/>
+        <simulatedOrientationMetrics key="orientation"/>
+    </simulatedMetricsContainer>
 </document>
