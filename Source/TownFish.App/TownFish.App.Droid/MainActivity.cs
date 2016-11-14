@@ -6,14 +6,16 @@ using Android.Runtime;
 using Android.OS;
 using Android.Views;
 
-using Com.Streethawk.Library.Core;
-using Com.Streethawk.Library.Push;
+using Xamarin.Forms;
+using Xamarin.Forms.Platform.Android;
+
+using StreetHawkCrossplatform;
 
 
 namespace TownFish.App.Droid
 {
 	[Activity(Label = "TownFish.App", Icon = "@drawable/icon", Theme = "@style/townfishTheme", MainLauncher = false, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-	public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsApplicationActivity
+	public class MainActivity : FormsApplicationActivity
 	{
 		#region Methods
 
@@ -21,11 +23,9 @@ namespace TownFish.App.Droid
 		{
 			base.OnCreate(bundle);
 
-			StreetHawk.Instance.SetAppKey ("TownFish");
-			StreetHawk.Instance.Init (Application);
-			Push.GetInstance (this).RegisterForPushMessaging (""); // TODO: add Google Project Number
+			StreetHawkAnalytics.Init (this);
 
-			global::Xamarin.Forms.Forms.Init(this, bundle);
+			Forms.Init(this, bundle);
 
 			mApp = new App();
 			mApp.AppCloseRequested += App_AppCloseRequested;

@@ -1,70 +1,54 @@
 ﻿using System;
-using StreetHawkCrossplatform;
-using Com.Streethawk.Library.Feeds;
-using Android.App;
-using Org.Json;
 using System.Collections.Generic;
+
+using Android.App;
 using Android.Util;
 
-using XamHawkDemo.Droid;
+using Org.Json;
+
+using Com.Streethawk.Library.Feeds;
+using StreetHawkCrossplatform;
+
 
 [assembly: Xamarin.Forms.Dependency(typeof(StreetHawkFeeds))]
-namespace XamHawkDemo.Droid
-                     
+
+
+namespace StreetHawkCrossplatform
 {
-	public class StreetHawkFeeds : IStreetHawkFeeds,ISHFeedItemObserver
+	public class StreetHawkFeeds : Java.Lang.Object, IStreetHawkFeeds, ISHFeedItemObserver
 	{
-		private static Application mApplication;
+		static Application mApplication => StreetHawkAnalytics.Application;
 
 		private const string FEED_ID = "feed_id";
-
 		private const string TITLE = "title";
-
 		private const string MESSAGE = "message";
-
 		private const string CAMPAIGN = "campaign";
-
 		private const string CONTENT = "content";
-
 		private const string ACTIVATES = "activates";
-
 		private const string EXPIRES = "expires";
-
 		private const string CREATED = "created";
-
 		private const string MODIFIED = "modified";
-
 		private const string DELETED = "deleted";
-
-
-		public StreetHawkFeeds() { }
-
-		public StreetHawkFeeds(Application application)
-		{
-			mApplication = application;
-		}
 
 		public void NotifyFeedResult(int feedid, int result)
 		{
 			SHFeedItem.GetInstance(mApplication.ApplicationContext).NotifyFeedResult(feedid,result);
 		}
 
-		private static RegisterForNewFeedCallback mNewFeedCallbak;
-
-		public IntPtr Handle
+		public void NotifyFeedResult(int feedid, string stepid, string feedresult, bool feedDelete, bool completed)
 		{
-			get;
-			set;
+			//TODO: not implement yet
 		}
 
+		private RegisterForNewFeedCallback mNewFeedCallbak;
 		public void OnNewFeedAvailableCallback(RegisterForNewFeedCallback cb)
 		{
-			//TODO : implement broadcast receiver in native to receive feed notification and notifys server
-			Log.Error("StreetHawk", "OnNewFeedAvailableCallback is not available for this relase");
+			//TODO : implement broadcast receiver in native to receive feed notification and notifies server
+			Log.Error("StreetHawk", "OnNewFeedAvailableCallback is not available for this release");
 
 		}
 
-		private static RegisterForFeedCallback mRegisterForFeedCallBack;
+		private RegisterForFeedCallback mRegisterForFeedCallBack;
 		public void ReadFeedData(int offset, RegisterForFeedCallback cb)
 		{
 			mRegisterForFeedCallBack = cb;
@@ -109,10 +93,6 @@ namespace XamHawkDemo.Droid
 					mRegisterForFeedCallBack.Invoke(arrayFeeds,null);
 				}
 			}
-		}
-		public void Dispose()
-		{
-			
 		}
 	}
 }

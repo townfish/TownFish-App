@@ -1,25 +1,22 @@
 ﻿using System;
-using StreetHawkCrossplatform;
-using Com.Streethawk.Library.Push;
+using System.Collections.Generic;
+
 using Android.App;
 using Android.Util;
-using System.Collections.Generic;
 using Android.OS;
 
+using Com.Streethawk.Library.Push;
+using StreetHawkCrossplatform;
+
+
 [assembly: Xamarin.Forms.Dependency(typeof(StreetHawkPush))]
+
+
 namespace StreetHawkCrossplatform
 {
-	public class StreetHawkPush : IStreetHawkPush, ISHObserver
+	public class StreetHawkPush : Java.Lang.Object, IStreetHawkPush, ISHObserver
 	{
-
-		private static Application mApplication;
-
-		public StreetHawkPush() { }
-
-		public StreetHawkPush(Application application)
-		{
-			mApplication = application;
-		}
+		static Application mApplication => StreetHawkAnalytics.Application;
 
 		public void ForcePushToNotificationBar(bool status)
 		{
@@ -34,18 +31,18 @@ namespace StreetHawkCrossplatform
 		public string GetAppPage()
 		{
 			//TODO
-			Log.Error("StreetHawk","Function GetAppPage is not imeplemnted in this release ");
+			Log.Error("StreetHawk","Function GetAppPage is not implemented in this release ");
 			return null;
 		}
 
 		public void GetButtinPairFromId()
 		{
-			Log.Error("StreetHawk", "Function GetButtinPairFromId is not imeplemnted in this release ");
+			Log.Error("StreetHawk", "Function GetButtinPairFromId is not implemented in this release ");
 		}
 
 		public string GetGcmSenderId()
 		{
-			Log.Error("StreetHawk", "Function GetGcmSenderId is not imeplemnted in this release ");
+			Log.Error("StreetHawk", "Function GetGcmSenderId is not implemented in this release ");
 			return null;
 		}
 
@@ -73,19 +70,19 @@ namespace StreetHawkCrossplatform
 			return true;
 		}
 
-		private static RegisterForOnReceiveNonSHPushPayloadCallback mNonSHPushPayloadCB;
+		private RegisterForOnReceiveNonSHPushPayloadCallback mNonSHPushPayloadCB;
 		public void OnReceiveNonSHPushPayload(RegisterForOnReceiveNonSHPushPayloadCallback cb)
 		{
 			mNonSHPushPayloadCB = cb;
 		}
-		private static RegisterForOnReceivePushDataCallback mPushDataCallback;
+
+		private RegisterForOnReceivePushDataCallback mPushDataCallback;
 		public void OnReceivePushData(RegisterForOnReceivePushDataCallback cb)
 		{
 			mPushDataCallback = cb;
 		}
 
-
-		private static RegisterForOnReceiveResultCallback mPushResultCallback;
+		private RegisterForOnReceiveResultCallback mPushResultCallback;
 		public void OnReceiveResult(RegisterForOnReceiveResultCallback cb)
 		{
 			mPushResultCallback = cb;
@@ -97,7 +94,7 @@ namespace StreetHawkCrossplatform
 			Push.GetInstance(mApplication.ApplicationContext).RegisterSHObserver(this);
 		}
 
-		private static RegisterForShReceivedRawJSONCallback mRawJSONCB;
+		private RegisterForShReceivedRawJSONCallback mRawJSONCB;
 		public void RegisterForRawJSON(RegisterForShReceivedRawJSONCallback cb)
 		{
 			mRawJSONCB = cb;
@@ -120,12 +117,12 @@ namespace StreetHawkCrossplatform
 
 		public void SetIsDefaultNotificationServiceEnabled(bool enabled)
 		{
-			Log.Error("Anurag","Function SetIsDefaultNotificationServiceEnabled is not available for Android ");
+			Log.Error("StreetHawk","Function SetIsDefaultNotificationServiceEnabled is not available for Android ");
 		}
 
 		public void SetIsNotificationServiceEnabled(bool enabled)
 		{
-			Log.Error("Anurag", "Function SetIsNotificationServiceEnabled is not available for Android ");
+			Log.Error("StreetHawk", "Function SetIsNotificationServiceEnabled is not available for Android ");
 		}
 
 		public void SetUseCustomDialog(bool isUse)
@@ -133,14 +130,7 @@ namespace StreetHawkCrossplatform
 			Push.GetInstance(mApplication.ApplicationContext).SetUseCustomDialog(isUse);
 		}
 
-		private static RegisterForShNotifyAppPageCallback mNotifyAppPageCB;
-
-		public IntPtr Handle
-		{
-			get;
-			set;
-		}
-
+		private RegisterForShNotifyAppPageCallback mNotifyAppPageCB;
 		public void ShNotifyAppPage(RegisterForShNotifyAppPageCallback cb)
 		{
 			mNotifyAppPageCB = cb;
@@ -162,7 +152,7 @@ namespace StreetHawkCrossplatform
 				appData.data = pushData.Data;
 				appData.action = (SHAction)pushData.Action;
 				appData.isAppOnForeground = false;
-				appData.msgID = Int32.Parse(pushData.MsgId);
+				appData.msgID = pushData.MsgId;
 				appData.portion = pushData.Portion;
 				appData.orientation = (SHSlideDirection)pushData.Orientation;
 				appData.speed = pushData.Speed;
@@ -183,7 +173,7 @@ namespace StreetHawkCrossplatform
 				appData.data = pushData.Data;
 				appData.action = (SHAction)pushData.Action;
 				appData.isAppOnForeground = false;
-				appData.msgID = Int32.Parse(pushData.MsgId);
+				appData.msgID = pushData.MsgId;
 				appData.portion = pushData.Portion;
 				appData.orientation = (SHSlideDirection)pushData.Orientation;
 				appData.speed = pushData.Speed;
@@ -208,11 +198,6 @@ namespace StreetHawkCrossplatform
 			{
 				mRawJSONCB.Invoke(title, message, json);
 			}
-		}
-
-		public void Dispose()
-		{
-			
 		}
 	}
 }

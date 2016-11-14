@@ -75,11 +75,28 @@
     <Reference Include="Mono.Android" />
     <Reference Include="Mono.Android.Export" />
     <Reference Include="mscorlib" />
-    <Reference Include="StreetHawkAnalytics">
-      <HintPath>..\..\Components\streethawkanalytics-1.8.4\lib\android\StreetHawkAnalytics.dll</HintPath>
+    <Reference Include="StreetHawkAnalytics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Components\streethawkanalytics-1.8.5\lib\android\StreetHawkAnalytics.dll</HintPath>
     </Reference>
-    <Reference Include="StreetHawkPush">
-      <HintPath>..\..\Components\streethawkpush-1.8.4\lib\android\StreetHawkPush.dll</HintPath>
+    <Reference Include="StreetHawkBeacon">
+      <HintPath>..\..\Components\streethawkbeacon-1.8.5\lib\android\StreetHawkBeacon.dll</HintPath>
+    </Reference>
+    <Reference Include="StreetHawkFeeds">
+      <HintPath>..\..\Components\streethawkfeeds-1.8.5\lib\android\StreetHawkFeeds.dll</HintPath>
+    </Reference>
+    <Reference Include="StreetHawkGeofence">
+      <HintPath>..\..\Components\streethawkgeofence-1.8.5\lib\android\StreetHawkGeofence.dll</HintPath>
+    </Reference>
+    <Reference Include="StreetHawkGrowth">
+      <HintPath>..\..\Components\streethawkgrowth-1.8.5\lib\android\StreetHawkGrowth.dll</HintPath>
+    </Reference>
+    <Reference Include="StreetHawkLocations">
+      <HintPath>..\..\Components\streethawklocations-1.8.5\lib\android\StreetHawkLocations.dll</HintPath>
+    </Reference>
+    <Reference Include="StreetHawkPush, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Components\streethawkpush-1.8.5\lib\android\StreetHawkPush.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -162,6 +179,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpashActivity.cs" />
     <Compile Include="StreetHawkDroid\StreetHawkAnalytics.cs" />
+    <Compile Include="StreetHawkDroid\StreetHawkBeacons.cs" />
+    <Compile Include="StreetHawkDroid\StreetHawkFeeds.cs" />
+    <Compile Include="StreetHawkDroid\StreetHawkGeofence.cs" />
+    <Compile Include="StreetHawkDroid\StreetHawkGrowth.cs" />
+    <Compile Include="StreetHawkDroid\StreetHawkLocation.cs" />
     <Compile Include="StreetHawkDroid\StreetHawkPush.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -194,16 +216,38 @@
     <AndroidResource Include="Resources\drawable\splash.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\splash_screen.xml" />
+    <AndroidResource Include="Resources\drawable\splash_screen.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <XamarinComponentReference Include="streethawkanalytics">
       <Visible>False</Visible>
-      <Version>1.8.4</Version>
+      <Version>1.8.5</Version>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="streethawkbeacon">
+      <Visible>False</Visible>
+      <Version>1.8.5</Version>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="streethawkfeeds">
+      <Visible>False</Visible>
+      <Version>1.8.5</Version>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="streethawkgeofence">
+      <Visible>False</Visible>
+      <Version>1.8.5</Version>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="streethawkgrowth">
+      <Visible>False</Visible>
+      <Version>1.8.5</Version>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="streethawklocations">
+      <Visible>False</Visible>
+      <Version>1.8.5</Version>
     </XamarinComponentReference>
     <XamarinComponentReference Include="streethawkpush">
       <Visible>False</Visible>
-      <Version>1.8.4</Version>
+      <Version>1.8.5</Version>
     </XamarinComponentReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

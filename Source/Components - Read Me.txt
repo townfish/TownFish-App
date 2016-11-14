@@ -1,0 +1,13 @@
+Xamarin Components
+==================
+
+Component binaries haven't been included in this archive to keep the size down. Before building
+the solution, restore the components as follows:
+
+1) In the iOS project, open Components and double-click on each one (make sure you're logged in
+   to your Xamarin account or it won't download)
+2) Close the solution and re-open it
+3) Both iOS and Android projects should now show components and references to them
+
+At this stage you can rebuild the solution, but the first attempt may only download the missing
+NuGet packages, so on completion you will probably have to rebuild it again.

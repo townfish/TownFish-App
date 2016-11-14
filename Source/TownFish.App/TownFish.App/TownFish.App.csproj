@@ -35,9 +35,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="App.cs" />
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Command.cs" />
     <Compile Include="IStreetHawk\IStreetHawkAnalytics.cs" />
+    <Compile Include="IStreetHawk\IStreetHawkBeacon.cs" />
+    <Compile Include="IStreetHawk\IStreetHawkFeeds.cs" />
+    <Compile Include="IStreetHawk\IStreetHawkGeofence.cs" />
+    <Compile Include="IStreetHawk\IStreetHawkGrowth.cs" />
+    <Compile Include="IStreetHawk\IStreetHawkLocations.cs" />
     <Compile Include="IStreetHawk\IStreetHawkPush.cs" />
     <Compile Include="Models\AvailableLocation.cs" />
     <Compile Include="Models\BottomMenu.cs" />
@@ -84,6 +91,14 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\LoadingAnimation.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="App.xaml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\..\packages\Xamarin.Forms.2.3.2.127\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets" Condition="Exists('..\..\packages\Xamarin.Forms.2.3.2.127\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Xamarin.Forms.targets')" />

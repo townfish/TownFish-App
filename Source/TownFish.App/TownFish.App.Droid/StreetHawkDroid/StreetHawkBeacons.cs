@@ -1,24 +1,20 @@
 ﻿using System;
-using StreetHawkCrossplatform;
-using Com.Streethawk.Library.Beacon;
-using Android.Util;
+
 using Android.App;
-using XamHawkDemo.Droid;
+using Android.Util;
+
+using Com.Streethawk.Library.Beacon;
+using StreetHawkCrossplatform;
+
 
 [assembly: Xamarin.Forms.Dependency(typeof(StreetHawkBeacons))]
-namespace XamHawkDemo.Droid
+
+
+namespace StreetHawkCrossplatform
 {
-	public class StreetHawkBeacons : IStreetHawkBeacon,INotifyBeaconTransition
+	public class StreetHawkBeacons : Java.Lang.Object, IStreetHawkBeacon, INotifyBeaconTransition
 	{
-		private static Application mApplication;
-
-
-		public StreetHawkBeacons() { }
-
-		public StreetHawkBeacons(Application application)
-		{
-			mApplication = application;
-		}
+		static Application mApplication => StreetHawkAnalytics.Application;
 
 		public bool GetIsDefaultLocationServiceEnabled()
 		{
@@ -31,13 +27,6 @@ namespace XamHawkDemo.Droid
 			Log.Error("StreetHawk", "Function DisplayBadge is not implemented for Android");
 			return false;
 		}
-		private static RegisterForBeaconCallback mBeaconCallBack;
-
-		public IntPtr Handle
-		{
-			get;
-			set;
-		}
 
 		public void NotifyBeaconDetected()
 		{
@@ -48,6 +37,7 @@ namespace XamHawkDemo.Droid
 			}
 		}
 
+		private RegisterForBeaconCallback mBeaconCallBack;
 		public void RegisterForBeaconStatus(RegisterForBeaconCallback cb)
 		{
 			mBeaconCallBack = cb;
@@ -81,11 +71,6 @@ namespace XamHawkDemo.Droid
 		public void StopBeaconMonitoring()
 		{
 			Beacons.GetInstance(mApplication.ApplicationContext).StopBeaconMonitoring();
-		}
-
-		public void Dispose()
-		{
-	
 		}
 	}
 }

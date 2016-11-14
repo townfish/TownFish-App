@@ -1,36 +1,22 @@
 ﻿using System;
-using StreetHawkCrossplatform;
-using Com.Streethawk.Library.Growth;
+
 using Android.App;
 using Android.Util;
+
 using Org.Json;
 
-using XamHawkDemo.Droid;
+using Com.Streethawk.Library.Growth;
+using StreetHawkCrossplatform;
+
 
 [assembly: Xamarin.Forms.Dependency(typeof(StreetHawkGrowth))]
-namespace XamHawkDemo.Droid
+
+
+namespace StreetHawkCrossplatform
 {
-	public class StreetHawkGrowth :IStreetHawkGrowth,IGrowth
+	public class StreetHawkGrowth : Java.Lang.Object, IStreetHawkGrowth, IGrowth
 	{
-		private Activity mActivity;
-
-		public StreetHawkGrowth() { }
-
-		public StreetHawkGrowth(Activity activity)
-		{
-			mActivity = activity;
-		}
-
-		public IntPtr Handle
-		{
-			get;
-			set;
-		}
-
-		public void Dispose()
-		{
-			
-		}
+		static Activity mActivity => StreetHawkAnalytics.MainActivity;
 
 		public void GetShareUrlForAppDownload(string utm_campaign, string share_url, string default_url)
 		{
@@ -44,7 +30,8 @@ namespace XamHawkDemo.Droid
 			{
 				Growth.GetInstance(mActivity).GetShareUrlForAppDownload(utm_campaign, share_url, utm_source, utm_medium, utm_term, campaign_content, default_url, null);
 			}
-			else {
+			else
+			{
 				mGrowthCallback = cb;
 				Growth.GetInstance(mActivity).GetShareUrlForAppDownload(utm_campaign, share_url, utm_source, utm_medium, utm_term, campaign_content, default_url,this);
 			}

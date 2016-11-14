@@ -59,7 +59,7 @@ namespace StreetHawkCrossplatform
 		/// Tags numeric event inside the app.
 		/// </summary>
 		/// <param name="key">Key for the event.</param>
-		/// <param name="value">Value for the venet.</param>
+		/// <param name="value">Value for the event.</param>
 		void TagNumeric(string key, double value);
 
 		/// <summary>
@@ -180,7 +180,7 @@ namespace StreetHawkCrossplatform
 		/*Android only functions*/
 
 		/// <summary>
-		/// Displaies the badge. Note that for Android, the API depends on home screen launcher and badge wont be displayed on non supported devices.
+		/// Displays the badge. Note that for Android, the API depends on home screen launcher and badge wont be displayed on non supported devices.
 		/// </summary>
 		/// <returns>The badge.</returns>
 		/// <param name="badgeCount">Badge count.</param>

@@ -1,25 +1,20 @@
 ﻿using System;
 
-using StreetHawkCrossplatform;
-using Com.Streethawk.Library.Locations;
 using Android.App;
 using Android.Util;
 
-using XamHawkDemo.Droid;
+using Com.Streethawk.Library.Locations;
+using StreetHawkCrossplatform;
+
 
 [assembly: Xamarin.Forms.Dependency(typeof(StreetHawkLocation))]
-namespace XamHawkDemo.Droid
+
+
+namespace StreetHawkCrossplatform
 {
 	public class StreetHawkLocation:IStreetHawkLocations
 	{
-		private static Application mApplication;
-
-		public StreetHawkLocation() { }
-
-		public StreetHawkLocation(Application application)
-		{
-			mApplication = application;
-		}
+		static Application mApplication => StreetHawkAnalytics.Application;
 
 		public bool GetIsDefaultLocationServiceEnabled()
 		{

@@ -266,27 +266,30 @@
 			  HeightRequest="26" Padding="0,4" VerticalOptions="Start">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="auto" />
-				<ColumnDefinition Width="auto" />
 				<ColumnDefinition />
 				<ColumnDefinition Width="auto"/>
 				<ColumnDefinition Width="auto"/>
 			</Grid.ColumnDefinitions>
 
-			<Label Grid.Column="1" VerticalOptions="Center" FontSize="16" FontAttributes="Bold"
-					TextColor="{Binding MenuBarTextColour}" Text="{Binding LocationName}" >
+			<Label Grid.Column="1" VerticalOptions="Center"
+				   FontSize="16" FontAttributes="Bold"
+				   TextColor="{Binding MenuBarTextColour}"
+				   Text="{Binding LocationName}"
+				   LineBreakMode="TailTruncation">
 				<Label.GestureRecognizers>
 					<TapGestureRecognizer x:Name="gstLocationLabel" Command="{Binding TopBarLeftCommand}"/>
 				</Label.GestureRecognizers>
 			</Label>
-			
+
 			<!-- span all cols so we can properly centre this -->
-			<Label Grid.Column="0" Grid.ColumnSpan="5"
+			<Label Grid.Column="0" Grid.ColumnSpan="4"
 				   VerticalOptions="Center" HorizontalOptions="Center"
 				   FontSize="16" FontAttributes="Bold"
-				   TextColor="{Binding MenuBarTextColour}" Text="{Binding PageTitle}" />
+				   TextColor="{Binding MenuBarTextColour}"
+				   Text="{Binding PageTitle}" />
 
 			<!-- 1st right button, with solid background and padding to expand tap area -->
-			<Grid Grid.Column="3" Padding="10,0"
+			<Grid Grid.Column="2" Padding="10,0"
 				  BackgroundColor="{Binding MenuBarBackgroundColour}">
 				<Grid.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
@@ -296,7 +299,7 @@
 			</Grid>
 
 			<!-- 2nd right button, with solid background and padding to expand tap area -->
-			<Grid Grid.Column="4" Padding="10,0"
+			<Grid Grid.Column="3" Padding="10,0"
 				  BackgroundColor="{Binding MenuBarBackgroundColour}">
 				<Grid.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
@@ -307,7 +310,7 @@
 
 			<!-- Top search panel (overlays top menu bar)
 				 Note: TranslationX of -10000 ensures it's off-screen to start with -->
-			<Frame x:Name="pnlTopSearch" Grid.Column="1" Grid.ColumnSpan="3"
+			<Frame x:Name="pnlTopSearch" Grid.Column="1" Grid.ColumnSpan="2"
 				   TranslationX="-10000"
 				   BackgroundColor="{Binding LocationsContrastBackgroundColour}"
 				   OutlineColor="{Binding LocationsContrastBackgroundColour}"
@@ -389,8 +392,9 @@
 		<!-- Loading Panel -->
 		<Grid x:Name="pnlLoading" IsVisible="{Binding IsLoading}" Grid.Row="1" Grid.RowSpan="2"
 			  BackgroundColor="{Binding MenuBarTextColour}">
-			<ActivityIndicator VerticalOptions="Center" HorizontalOptions="Center"
-							   IsRunning="{Binding IsLoading}" />
+			<!--<ActivityIndicator VerticalOptions="Center" HorizontalOptions="Center"
+							   IsRunning="{Binding IsLoading}" />-->
+			<WebView Source="{Binding LoadingWebViewSource}"/>
 
 			<!-- splash image for first-time loading -->
 			<Image x:Name="imgSplash" Source="splash.png" HorizontalOptions="Center"

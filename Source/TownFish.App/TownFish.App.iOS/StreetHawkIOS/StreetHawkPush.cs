@@ -65,22 +65,19 @@ namespace StreetHawkCrossplatform
 			   };
 		}
 
-		private List<KeyValuePair<int, ClickButtonHandler>> dictPushMsgHandler = new List<KeyValuePair<int, ClickButtonHandler>>();
-		public void SendPushResult(string sMsgid, int result)
+		private List<KeyValuePair<string, ClickButtonHandler>> dictPushMsgHandler = new List<KeyValuePair<string, ClickButtonHandler>>();
+		public void SendPushResult(string msgid, int result)
 		{
-			int msgid;
-			int.TryParse (sMsgid, out msgid);
-
-			KeyValuePair<int, ClickButtonHandler> findItem = default(KeyValuePair<int, ClickButtonHandler>);
+			KeyValuePair<string, ClickButtonHandler> findItem = default(KeyValuePair<string, ClickButtonHandler>);
 			for (int i = 0; i < this.dictPushMsgHandler.Count; i++)
 			{
-				if (this.dictPushMsgHandler[i].Key == msgid)
+				if (this.dictPushMsgHandler[i].Key.CompareTo(msgid) == 0)
 				{
 					findItem = this.dictPushMsgHandler[i];
 					break;
 				}
 			}
-			if (!findItem.Equals(default(KeyValuePair<int, ClickButtonHandler>)))
+			if (!findItem.Equals(default(KeyValuePair<string, ClickButtonHandler>)))
 			{
 				findItem.Value((StreethawkIOS.Push.SHPushResult)result);
 				this.dictPushMsgHandler.Remove(findItem);
@@ -180,6 +177,7 @@ namespace StreetHawkCrossplatform
 				data.badge = pushData.badge;
 				data.displayWithoutDialog = pushData.displayWithoutDialog;
 				data.isInAppSlide = pushData.isInAppSlide;
+				data.category = pushData.category;
 				//insert into memory cache
 				if (handler != null)
 				{
@@ -194,7 +192,7 @@ namespace StreetHawkCrossplatform
 					}
 					if (findHandler == null)
 					{
-						this.dictPushMsgHandler.Add(new KeyValuePair<int, ClickButtonHandler>(data.msgID, handler));
+						this.dictPushMsgHandler.Add(new KeyValuePair<string, ClickButtonHandler>(data.msgID, handler));
 					}
 				}
 				_pushDataCallback(data);
@@ -222,7 +220,8 @@ namespace StreetHawkCrossplatform
 				data.badge = pushData.badge;
 				data.displayWithoutDialog = pushData.displayWithoutDialog;
 				data.isInAppSlide = pushData.isInAppSlide;
-				_pushResultCallback(data, (int) result);
+				data.category = pushData.category;
+				_pushResultCallback(data, (int)result);
 			}
 		}
 

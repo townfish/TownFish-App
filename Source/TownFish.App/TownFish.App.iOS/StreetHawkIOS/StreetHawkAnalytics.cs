@@ -161,19 +161,6 @@ namespace StreetHawkCrossplatform
 				return NSDate.FromTimeIntervalSinceReferenceDate((datetime - referenceDate).TotalSeconds);
 			}
 		}
-
-		private DateTime convertDatetime(NSDate datetime)
-		{
-			if (datetime == null)
-			{
-				return DateTime.MinValue;
-			}
-			else
-			{
-				DateTime reference = new DateTime(2001, 1, 1, 0, 0, 0);
-				return reference.AddSeconds(datetime.SecondsSinceReferenceDate);
-			}
-		}
 	}
 }
 

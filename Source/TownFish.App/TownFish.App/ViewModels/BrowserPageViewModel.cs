@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Windows.Input;
 
@@ -37,7 +39,31 @@ namespace TownFish.App.ViewModels
 		public bool IsLoading
 		{
 			get { return Get<bool>(); }
-			set { Set (value); }
+
+			set
+			{
+				// allows us to clear loading content when not loading
+				if (Set (value))
+					OnPropertyChanged (() => LoadingWebViewSource);
+			}
+		}
+
+		public HtmlWebViewSource LoadingWebViewSource
+			{ get { return new HtmlWebViewSource { Html = LoadingHtml }; } }
+
+		public string LoadingHtml
+		{
+			get
+			{
+				// if not loading, no need for expensive animations to be running
+				if (!IsLoading)
+					return "";
+
+				using (var stm = App.Assembly.GetManifestResourceStream (
+						"TownFish.App.Resources.LoadingAnimation.html"))
+					using (var reader = new StreamReader (stm))
+						return reader.ReadToEnd();
+			}
 		}
 
 		#region Colours
@@ -557,7 +583,7 @@ namespace TownFish.App.ViewModels
 					CurrentLocation = map.CurrentLocation;
 
 					// set this now that we know it
-					LocationName = CurrentLocation.Name;
+					LocationName = WebUtility.HtmlDecode (CurrentLocation.Name);
 
 					InfoLocationIcon = App.BaseUrl + map.LocationIcons.Info
 							.Replace ("{size}", size)

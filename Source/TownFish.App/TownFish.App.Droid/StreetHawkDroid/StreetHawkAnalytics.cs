@@ -1,24 +1,52 @@
 ﻿using System;
-using StreetHawkCrossplatform;
+
 using Android.App;
-using Com.Streethawk.Library.Core;
 using Android.Util;
 
+using Com.Streethawk.Library.Core;
+using StreetHawkCrossplatform;
+
+
 [assembly: Xamarin.Forms.Dependency(typeof(StreetHawkAnalytics))]
+
+
 namespace StreetHawkCrossplatform
 {
-	public class StreetHawkAnalytics : IStreetHawkAnalytics,ISHEventObserver
+	public class StreetHawkAnalytics : Java.Lang.Object, IStreetHawkAnalytics, ISHEventObserver
 	{
+		const string cCallInitAndroidMessage =
+				"Call StreetHawkAnalytics.Init (Activity) before any other StreetHawk APIs";
 
-		private static Application mApplication;
-		private static bool mIsInitialised = false;
+		private Application mApplication => Application; // just an alias; remove if you want to
+		private bool mIsInitialised = false;
 
-		public StreetHawkAnalytics() { }
+		static Activity sMainActivity;
 
-		public StreetHawkAnalytics(Application app)
+		public static Activity MainActivity
 		{
-			mApplication = app;
-			Log.Error("Anurag","Application "+mApplication);
+			get
+			{
+				if (sMainActivity == null)
+					throw new InvalidOperationException (cCallInitAndroidMessage);
+
+				return sMainActivity;
+			}
+
+			private set
+			{
+				sMainActivity = value;
+			}
+		}
+
+		public static Application Application => MainActivity.Application;
+
+		/// <summary>
+		/// Sets up 
+		/// </summary>
+		/// <param name="mainActivity">The main activity.</param>
+		public static void Init (Activity mainActivity)
+		{
+			MainActivity = mainActivity;
 		}
 
 		public void DisplayBadge(int badgeCount)
@@ -34,7 +62,7 @@ namespace StreetHawkCrossplatform
 
 		public string GetAppKey()
 		{
-			Log.Error("Anurag","inside getApp[Key "+mApplication);
+			Log.Error("StreetHawk","inside getAppKey "+mApplication);
 			return StreetHawk.Instance.GetAppKey(mApplication.ApplicationContext);
 		}
 
@@ -62,9 +90,9 @@ namespace StreetHawkCrossplatform
 
 		public string GetSHLibraryVersion()
 		{
-			//TODO return from library
-			return "1.8.2";
+			return StreetHawk.Instance.SHLibraryVersion;
 		}
+
 		public string GetsiTunesId()
 		{
 			Log.Error("StreetHawk", "Function GetsiTunesId is not implemented for Android");
@@ -103,14 +131,8 @@ namespace StreetHawkCrossplatform
 		{
 			Log.Error("StreetHawk", "Function RegisterForDeeplinkURL is not implemented for Android");
 		}
-		private static OnInstallRegisteredCallback mInstallRegisterCallback;
 
-		public IntPtr Handle
-		{
-			get;
-			set;
-		}
-
+		private OnInstallRegisteredCallback mInstallRegisterCallback;
 		public void RegisterForInstallEvent(OnInstallRegisteredCallback cb)
 		{
 			mInstallRegisterCallback = cb;
@@ -178,11 +200,6 @@ namespace StreetHawkCrossplatform
 			{
 				mInstallRegisterCallback.Invoke(installId);
 			}
-		}
-
-		public void Dispose()
-		{
-			
 		}
 	}
 }

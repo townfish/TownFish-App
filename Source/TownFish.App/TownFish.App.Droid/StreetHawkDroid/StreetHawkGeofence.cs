@@ -1,26 +1,20 @@
 ﻿using System;
-using StreetHawkCrossplatform;
-using Com.Streethawk.Library.Geofence;
+
 using Android.App;
 using Android.Util;
-using System.Collections.Generic;
 
-using XamHawkDemo.Droid;
+using Com.Streethawk.Library.Geofence;
+using StreetHawkCrossplatform;
+
 
 [assembly: Xamarin.Forms.Dependency(typeof(StreetHawkGeofence))]
-namespace XamHawkDemo.Droid
+
+
+namespace StreetHawkCrossplatform
 {
-	public class StreetHawkGeofence :IStreetHawkGeofence,INotifyGeofenceTransition
+	public class StreetHawkGeofence : Java.Lang.Object, IStreetHawkGeofence, INotifyGeofenceTransition
 	{
-		private static Application mApplication;
-
-
-		public StreetHawkGeofence() { }
-
-		public StreetHawkGeofence(Application application)
-		{
-			mApplication = application;
-		}
+		static Application mApplication => StreetHawkAnalytics.Application;
 
 		public bool GetIsDefaultLocationServiceEnabled()
 		{
@@ -34,15 +28,7 @@ namespace XamHawkDemo.Droid
 			return false;
 		}
 
-
-		private static RegisterForGeofenceCallback mGeofenceCallBack;
-
-		public IntPtr Handle
-		{
-			get;
-			set;
-		}
-
+		private RegisterForGeofenceCallback mGeofenceCallBack;
 		public void RegisterForGeofenceStatus(RegisterForGeofenceCallback cb)
 		{
 			mGeofenceCallBack = cb;
@@ -86,11 +72,5 @@ namespace XamHawkDemo.Droid
 
 			Log.Error("StreetHawk", "OnDeviceEnteringGeofence is not supported in this release");
 		}
-
-		public void Dispose()
-		{
-			
-		}
 	}
 }
-

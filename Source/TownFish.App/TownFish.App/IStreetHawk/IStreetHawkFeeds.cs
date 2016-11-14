@@ -24,10 +24,19 @@ namespace StreetHawkCrossplatform
 		/// <summary>
 		/// Notifies user's action on feed item. 1 for accepted, 0 for later and -1 for decline.
 		/// </summary>
-		/// <returns>The feed result.</returns>
-		/// <param name="feedid">Feed id.</param>
-		/// <param name="result">Result.</param>
+		/// <param name="feedid">The feed id of result feed.</param>
+		/// <param name="result">Result. 1 for accepted, 0 for postpone, -1 for declined.</param>
 		void NotifyFeedResult(int feedid, int result);
+
+		/// <summary>
+		/// Notifies user's action on feed item. 
+		/// </summary>
+		/// <param name="feedid">The feed id of result feed.</param>
+		/// <param name="stepid">The ID or label about a step.</param>
+		/// <param name="feedresult">The result for accept, or postpone or decline. String must be accepted|postponed|rejected.</param>
+		/// <param name="feedDelete">Set to <c>true</c> if feed items should be deleted from server for the given install. </param>
+		/// <param name="completed">Set to <c>true</c> when tour complete.</param>
+		void NotifyFeedResult(int feedid, string stepid, string feedresult, bool feedDelete, bool completed);
 
 		/// <summary>
 		/// Fetch feed data from StreetHawk server.
@@ -42,21 +51,6 @@ namespace StreetHawkCrossplatform
 		/// <param name="cb">Callback for new feeds available.</param>
 		void OnNewFeedAvailableCallback(RegisterForNewFeedCallback cb);
 	}
-
-	/*
-	/// <summary>
-	/// Result when click positive button such as "Agree", "Yes Please".
-	/// </summary>
-	public int SHFeedResult_Accept = 1;
-	/// <summary>
-	/// Result when click neutral button such as "Later", "Not now".
-	/// </summary>
-	public int SHFeedResult_Postpone = 0;
-	/// <summary>
-	/// Result when click negative button such as "Never", "Cancel".
-	/// </summary>
-	public int SHFeedResult_Decline = -1;
-	*/
 
 	public class SHFeedObject
 	{

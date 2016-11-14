@@ -50,11 +50,11 @@ namespace StreetHawkCrossplatform
 		/// <param name="uuid">UUID.</param>
 		/// <param name="major">Major. Major number of detected beacon</param>
 		/// <param name="minor">Minor. Minor number of detected beacon</param>
-		/// <param name="distance">Distance. Distance between beaocn and device</param>
+		/// <param name="distance">Distance. Distance between beacon and device</param>
 		int ShEnterBeacon(string uuid, int major, int minor, double distance);
 
 		/// <summary>
-		/// Notify beacon exit if you are using a third party library to detect beaocn exits
+		/// Notify beacon exit if you are using a third party library to detect beacon exits
 		/// </summary>
 		/// <returns>The exit beacon.</returns>
 		/// <param name="uuid">UUID.</param>

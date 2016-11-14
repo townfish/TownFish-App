@@ -19,7 +19,7 @@ namespace StreetHawkCrossplatform
 	public delegate void RegisterForOnReceivePushDataCallback(PushDataForApplication pushData);
 
 	/// <summary>
-	/// Callback to get a push content with its result.
+	/// Callback to get a push content with its result. 1 for accepted, 0 for postpone, -1 for declined.
 	/// </summary>
 	public delegate void RegisterForOnReceiveResultCallback(PushDataForApplication pushData, int result);
 
@@ -76,7 +76,7 @@ namespace StreetHawkCrossplatform
 		/// Sends the push result. Must call this after handle pushDataCallback to let process continue.
 		/// </summary>
 		/// <param name="msgid">The message id.</param>
-		/// <param name="result">The push result.</param>
+		/// <param name="result">The push result. 1 for accepted, 0 for postpone, -1 for declined.</param>
 		void SendPushResult(string msgid, int result);
 
 		/*iOS only functions*/
@@ -121,7 +121,7 @@ namespace StreetHawkCrossplatform
 		void ShNotifyAppPage(RegisterForShNotifyAppPageCallback cb);
 
 		/// <summary>
-		/// Gets the name of the page which app should display when lauched via deeplink or push message
+		/// Gets the name of the page which app should display when launched via deeplink or push message
 		/// </summary>
 		/// <returns>The app page.</returns>
 		string GetAppPage();
@@ -285,7 +285,7 @@ namespace StreetHawkCrossplatform
 		/// <summary>
 		/// The msg id from server inside this notification, used internally.
 		/// </summary>
-		public int msgID { get; set; }
+		public string msgID { get; set; }
 
 		/// <summary>
 		/// A flag indicate whether this notification is for slide.
@@ -316,6 +316,12 @@ namespace StreetHawkCrossplatform
 		/// The badge number in notification payload. Normally no need to handle this in iOS, system set badge in App icon automatically when notification arrives. 
 		/// </summary>
 		public int badge { get; set; }
+
+		/// <summary>
+		/// The category string identifier for interactive buttons.
+		/// </summary>
+		public string category { get; set; }
+
 	}
 }
 
