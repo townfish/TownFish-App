@@ -15,8 +15,10 @@ namespace TownFish.App
 	{
 		#region Construction
 
-		public App()
+		public App (string deviceID)
 		{
+			DeviceID = deviceID;
+
 			var vm = new BrowserPageViewModel();
 			MainPage = new BrowserPage { BindingContext = vm };
 
@@ -61,7 +63,7 @@ namespace TownFish.App
 		{
 			var shAnalytics = DependencyService.Get<IStreetHawkAnalytics>();
 			var shBeacon = DependencyService.Get<IStreetHawkBeacon>();
-			var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
+			//var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
 			var shGeofence = DependencyService.Get<IStreetHawkGeofence>();
 			var shLocations = DependencyService.Get<IStreetHawkLocations>();
 			var shPush = DependencyService.Get<IStreetHawkPush>();
@@ -73,11 +75,13 @@ namespace TownFish.App
 			shAnalytics.Init();
 
 			shPush.RegisterForPushMessaging ("7712235891"); // GCM push ID (Android only)
-
 			//shPush.SetGcmSenderId(gcm);
 
+#if DEBUG
 			//Optional: enable XCode console logs.
 			shAnalytics.SetEnableLogs (true);
+#endif
+
 			//Optional: iOS specific, set AppStore Id for upgrading or rating App.
 			//shAnalytics.SetsiTunesId ("944344799");
 			//Optional: if App is allowed to get advertising identifier, pass to SDK.
@@ -223,6 +227,10 @@ namespace TownFish.App
 			}
 		}
 
+		public bool CheckedCuid { get; set; }
+
+		public string DeviceID { get; private set; }
+
 		#endregion Properties and Events
 
 		#region Fields
@@ -230,8 +238,10 @@ namespace TownFish.App
 		// all magic URLs and paths used in this app
 		public const string SiteDomain = "dev.townfish.com";
 		public const string BaseUrl = "http://" + SiteDomain;
-		public const string TermsUrl = BaseUrl + "/terms-of-use/";
 		public const string StartPath = "/";
+		public const string TermsUrl = BaseUrl + "/terms-of-use/";
+		public const string SHCuidUrl = BaseUrl + "/profile/shcuid/{0}?syncToken={1}";
+		public const string SHSyncUrl = BaseUrl + "/profile/shsync/{0}?syncToken={1}";
 
 		public const string QueryParam = "mode=app"; // parameter added to every request
 		public const string QueryString = "?" + QueryParam;

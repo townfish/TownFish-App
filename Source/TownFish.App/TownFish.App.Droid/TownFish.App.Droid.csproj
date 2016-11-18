@@ -82,9 +82,6 @@
     <Reference Include="StreetHawkBeacon">
       <HintPath>..\..\Components\streethawkbeacon-1.8.5\lib\android\StreetHawkBeacon.dll</HintPath>
     </Reference>
-    <Reference Include="StreetHawkFeeds">
-      <HintPath>..\..\Components\streethawkfeeds-1.8.5\lib\android\StreetHawkFeeds.dll</HintPath>
-    </Reference>
     <Reference Include="StreetHawkGeofence">
       <HintPath>..\..\Components\streethawkgeofence-1.8.5\lib\android\StreetHawkGeofence.dll</HintPath>
     </Reference>
@@ -180,7 +177,6 @@
     <Compile Include="SpashActivity.cs" />
     <Compile Include="StreetHawkDroid\StreetHawkAnalytics.cs" />
     <Compile Include="StreetHawkDroid\StreetHawkBeacons.cs" />
-    <Compile Include="StreetHawkDroid\StreetHawkFeeds.cs" />
     <Compile Include="StreetHawkDroid\StreetHawkGeofence.cs" />
     <Compile Include="StreetHawkDroid\StreetHawkGrowth.cs" />
     <Compile Include="StreetHawkDroid\StreetHawkLocation.cs" />
@@ -226,10 +222,6 @@
       <Version>1.8.5</Version>
     </XamarinComponentReference>
     <XamarinComponentReference Include="streethawkbeacon">
-      <Visible>False</Visible>
-      <Version>1.8.5</Version>
-    </XamarinComponentReference>
-    <XamarinComponentReference Include="streethawkfeeds">
       <Visible>False</Visible>
       <Version>1.8.5</Version>
     </XamarinComponentReference>

@@ -2,6 +2,7 @@
 
 using Android.App;
 using Android.Content.PM;
+using static Android.Provider.Settings;
 using Android.Runtime;
 using Android.OS;
 using Android.Views;
@@ -10,7 +11,6 @@ using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
 using StreetHawkCrossplatform;
-
 
 namespace TownFish.App.Droid
 {
@@ -27,7 +27,10 @@ namespace TownFish.App.Droid
 
 			Forms.Init(this, bundle);
 
-			mApp = new App();
+			var id = Secure.GetString (ApplicationContext.ContentResolver,
+					Secure.AndroidId);
+
+			mApp = new App (id);
 			mApp.AppCloseRequested += App_AppCloseRequested;
 			LoadApplication(mApp);
 		}

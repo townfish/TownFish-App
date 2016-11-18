@@ -41,7 +41,6 @@
     <Compile Include="Command.cs" />
     <Compile Include="IStreetHawk\IStreetHawkAnalytics.cs" />
     <Compile Include="IStreetHawk\IStreetHawkBeacon.cs" />
-    <Compile Include="IStreetHawk\IStreetHawkFeeds.cs" />
     <Compile Include="IStreetHawk\IStreetHawkGeofence.cs" />
     <Compile Include="IStreetHawk\IStreetHawkGrowth.cs" />
     <Compile Include="IStreetHawk\IStreetHawkLocations.cs" />

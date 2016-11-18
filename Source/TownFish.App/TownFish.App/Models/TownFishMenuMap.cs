@@ -85,6 +85,8 @@ namespace TownFish.App.Models
 
 		public AvailableLocation CurrentLocation { get; set; }
 
+		public string SyncToken { get; set; }
+
 		#endregion
 	}
 

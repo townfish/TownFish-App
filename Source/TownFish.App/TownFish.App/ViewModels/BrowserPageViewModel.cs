@@ -30,12 +30,6 @@ namespace TownFish.App.ViewModels
 			set { Set (value); }
 		}
 
-		public bool IsTopBarVisible
-		{
-			get { return Get<bool>(); }
-			set { Set (value); }
-		}
-
 		public bool IsLoading
 		{
 			get { return Get<bool>(); }
@@ -48,8 +42,8 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		public HtmlWebViewSource LoadingWebViewSource
-			{ get { return new HtmlWebViewSource { Html = LoadingHtml }; } }
+		public HtmlWebViewSource LoadingWebViewSource =>
+				new HtmlWebViewSource { Html = LoadingHtml };
 
 		public string LoadingHtml
 		{
@@ -66,78 +60,80 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
+		public string SyncToken { get; private set; }
+
 		#region Colours
 
 		public Color MenuBarBackgroundColour
 		{
 			get { return Get<Color> (() => Color.FromHex ("#484848")); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public Color MenuBarTextColour
 		{
 			get { return Get<Color> (() => Color.FromHex ("#ffffff")); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public Color SubMenuBackgroundColour
 		{
 			get { return Get<Color> (() => Color.FromHex ("#e8e8e8")); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public Color BottomMenuBackgroundColour
 		{
 			get { return Get<Color> (() => Color.FromHex ("#f2f2f2")); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public Color BottomMenuCounterColour
 		{
 			get { return Get<Color> (() => Color.FromHex ("#d62327")); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public Color LocationsBackgroundColour
 		{
 			get { return Get<Color> (() => Color.FromHex ("#444444")); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public Color LocationsContrastBackgroundColour
 		{
 			get { return Get<Color> (() => Color.FromHex ("#333333")); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public Color MyLocationsTextColour
 		{
 			get { return Get<Color> (() => Color.FromHex ("#c8c8c8")); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public Color LocationsTextColour
 		{
 			get { return Get<Color> (() => Color.FromHex ("#ececec")); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public Color LocationsLinkColour
 		{
 			get { return Get<Color> (() => Color.FromHex ("#4f92eb")); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public Color LocationsSearchInputTextColour
 		{
 			get { return Get<Color> (() => Color.FromHex ("#b9b9b9")); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public Color LocationsSearchResultsTextColour
 		{
 			get { return Get<Color> (() => Color.FromHex ("#989898")); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		#endregion Colours
@@ -149,13 +145,13 @@ namespace TownFish.App.ViewModels
 		public string BottomAction1Label
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public ICommand BottomAction1Command
 		{
 			get { return Get<ICommand>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		#endregion Bottom Action 1
@@ -165,25 +161,25 @@ namespace TownFish.App.ViewModels
 		public string BottomAction2Label
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public ICommand BottomAction2Command
 		{
 			get { return Get<ICommand>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public bool BottomAction2HasNumber
 		{
 			get { return Get<bool>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public string BottomAction2Number
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		#endregion Bottom Action 2
@@ -193,25 +189,25 @@ namespace TownFish.App.ViewModels
 		public string BottomAction3Label
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public ICommand BottomAction3Command
 		{
 			get { return Get<ICommand>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public bool BottomAction3HasNumber
 		{
 			get { return Get<bool>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public string BottomAction3Number
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		#endregion Bottom Action 3
@@ -221,13 +217,13 @@ namespace TownFish.App.ViewModels
 		public string BottomAction4Label
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public ICommand BottomAction4Command
 		{
 			get { return Get<ICommand>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		#endregion Bottom Action 4
@@ -237,13 +233,13 @@ namespace TownFish.App.ViewModels
 		public string BottomAction5Label
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public ICommand BottomAction5Command
 		{
 			get { return Get<ICommand>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		#endregion Bottom Action 5
@@ -261,50 +257,56 @@ namespace TownFish.App.ViewModels
 		public string TopBarLeftLabel
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public ICommand TopBarLeftCommand
 		{
 			get { return Get<ICommand>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public string TopBarRightLabel
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public ICommand TopBarRightCommand
 		{
 			get { return Get<ICommand>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public string TopBarRight1Label
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public ICommand TopBarRight1Command
 		{
 			get { return Get<ICommand>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public string PageTitle
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
-		public bool LeftActionIsLocationPin { get; set; }
+		public bool LeftActionIsLocationPin { get; private set; }
 
 		public string LocationName
 		{
 			get { return Get<string>(); }
+			private set { Set (value); }
+		}
+
+		public bool IsTopBarVisible
+		{
+			get { return Get<bool>(); }
 			set { Set (value); }
 		}
 
@@ -315,73 +317,73 @@ namespace TownFish.App.ViewModels
 		public string TopAction1Label
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public ICommand TopAction1Command
 		{
 			get { return Get<ICommand>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public FontAttributes TopAction1Bold
 		{
 			get { return Get<FontAttributes>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public string TopAction2Label
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public FontAttributes TopAction2Bold
 		{
 			get { return Get<FontAttributes>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public ICommand TopAction2Command
 		{
 			get { return Get<ICommand>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public string TopAction3Label
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public ICommand TopAction3Command
 		{
 			get { return Get<ICommand>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public FontAttributes TopAction3Bold
 		{
 			get { return Get<FontAttributes>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		} 
 
 		public string TopAction4Label
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public ICommand TopAction4Command
 		{
 			get { return Get<ICommand>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public FontAttributes TopAction4Bold
 		{
 			get { return Get<FontAttributes>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public ICommand TopActionMoreCommand
@@ -393,7 +395,7 @@ namespace TownFish.App.ViewModels
 		public string TopActionMoreLabel
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public bool IsTopSubBarVisible
@@ -411,25 +413,25 @@ namespace TownFish.App.ViewModels
 		public string TopFormLeftActionLabel
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public ICommand TopFormLeftAction
 		{
 			get { return Get<ICommand>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public string TopFormRightActionLabel
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public ICommand TopFormRightAction
 		{
 			get { return Get<ICommand>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public bool IsTopFormBarVisible
@@ -446,7 +448,7 @@ namespace TownFish.App.ViewModels
 		{
 			get { return Get<ObservableCollection<TownfishLocationItem>>(); }
 
-			set
+			private set
 			{
 				// if collection changes, we may or may not have any items in the new one
 				if (Set (value))
@@ -457,16 +459,14 @@ namespace TownFish.App.ViewModels
 		public bool SearchLocationHasResults
 		{
 			get { return Get<bool> () && !string.IsNullOrWhiteSpace (SearchTerm) && SearchTerm.Length > 2; }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
-		public bool SearchLocationHasNoItems
-		{
-			get { return LocationSearchItems?.Count == 0; }
-		}
+		public bool SearchLocationHasNoItems =>
+				LocationSearchItems?.Count == 0;
 
-		public ICommand CancelSearchCommand
-			{ get { return new Command (_ => CancelLocationSearch()); } }
+		public ICommand CancelSearchCommand =>
+				new Command (_ => CancelLocationSearch());
 
 		public bool SearchHasContent
 		{
@@ -478,7 +478,7 @@ namespace TownFish.App.ViewModels
 		{
 			get { return Get<string>(); }
 
-			set
+			private set
 			{
 				// if text changes, we may want to hide search results
 				if (Set (value))
@@ -493,19 +493,19 @@ namespace TownFish.App.ViewModels
 		public ObservableCollection<AvailableLocation> AvailableLocations
 		{
 			get { return Get<ObservableCollection<AvailableLocation>>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public AvailableLocation CurrentLocation
 		{
 			get { return Get<AvailableLocation>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		public string InfoLocationIcon
 		{
 			get { return Get<string>(); }
-			set { Set (value); }
+			private set { Set (value); }
 		}
 
 		#endregion Locations
@@ -561,6 +561,8 @@ namespace TownFish.App.ViewModels
 			LeftActionIsLocationPin = false;
 
 			LocationName = "";
+
+			SyncToken = map.SyncToken;
 
 			try
 			{

@@ -48,7 +48,9 @@ namespace TownFish.App.iOS
 			var load2 = new Renderers.TownFishEntryRenderer();
 
 			Forms.Init();
-			LoadApplication (new App());
+
+			var id = UIDevice.CurrentDevice.IdentifierForVendor.ToString();
+			LoadApplication (new App (id));
 
 			return base.FinishedLaunching (app, options);
 		}

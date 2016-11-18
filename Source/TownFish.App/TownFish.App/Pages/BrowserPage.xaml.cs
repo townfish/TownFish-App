@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using Newtonsoft.Json;
 using Xamarin.Forms;
 
 using Xamify.UberWebViewLib;
+
+using StreetHawkCrossplatform;
 
 using TownFish.App.Models;
 using TownFish.App.ViewModels;
@@ -409,6 +412,69 @@ namespace TownFish.App.Pages
 		void ViewModel_MenusLoaded (object sender, string e)
 		{
 			Device.BeginInvokeOnMainThread (() => HideLoading());
+
+			// if no sync token, nobody is logged in so don't bother getting ID
+			if (string.IsNullOrEmpty (ViewModel.SyncToken))
+			{
+				App.Current.CheckedCuid = false; // in case we switch users
+				return;
+			}
+
+			// if we haven't checked CUID and we have a sync token, do so now
+			if (!App.Current.CheckedCuid && !mCheckingCuid)
+				CheckCuid();
+		}
+
+		async void CheckCuid()
+		{
+			try
+			{
+				mCheckingCuid = true;
+
+				var cli = new HttpClient();
+				var devID = App.Current.DeviceID;
+				var url = string.Format (App.SHCuidUrl, devID, ViewModel.SyncToken);
+
+				var result = await cli.GetStringAsync (url);
+				var shcuid = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
+
+				string code, newID;
+				if (!shcuid.TryGetValue (cCode, out code) &&
+						shcuid.TryGetValue (cSHCuid, out newID))
+				{
+					var props = App.Current.Properties;
+					object obj;
+					string userID = null;
+
+					if (props.TryGetValue (cSHCuid, out obj))
+						userID = obj as string;
+
+					if (userID != newID)
+					{
+						userID = newID;
+
+						var shAnalytics = DependencyService.Get<IStreetHawkAnalytics>();
+						shAnalytics.TagCuid (userID);
+
+						url = string.Format (App.SHSyncUrl, devID, ViewModel.SyncToken);
+
+						result = await cli.GetStringAsync (url);
+						var syncResult = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
+
+						string sync;
+						if (!shcuid.TryGetValue (cCode, out code) &&
+								syncResult.TryGetValue (cSynced, out sync) &&
+								sync == "true")
+							props [cSHCuid] = userID;
+					}
+				}
+			}
+			catch {} // if it fails, we don't care
+			finally
+			{
+				App.Current.CheckedCuid = true;
+				mCheckingCuid = false;
+			}
 		}
 
 		#endregion Methods
@@ -458,12 +524,18 @@ namespace TownFish.App.Pages
 
 		const string cCustomUserAgent = "com.townfish.app";
 
+		const string cCode = "Code";
+		const string cSHCuid = "shcuid";
+		const string cSynced = "synced";
+
 		bool mFirstLoading = true;
 		bool mFirstShowing = true;
 
 		bool mIsSearchVisible;
 		bool mShowingSearch;
 		bool mHidingSearch;
+
+		bool mCheckingCuid;
 
 		TownFishMenuMap mCurrentSchema;
 
