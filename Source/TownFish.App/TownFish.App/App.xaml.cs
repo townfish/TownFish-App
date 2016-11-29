@@ -61,6 +61,9 @@ namespace TownFish.App
 
 		void InitStreetHawk()
 		{
+			// NOTE: this code is derived from the SH Xamarin demo here:
+			// https://github.com/StreetHawkSDK/XamHawkDemoApp/blob/master/XamHawkDemo/XamHawkDemo/App.xaml.cs
+
 			var shAnalytics = DependencyService.Get<IStreetHawkAnalytics>();
 			var shBeacon = DependencyService.Get<IStreetHawkBeacon>();
 			//var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
@@ -68,19 +71,19 @@ namespace TownFish.App
 			var shLocations = DependencyService.Get<IStreetHawkLocations>();
 			var shPush = DependencyService.Get<IStreetHawkPush>();
 
+#if DEBUG
+			//Optional: enable XCode console logs.
+			shAnalytics.SetEnableLogs (true);
+#endif
+
 			shAnalytics.SetAppKey ("TownFish");
 
 			// Initialize StreetHawk when App starts.
 			//Mandatory: set app key and call init.
 			shAnalytics.Init();
 
-			shPush.RegisterForPushMessaging ("7712235891"); // GCM push ID (Android only)
-			//shPush.SetGcmSenderId(gcm);
-
-#if DEBUG
-			//Optional: enable XCode console logs.
-			shAnalytics.SetEnableLogs (true);
-#endif
+			shPush.RegisterForPushMessaging (GcmSenderID); // GCM push ID (Android only)
+			//shPush.SetGcmSenderId(gcm); // appears to be obsolete in latest SH Xamarin SDK
 
 			//Optional: iOS specific, set AppStore Id for upgrading or rating App.
 			//shAnalytics.SetsiTunesId ("944344799");
@@ -88,12 +91,12 @@ namespace TownFish.App
 			//shAnalytics.SetAdvertisementId("BEE83220-9385-4B36-81E1-BF4305834093");
 
 			//Optional: not enable location when launch, delay ask for permission. Below three  APIs are equivalent. 
-			shBeacon.SetIsDefaultLocationServiceEnabled (false);
-			shGeofence.SetIsDefaultLocationServiceEnabled (false);
-			shLocations.SetIsDefaultLocationServiceEnabled (false);
+			shBeacon.SetIsDefaultLocationServiceEnabled (true);
+			shGeofence.SetIsDefaultLocationServiceEnabled (true);
+			shLocations.SetIsDefaultLocationServiceEnabled (true);
 
 			//Optional: not enable notification when launch, delay ask for permission.
-			shPush.SetIsDefaultNotificationServiceEnabled (false);
+			shPush.SetIsDefaultNotificationServiceEnabled (true);
 
 			//Optional: callback when install register successfully.
 			/*shAnalytics.RegisterForInstallEvent (delegate (string installId)
@@ -201,7 +204,6 @@ namespace TownFish.App
 					MainPage.DisplayAlert ("Receive none StreetHawk push:", payload, "OK");
 				});
 			});
-
 		}
 
 		#endregion StreetHawk
@@ -229,7 +231,7 @@ namespace TownFish.App
 
 		public bool CheckedCuid { get; set; }
 
-		public string DeviceID { get; private set; }
+		public string DeviceID { get; }
 
 		#endregion Properties and Events
 
@@ -247,6 +249,8 @@ namespace TownFish.App
 		public const string QueryString = "?" + QueryParam;
 
 		public const string TwitterApiDomain = "api.twitter.com";
+
+		public const string GcmSenderID = "7712235891";
 
 		static Assembly sAssembly = null;
 

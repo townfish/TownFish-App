@@ -30,13 +30,13 @@ namespace TownFish.App.iOS
 		{
 			#region StreetHawk
 
-			SHApp.instance().appKey = "TownFish";
-			SHApp.instance().enableLogs = true;
-			SHApp.instance().iTunesId = ""; // TODO: insert iTunes ID
-			SHApp.instance().streethawkinit();
+			//SHApp.instance().appKey = "TownFish";
+			//SHApp.instance().enableLogs = true;
+			//SHApp.instance().iTunesId = ""; // TODO: insert iTunes ID
+			//SHApp.instance().streethawkinit();
 
 			//Simply call one function of Push module to make sure linking to it.
-			SHPush.instance().isDefaultNotificationEnabled = true;
+			//SHPush.instance().isDefaultNotificationEnabled = true;
 
 			#endregion StreetHawk
 

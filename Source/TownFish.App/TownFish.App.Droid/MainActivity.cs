@@ -12,6 +12,7 @@ using Xamarin.Forms.Platform.Android;
 
 using StreetHawkCrossplatform;
 
+
 namespace TownFish.App.Droid
 {
 	[Activity(Label = "TownFish.App", Icon = "@drawable/icon", Theme = "@style/townfishTheme", MainLauncher = false, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
@@ -19,20 +20,21 @@ namespace TownFish.App.Droid
 	{
 		#region Methods
 
-		protected override void OnCreate(Bundle bundle)
+		protected override void OnCreate (Bundle bundle)
 		{
-			base.OnCreate(bundle);
+			base.OnCreate (bundle);
 
 			StreetHawkAnalytics.Init (this);
 
-			Forms.Init(this, bundle);
+			Forms.Init (this, bundle);
 
-			var id = Secure.GetString (ApplicationContext.ContentResolver,
+			var deviceID = Secure.GetString (ApplicationContext.ContentResolver,
 					Secure.AndroidId);
 
-			mApp = new App (id);
+			mApp = new App (deviceID);
 			mApp.AppCloseRequested += App_AppCloseRequested;
-			LoadApplication(mApp);
+
+			LoadApplication (mApp);
 		}
 
 		void App_AppCloseRequested (object sender, EventArgs e)

@@ -458,14 +458,25 @@ namespace TownFish.App.Pages
 
 						url = string.Format (App.SHSyncUrl, devID, ViewModel.SyncToken);
 
-						result = await cli.GetStringAsync (url);
-						var syncResult = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
+						for (var i = 0; i++ <= cSHSyncRetries; )
+						{
+							// give SH time to process it
+							await Task.Delay (cSHSyncDelay);
 
-						string sync;
-						if (!shcuid.TryGetValue (cCode, out code) &&
-								syncResult.TryGetValue (cSynced, out sync) &&
-								sync == "true")
-							props [cSHCuid] = userID;
+							result = await cli.GetStringAsync (url);
+							var syncResult = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
+
+							string sync;
+							if (!shcuid.TryGetValue (cCode, out code) &&
+									syncResult.TryGetValue (cSynced, out sync) &&
+									sync == "true")
+							{
+								props [cSHCuid] = userID;
+
+								// got it, so stop trying
+								break;
+							}
+						}
 					}
 				}
 			}
@@ -527,6 +538,8 @@ namespace TownFish.App.Pages
 		const string cCode = "Code";
 		const string cSHCuid = "shcuid";
 		const string cSynced = "synced";
+		const int cSHSyncDelay = 3000;
+		const int cSHSyncRetries = 3;
 
 		bool mFirstLoading = true;
 		bool mFirstShowing = true;
