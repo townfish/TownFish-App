@@ -235,32 +235,11 @@ namespace TownFish.App.Pages
 				});
 
 			ViewModel.CallbackRequested += (s, name) => OnCallback (name);
-
 			ViewModel.MenusLoaded += ViewModel_MenusLoaded;
+			ViewModel.PropertyChanged += ViewModel_PropertyChanged;
 
-			ebxSearch.TextChanged += ebxSearch_TextChanged;
-			ebxSearch.Completed += ebxSearch_Completed;
 			lstLocationSearchResults.ItemTapped += lstLocationSearchResults_ItemTapped;
 			lstAvailableLocations.ItemTapped += lstAvailableLocations_ItemTapped;
-
-			ViewModel.PropertyChanged += ViewModel_PropertyChanged;
-		}
-
-		void ebxSearch_TextChanged (object sender, TextChangedEventArgs e)
-		{
-			if (e.NewTextValue.Length > 0)
-				ViewModel.SearchHasContent = true;
-			else
-				ViewModel.SearchHasContent = false;
-
-			if (e.NewTextValue.Length > 2)
-				ViewModel.UpdateLocationList(e.NewTextValue);
-		}
-
-		void ebxSearch_Completed (object sender, EventArgs e)
-		{
-			if (ebxSearch.Text.Length > 2)
-				ViewModel.UpdateLocationList(ebxSearch.Text);
 		}
 
 		void lstLocationSearchResults_ItemTapped (object sender, ItemTappedEventArgs e)
@@ -449,6 +428,17 @@ namespace TownFish.App.Pages
 					if (props.TryGetValue (cSHCuid, out obj))
 						userID = obj as string;
 
+#if DEBUG
+					Device.BeginInvokeOnMainThread (() =>
+					{
+						var message = string.Format (
+								"TownFish: userID = {0}; newID = {1}",
+								userID ?? "null", newID ?? "null");
+
+						App.Current.MainPage.DisplayAlert (
+								"StreetHawk Registration", message, "Continue");
+					});
+#endif
 					if (userID != newID)
 					{
 						userID = newID;
@@ -510,7 +500,7 @@ namespace TownFish.App.Pages
 		// apparently iOS status bar height is always 20 in XF (apparently, I said)
 		const double cTopPaddingiOS = 20;
 
-		const string cPageLoadScript = "twnfsh.appReady();";
+		const string cPageLoadScript = "if (window.twnfsh && twnfsh.appReady) twnfsh.appReady();";
 
 		const string cBeginLoadingAction = "app_schema_loading";
 		const string cBeginLoadingValue = "true";

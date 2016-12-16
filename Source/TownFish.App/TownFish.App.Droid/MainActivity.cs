@@ -6,23 +6,59 @@ using static Android.Provider.Settings;
 using Android.Runtime;
 using Android.OS;
 using Android.Views;
+using Android.Webkit;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
 using StreetHawkCrossplatform;
+using Com.Streethawk.Library.Core;
+using Com.Streethawk.Library.Push;
 
 
 namespace TownFish.App.Droid
 {
-	[Activity(Label = "TownFish.App", Icon = "@drawable/icon", Theme = "@style/townfishTheme", MainLauncher = false, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
+	[Activity (Label = "TownFish.App", Icon = "@drawable/icon",
+		Theme = "@style/townfishTheme", MainLauncher = false,
+		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation,
+		ScreenOrientation = ScreenOrientation.Portrait | ScreenOrientation.ReversePortrait)]
 	public class MainActivity : FormsApplicationActivity
 	{
+		#region Nested Types
+
+#if DEBUG
+		#region WebChromeClient
+
+		class WebPlayerWebChromeClient: WebChromeClient
+		{
+			public override bool OnJsAlert (Android.Webkit.WebView view, string url, string message, JsResult result)
+			{
+				new AlertDialog.Builder (view.Context)
+					.SetTitle ("javaScript dialog")
+					.SetMessage (message)
+					.SetPositiveButton (Android.Resource.String.Ok, (dlg, dcea) => result.Confirm ())
+					.SetCancelable (false)
+					.Create()
+					.Show();
+
+				return true;
+			}
+		}
+
+		#endregion WebChromeClient
+#endif
+		#endregion Nested Types
+
 		#region Methods
 
 		protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
+
+#if DEBUG	
+			if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
+				Android.Webkit.WebView.SetWebContentsDebuggingEnabled (true);
+#endif
 
 			StreetHawkAnalytics.Init (this);
 

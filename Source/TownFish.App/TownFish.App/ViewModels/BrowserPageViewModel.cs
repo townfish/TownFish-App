@@ -452,37 +452,41 @@ namespace TownFish.App.ViewModels
 			{
 				// if collection changes, we may or may not have any items in the new one
 				if (Set (value))
+				{
+					OnPropertyChanged (() => SearchLocationHasResults);
 					OnPropertyChanged (() => SearchLocationHasNoItems);
+				}
 			}
 		}
 
-		public bool SearchLocationHasResults
-		{
-			get { return Get<bool> () && !string.IsNullOrWhiteSpace (SearchTerm) && SearchTerm.Length > 2; }
-			private set { Set (value); }
-		}
+		public bool SearchHasContent =>
+				!string.IsNullOrWhiteSpace (SearchTerm) && SearchTerm.Length > 0;
 
-		public bool SearchLocationHasNoItems =>
-				LocationSearchItems?.Count == 0;
+		public bool SearchLocationHasResults =>
+				LocationSearchItems != null && LocationSearchItems?.Count > 0;
+
+		public bool SearchLocationHasNoItems => !SearchLocationHasResults;
 
 		public ICommand CancelSearchCommand =>
 				new Command (_ => CancelLocationSearch());
-
-		public bool SearchHasContent
-		{
-			get { return Get<bool>(); }
-			set { Set (value); }
-		}
 
 		public string SearchTerm
 		{
 			get { return Get<string>(); }
 
-			private set
+			set
 			{
-				// if text changes, we may want to hide search results
+				// if text changes, update search results if enough has been entered
 				if (Set (value))
-					OnPropertyChanged (() => SearchLocationHasResults);
+				{
+					// update this for SearchFormatConverter to reference
+					CurrentSearchTerm = value;
+
+					if (value == null || value.Length == 0)
+						LocationSearchItems = null;
+					else if (value.Length > 2)
+						UpdateLocationList();
+				}
 			}
 		}
 
@@ -514,25 +518,20 @@ namespace TownFish.App.ViewModels
 
 		#region Methods
 
-		public async void UpdateLocationList (string searchTerm)
+		public async void UpdateLocationList()
 		{
-			sSearchTerm = searchTerm;
-
 			try
 			{
 				using (var client = new HttpClient())
 				{
 					var resultJson = await client.GetStringAsync (
-							App.BaseUrl + mLocationApiFormat.Replace ("{term}", searchTerm));
+							App.BaseUrl + mLocationApiFormat.Replace ("{term}", SearchTerm));
 
 					if (!string.IsNullOrEmpty (resultJson))
 					{
 						var model = JsonConvert.DeserializeObject<TownFishLocationList> (resultJson);
 						if (model?.Items != null)
-						{
 							LocationSearchItems = new ObservableCollection<TownfishLocationItem> (model.Items);
-							SearchLocationHasResults = true;
-						}
 					}
 				}
 			}
@@ -625,7 +624,6 @@ namespace TownFish.App.ViewModels
 
 		public void CancelLocationSearch()
 		{
-			SearchLocationHasResults = false;
 			SearchTerm = "";
 		}
 
@@ -949,7 +947,7 @@ namespace TownFish.App.ViewModels
 
 		#region Fields
 
-		public static string sSearchTerm = "";
+		public static string CurrentSearchTerm = "";
 
 		string mLocationApiFormat = "";
 		string mLocationSetFormat = "";

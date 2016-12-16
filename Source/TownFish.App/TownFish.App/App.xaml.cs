@@ -66,7 +66,7 @@ namespace TownFish.App
 
 			var shAnalytics = DependencyService.Get<IStreetHawkAnalytics>();
 			var shBeacon = DependencyService.Get<IStreetHawkBeacon>();
-			//var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
+			var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
 			var shGeofence = DependencyService.Get<IStreetHawkGeofence>();
 			var shLocations = DependencyService.Get<IStreetHawkLocations>();
 			var shPush = DependencyService.Get<IStreetHawkPush>();
@@ -76,7 +76,7 @@ namespace TownFish.App
 			shAnalytics.SetEnableLogs (true);
 #endif
 
-			shAnalytics.SetAppKey ("TownFish");
+			shAnalytics.SetAppKey (StreetHawkAppKey);
 
 			// Initialize StreetHawk when App starts.
 			//Mandatory: set app key and call init.
@@ -99,110 +99,126 @@ namespace TownFish.App
 			shPush.SetIsDefaultNotificationServiceEnabled (true);
 
 			//Optional: callback when install register successfully.
-			/*shAnalytics.RegisterForInstallEvent (delegate (string installId)
+			shAnalytics.RegisterForInstallEvent (installId =>
 			{
+#if DEBUG
 				Device.BeginInvokeOnMainThread (() =>
-				{
-					MainPage.DisplayAlert ("Install register successfully: ", installId, "OK");
-				});
+					MainPage.DisplayAlert ("Install register successfully: ", installId, "OK"));
+#endif
 			});
 
 			//Optional: callback when open url.
-			shAnalytics.RegisterForDeeplinkURL (delegate (string openUrl)
+			shAnalytics.RegisterForDeeplinkURL (openUrl =>
 			{
+#if DEBUG
 				Device.BeginInvokeOnMainThread (() =>
-				{
-					MainPage.DisplayAlert ("Open url: ", openUrl, "OK");
-				});
+					MainPage.DisplayAlert ("Open url: ", openUrl, "OK"));
+#endif
 			});
 
 			//Optional: Callback when enter or exit beacon.
-			shBeacon.RegisterForBeaconStatus (delegate (SHBeaconObj beacon)
+			shBeacon.RegisterForBeaconStatus (beacon =>
 			{
+#if DEBUG
 				Device.BeginInvokeOnMainThread (() =>
-				{
-					string message = string.Format("uuid: {0}, major: {1}, minor: {2}, server id: {3}, inside: {4}.", beacon.uuid, beacon.major, beacon.minor, beacon.serverId, beacon.isInside);
-					MainPage.DisplayAlert ("Enter/Exit beacon: ", message, "OK");
-				});
+					{
+						var message = $"uuid: {beacon.uuid}, major: {beacon.major}, minor: {beacon.minor}, server id: {beacon.serverId}, inside: {beacon.isInside}.";
+						MainPage.DisplayAlert ("Enter/Exit beacon: ", message, "OK");
+					});
+#endif
 			});
 
 			//Optional: Callback when enter or exit geofence.
-			shGeofence.RegisterForGeofenceStatus (delegate (SHGeofenceObj geofence)
+			shGeofence.RegisterForGeofenceStatus (geofence =>
 			{
+#if DEBUG
 				Device.BeginInvokeOnMainThread (() =>
-				{
-					string message = string.Format("latitude: {0}, longitude: {1}, radius: {2}, server id: {3}, inside: {4}, title: {5}.", geofence.latitude, geofence.longitude, geofence.radius, geofence.serverId, geofence.isInside, geofence.title);
-					MainPage.DisplayAlert ("Enter/Exit geofence: ", message, "OK");
-				});
+					{
+						var message = $"latitude: {geofence.latitude}, longitude: {geofence.longitude}, radius: {geofence.radius}, server id: {geofence.serverId}, inside: {geofence.isInside}, title: {geofence.title}.";
+						MainPage.DisplayAlert ("Enter/Exit geofence: ", message, "OK");
+					});
+#endif
 			});
 
 			//Optional: Callback when new feeds are available.
-			shFeeds.OnNewFeedAvailableCallback (delegate()
+			shFeeds.OnNewFeedAvailableCallback (() =>
 			{
-				shFeeds.ReadFeedData (0, delegate (System.Collections.Generic.List<SHFeedObject> arrayFeeds, string error)
+				shFeeds.ReadFeedData (0, (arrayFeeds, error) =>
 				{
+#if DEBUG
 					Device.BeginInvokeOnMainThread (() =>
-					{
-						if (error != null)
 						{
-							MainPage.DisplayAlert ("New feeds available but fetch meet error:", error, "OK");
-						}
-						else
-						{
-							string feeds = string.Empty;
-							for (int i = 0; i < arrayFeeds.Count; i++)
+							if (error != null)
 							{
-								SHFeedObject feed = arrayFeeds[i];
-								feeds = string.Format ("Title: {0}; Message: {1}; Content: {2}. \r\n{3}", feed.title, feed.message, feed.content, feeds);
-								shFeeds.SendFeedAck (feed.feed_id);
-								shFeeds.NotifyFeedResult (feed.feed_id, 1);
+								MainPage.DisplayAlert ("New feeds available but fetch failed:", error, "OK");
 							}
-							MainPage.DisplayAlert (string.Format ("New feeds available and fetch {0}:", arrayFeeds.Count), feeds, "OK");
-						}
-					});
-				});
-			});*/
+							else
+							{
+								var feeds = string.Empty;
 
-			//Optional: Callback when receive push notification payload.
-			//shPush.OnReceivePushData(delegate (PushDataForApplication pushData)
-			//		   {
-			//			   Device.BeginInvokeOnMainThread(() =>
-			//				   {
-			//					   string message = string.Format("msgid: {0}; code: {1}; action: {2};\r\ntitle: {3}\r\nmessage: {4}\r\ndata: {5}", pushData.msgID, pushData.code, pushData.action, pushData.title, pushData.message, pushData.data);
-			//					   MainPage.DisplayAlert("Show custom dialog:", message, "Continue");
-			//						//Mandatory: Send push result.
-			//						shPush.SendPushResult(pushData.msgID, SHPushResult.SHPushResult_Accept);
-			//				   });
-			//		   });
+								for (int i = 0; i < arrayFeeds.Count; i++)
+								{
+									var feed = arrayFeeds[i];
+									feeds = $"Title: {feed.title}; Message: {feed.message}; Content: {feed.content}. \r\n{feeds}";
+									shFeeds.SendFeedAck (feed.feed_id);
+									shFeeds.NotifyFeedResult (feed.feed_id, 1);
+								}
 
-			//Optional: Callback when decide push result.
-			//shPush.OnReceiveResult(delegate (PushDataForApplication pushData, SHPushResult result)
-			//		   {
-			//			   Device.BeginInvokeOnMainThread(() =>
-			//				   {
-			//					   string title = string.Format("Push result: {0}", result);
-			//					   string message = string.Format("msgid: {0}; code: {1}; action: {2};\r\ntitle: {3}\r\nmessage: {4}\r\ndata: {5}", pushData.msgID, pushData.code, pushData.action, pushData.title, pushData.message, pushData.data);
-			//					   MainPage.DisplayAlert(title, message, "OK");
-			//				   });
-			//		   });
-
-			//Optional: Callback when receive json push.
-			shPush.RegisterForRawJSON (delegate (string title, string message, string JSON)
-			{
-				Device.BeginInvokeOnMainThread (() =>
-				{
-					string msg = string.Format("title: {0}\r\nmessage: {1}\r\njson: {2}", title, message, JSON);
-					MainPage.DisplayAlert ("Receive json push:", msg, "OK");
+								MainPage.DisplayAlert ($"New feeds available and fetched {arrayFeeds.Count}:", feeds, "OK");
+							}
+						});
+#endif
 				});
 			});
 
-			//Optional: Callback when none 
-			shPush.OnReceiveNonSHPushPayload (delegate (string payload)
-			{
-				Device.BeginInvokeOnMainThread (() =>
+			//Optional: Callback when receive push notification payload.
+			shPush.OnReceivePushData (pushData =>
 				{
-					MainPage.DisplayAlert ("Receive none StreetHawk push:", payload, "OK");
+#if DEBUG
+					Device.BeginInvokeOnMainThread (() =>
+						{
+							var message = $"msgid: {pushData.msgID}; code: {pushData.code}; action: {pushData.action};\r\ntitle: {									pushData.title}\r\nmessage: {pushData.message}\r\ndata: {pushData.data}";
+							MainPage.DisplayAlert ("Push Data:", message, "Continue");
+						});
+#endif
+
+					//Mandatory: Send push result.
+					shPush.SendPushResult (pushData.msgID, 1);// SHPushResult.SHPushResult_Accept);
 				});
+
+			//Optional: Callback when decide push result.
+			shPush.OnReceiveResult ((pushData, result) =>
+			{
+#if DEBUG
+				Device.BeginInvokeOnMainThread(() =>
+					{
+						var title = $"Push Result: {result}";
+						var message = $"msgid: {pushData.msgID}; code: {pushData.code}; action: {pushData.action};\r\ntitle: {									pushData.title}\r\nmessage: {pushData.message}\r\ndata: {pushData.data}";
+
+						MainPage.DisplayAlert (title, message, "OK");
+					});
+#endif
+			});
+
+			//Optional: Callback when receive json push.
+			shPush.RegisterForRawJSON ((title, message, Json) =>
+				{
+#if DEBUG
+					Device.BeginInvokeOnMainThread (() =>
+						{
+							var msg = $"title: {title}\r\nmessage: {message}\r\nJSON: {Json}";
+							MainPage.DisplayAlert ("Receive JSON push:", msg, "OK");
+						});
+#endif
+				});
+
+			//Optional: Callback when none 
+			shPush.OnReceiveNonSHPushPayload (payload =>
+			{
+#if DEBUG
+				Device.BeginInvokeOnMainThread (() =>
+					MainPage.DisplayAlert ("Receive non-StreetHawk push:", payload, "OK"));
+#endif
 			});
 		}
 
@@ -251,6 +267,8 @@ namespace TownFish.App
 		public const string TwitterApiDomain = "api.twitter.com";
 
 		public const string GcmSenderID = "7712235891";
+
+		public const string StreetHawkAppKey = "TownFish";
 
 		static Assembly sAssembly = null;
 

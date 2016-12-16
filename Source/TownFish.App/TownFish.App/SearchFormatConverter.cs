@@ -23,7 +23,7 @@ namespace TownFish.App
 
 				var formattedOutput = new FormattedString();
 
-				HighlightTerm(item, BrowserPageViewModel.sSearchTerm, ref formattedOutput);
+				HighlightTerm (item, BrowserPageViewModel.CurrentSearchTerm, ref formattedOutput);
 
 				return formattedOutput;
 			}

@@ -17,7 +17,6 @@ namespace StreetHawkCrossplatform
 		const string cCallInitAndroidMessage =
 				"Call StreetHawkAnalytics.Init (Activity) before any other StreetHawk APIs";
 
-		private Application mApplication => Application; // just an alias; remove if you want to
 		private bool mIsInitialised = false;
 
 		static Activity sMainActivity;
@@ -62,8 +61,8 @@ namespace StreetHawkCrossplatform
 
 		public string GetAppKey()
 		{
-			Log.Error("StreetHawk","inside getAppKey "+mApplication);
-			return StreetHawk.Instance.GetAppKey(mApplication.ApplicationContext);
+			Log.Error("StreetHawk","inside getAppKey "+Application);
+			return StreetHawk.Instance.GetAppKey(Application.ApplicationContext);
 		}
 
 		public string GetCurrentFormattedDateTime()
@@ -85,7 +84,7 @@ namespace StreetHawkCrossplatform
 
 		public string GetInstallId()
 		{
-			return StreetHawk.Instance.GetInstallId(mApplication.ApplicationContext);
+			return StreetHawk.Instance.GetInstallId(Application.ApplicationContext);
 		}
 
 		public string GetSHLibraryVersion()
@@ -112,7 +111,7 @@ namespace StreetHawkCrossplatform
 		public void Init()
 		{
 			mIsInitialised = true;
-			StreetHawk.Instance.Init(mApplication);
+			StreetHawk.Instance.Init(Application);
 		}
 
 		public void NotifyViewEnter(string viewName)
@@ -150,7 +149,7 @@ namespace StreetHawkCrossplatform
 
 		public void SetAdvertisementId(string id)
 		{
-			StreetHawk.Instance.SetAdvertisementId(mApplication.ApplicationContext,id);
+			StreetHawk.Instance.SetAdvertisementId(Application.ApplicationContext,id);
 		}
 
 		public void SetAppKey(string appKey)
@@ -160,7 +159,7 @@ namespace StreetHawkCrossplatform
 
 		public void SetEnableLogs(bool isEnable)
 		{
-			Util.SetSHDebugFlag(mApplication.ApplicationContext,isEnable);
+			Util.SetSHDebugFlag(Application.ApplicationContext,isEnable);
 		}
 
 		public void SetsiTunesId(string iTunesId)
