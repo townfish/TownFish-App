@@ -98,6 +98,10 @@ namespace TownFish.App
 			//Optional: not enable notification when launch, delay ask for permission.
 			shPush.SetIsDefaultNotificationServiceEnabled (true);
 
+			// start listening for beacons and geofences
+			shBeacon.StartBeaconMonitoring();
+			shGeofence.StartGeofenceMonitoring();
+
 			//Optional: callback when install register successfully.
 			shAnalytics.RegisterForInstallEvent (installId =>
 			{
