@@ -28,7 +28,7 @@ namespace StreetHawkCrossplatform
 			return false;
 		}
 
-		private RegisterForGeofenceCallback mGeofenceCallBack;
+		RegisterForGeofenceCallback mGeofenceCallBack;
 		public void RegisterForGeofenceStatus(RegisterForGeofenceCallback cb)
 		{
 			mGeofenceCallBack = cb;

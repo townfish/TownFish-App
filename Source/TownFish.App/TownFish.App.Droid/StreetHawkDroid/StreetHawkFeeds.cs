@@ -19,16 +19,16 @@ namespace StreetHawkCrossplatform
 	{
 		static Application mApplication => StreetHawkAnalytics.Application;
 
-		private const string FEED_ID = "feed_id";
-		private const string TITLE = "title";
-		private const string MESSAGE = "message";
-		private const string CAMPAIGN = "campaign";
-		private const string CONTENT = "content";
-		private const string ACTIVATES = "activates";
-		private const string EXPIRES = "expires";
-		private const string CREATED = "created";
-		private const string MODIFIED = "modified";
-		private const string DELETED = "deleted";
+		const string FEED_ID = "feed_id";
+		const string TITLE = "title";
+		const string MESSAGE = "message";
+		const string CAMPAIGN = "campaign";
+		const string CONTENT = "content";
+		const string ACTIVATES = "activates";
+		const string EXPIRES = "expires";
+		const string CREATED = "created";
+		const string MODIFIED = "modified";
+		const string DELETED = "deleted";
 
 		public void NotifyFeedResult(int feedid, int result)
 		{
@@ -40,15 +40,14 @@ namespace StreetHawkCrossplatform
 			//TODO: not implement yet
 		}
 
-		private RegisterForNewFeedCallback mNewFeedCallbak;
+		RegisterForNewFeedCallback mNewFeedCallbak;
 		public void OnNewFeedAvailableCallback(RegisterForNewFeedCallback cb)
 		{
 			//TODO : implement broadcast receiver in native to receive feed notification and notifies server
 			Log.Error("StreetHawk", "OnNewFeedAvailableCallback is not available for this release");
-
 		}
 
-		private RegisterForFeedCallback mRegisterForFeedCallBack;
+		RegisterForFeedCallback mRegisterForFeedCallBack;
 		public void ReadFeedData(int offset, RegisterForFeedCallback cb)
 		{
 			mRegisterForFeedCallBack = cb;

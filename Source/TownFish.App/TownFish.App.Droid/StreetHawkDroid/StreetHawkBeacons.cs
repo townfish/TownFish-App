@@ -37,7 +37,7 @@ namespace StreetHawkCrossplatform
 			}
 		}
 
-		private RegisterForBeaconCallback mBeaconCallBack;
+		RegisterForBeaconCallback mBeaconCallBack;
 		public void RegisterForBeaconStatus(RegisterForBeaconCallback cb)
 		{
 			mBeaconCallBack = cb;
@@ -74,4 +74,3 @@ namespace StreetHawkCrossplatform
 		}
 	}
 }
-

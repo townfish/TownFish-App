@@ -21,7 +21,7 @@ namespace TownFish.App.Droid
 	[Activity (Label = "TownFish.App", Icon = "@drawable/icon",
 		Theme = "@style/townfishTheme", MainLauncher = false,
 		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation,
-		ScreenOrientation = ScreenOrientation.Portrait | ScreenOrientation.ReversePortrait)]
+		ScreenOrientation = ScreenOrientation.SensorPortrait)]
 	public class MainActivity : FormsApplicationActivity
 	{
 		#region Nested Types

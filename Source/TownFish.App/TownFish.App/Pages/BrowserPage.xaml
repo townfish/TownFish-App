@@ -98,6 +98,7 @@
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="*" />
 				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
 
 			<Image Source="{Binding BottomAction1Label}" HorizontalOptions="Center" WidthRequest="24">
@@ -133,6 +134,12 @@
 			<Image Grid.Column="4" Source="{Binding BottomAction5Label}" HorizontalOptions="Center" WidthRequest="24">
 				<Image.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding BottomAction5Command}"/>
+				</Image.GestureRecognizers>
+			</Image>
+			<Image Grid.Column="5" Source="{Binding BottomAction6Label}"
+				   HorizontalOptions="Center" WidthRequest="24">
+				<Image.GestureRecognizers>
+					<TapGestureRecognizer Command="{Binding BottomAction6Command}"/>
 				</Image.GestureRecognizers>
 			</Image>
 		</Grid>
@@ -294,8 +301,15 @@
 				<Grid.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
 				</Grid.GestureRecognizers>
-				<Image Source="{Binding TopBarRightLabel}"
+				<Image BindingContext="{Binding TopBarRightIcon}"
+					   Source="{Binding Source}"
+					   IsVisible="{Binding IsVisible}"
 					   HorizontalOptions="Center" WidthRequest="18" />
+				<Label BindingContext="{Binding TopBarRightLabel}"
+					   IsVisible="{Binding IsVisible}"
+					   VerticalOptions="Center" HorizontalOptions="End"
+					   FontSize="16" TextColor="{Binding MenuBarTextColour}"
+					   Text="{Binding Text}" />
 			</Grid>
 
 			<!-- 2nd right button, with solid background and padding to expand tap area -->
@@ -304,8 +318,15 @@
 				<Grid.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
 				</Grid.GestureRecognizers>
-				<Image Source="{Binding TopBarRight1Label}"
+				<Image BindingContext="{Binding TopBarRight1Icon}"
+					   Source="{Binding Source}"
+					   IsVisible="{Binding IsVisible}"
 					   HorizontalOptions="Center" WidthRequest="18" />
+				<Label BindingContext="{Binding TopBarRight1Label}"
+					   IsVisible="{Binding IsVisible}"
+					   VerticalOptions="Center" HorizontalOptions="End"
+					   FontSize="16" TextColor="{Binding MenuBarTextColour}"
+					   Text="{Binding Text}" />
 			</Grid>
 
 			<!-- Top search panel (overlays top menu bar)
@@ -323,17 +344,20 @@
 						<ColumnDefinition Width="auto"/>
 					</Grid.ColumnDefinitions>
 
-					<Image Grid.Column="0" Margin="8,4" Source="{Binding TopBarRightLabel}"
-							VerticalOptions="Center" WidthRequest="16" />
+					<Image Grid.Column="0" Margin="8,4"
+						   BindingContext="{Binding TopBarRightIcon}"
+						   Source="{Binding Source}"
+						   IsVisible="{Binding IsVisible}"
+						   VerticalOptions="Center" WidthRequest="16" />
 					<Entry x:Name="ebxSearch" Grid.Column="1"
-							Placeholder="Location e.g. Camden or NW1"
-							HorizontalOptions="Fill" VerticalOptions="Center"
-							BackgroundColor="{Binding LocationsContrastBackgroundColour}"
-							TextColor="{Binding LocationsSearchInputTextColour}"
-							FontSize="13" Text="{Binding SearchTerm, Mode=TwoWay}" />
+						   Placeholder="Location e.g. Camden or NW1"
+						   HorizontalOptions="Fill" VerticalOptions="Center"
+						   BackgroundColor="{Binding LocationsContrastBackgroundColour}"
+						   TextColor="{Binding LocationsSearchInputTextColour}"
+						   FontSize="13" Text="{Binding SearchTerm, Mode=TwoWay}" />
 					<Image Grid.Column="2" Margin="8,4" IsVisible="{Binding SearchHasContent}"
-							Source="close.png"
-							VerticalOptions="Center" WidthRequest="16">
+						   Source="close.png"
+						   VerticalOptions="Center" WidthRequest="16">
 						<Image.GestureRecognizers>
 							<TapGestureRecognizer Command="{Binding CancelSearchCommand}" />
 						</Image.GestureRecognizers>

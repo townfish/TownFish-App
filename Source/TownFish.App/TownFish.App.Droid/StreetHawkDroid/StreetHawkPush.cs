@@ -31,7 +31,7 @@ namespace StreetHawkCrossplatform
 		public string GetAppPage()
 		{
 			//TODO
-			Log.Error("StreetHawk","Function GetAppPage is not implemented in this release ");
+			Log.Error("StreetHawk", "Function GetAppPage is not implemented in this release ");
 			return null;
 		}
 
@@ -70,19 +70,19 @@ namespace StreetHawkCrossplatform
 			return true;
 		}
 
-		private RegisterForOnReceiveNonSHPushPayloadCallback mNonSHPushPayloadCB;
+		RegisterForOnReceiveNonSHPushPayloadCallback mNonSHPushPayloadCB;
 		public void OnReceiveNonSHPushPayload(RegisterForOnReceiveNonSHPushPayloadCallback cb)
 		{
 			mNonSHPushPayloadCB = cb;
 		}
 
-		private RegisterForOnReceivePushDataCallback mPushDataCallback;
+		RegisterForOnReceivePushDataCallback mPushDataCallback;
 		public void OnReceivePushData(RegisterForOnReceivePushDataCallback cb)
 		{
 			mPushDataCallback = cb;
 		}
 
-		private RegisterForOnReceiveResultCallback mPushResultCallback;
+		RegisterForOnReceiveResultCallback mPushResultCallback;
 		public void OnReceiveResult(RegisterForOnReceiveResultCallback cb)
 		{
 			mPushResultCallback = cb;
@@ -94,7 +94,7 @@ namespace StreetHawkCrossplatform
 			Push.GetInstance(mApplication.ApplicationContext).RegisterSHObserver(this);
 		}
 
-		private RegisterForShReceivedRawJSONCallback mRawJSONCB;
+		RegisterForShReceivedRawJSONCallback mRawJSONCB;
 		public void RegisterForRawJSON(RegisterForShReceivedRawJSONCallback cb)
 		{
 			mRawJSONCB = cb;
@@ -117,7 +117,7 @@ namespace StreetHawkCrossplatform
 
 		public void SetIsDefaultNotificationServiceEnabled(bool enabled)
 		{
-			Log.Error("StreetHawk","Function SetIsDefaultNotificationServiceEnabled is not available for Android ");
+			Log.Error("StreetHawk", "Function SetIsDefaultNotificationServiceEnabled is not available for Android ");
 		}
 
 		public void SetIsNotificationServiceEnabled(bool enabled)
@@ -130,7 +130,7 @@ namespace StreetHawkCrossplatform
 			Push.GetInstance(mApplication.ApplicationContext).SetUseCustomDialog(isUse);
 		}
 
-		private RegisterForShNotifyAppPageCallback mNotifyAppPageCB;
+		RegisterForShNotifyAppPageCallback mNotifyAppPageCB;
 		public void ShNotifyAppPage(RegisterForShNotifyAppPageCallback cb)
 		{
 			mNotifyAppPageCB = cb;
@@ -159,6 +159,7 @@ namespace StreetHawkCrossplatform
 				appData.sound = pushData.Sound;
 				appData.badge = pushData.Badge;
 			}
+
 			mPushDataCallback.Invoke(appData);
 		}
 
@@ -179,8 +180,8 @@ namespace StreetHawkCrossplatform
 				appData.speed = pushData.Speed;
 				appData.sound = pushData.Sound;
 				appData.badge = pushData.Badge;
-
 			}
+
 			mPushResultCallback.Invoke(appData,result);
 		}
 
@@ -201,4 +202,3 @@ namespace StreetHawkCrossplatform
 		}
 	}
 }
-

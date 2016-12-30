@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 using Xamarin.Forms;
 
-using TownFish.App.Pages;
-using TownFish.App.ViewModels;
+using Newtonsoft.Json;
 
 using StreetHawkCrossplatform;
+
+using TownFish.App.Pages;
+using TownFish.App.ViewModels;
 
 
 namespace TownFish.App
@@ -205,15 +208,19 @@ namespace TownFish.App
 			});
 
 			//Optional: Callback when receive json push.
-			shPush.RegisterForRawJSON ((title, message, Json) =>
+			shPush.RegisterForRawJSON ((title, message, json) =>
 				{
 #if DEBUG
 					Device.BeginInvokeOnMainThread (() =>
 						{
-							var msg = $"title: {title}\r\nmessage: {message}\r\nJSON: {Json}";
+							var msg = $"title: {title}\r\nmessage: {message}\r\nJSON: {json}";
 							MainPage.DisplayAlert ("Receive JSON push:", msg, "OK");
 						});
 #endif
+					var raw = JsonConvert.DeserializeObject<Dictionary<string, string>> (json);
+					if (raw ["dataType"] == "vanilla_notification" &&
+							raw ["route"].ToLower().Contains ("townfish.com"))
+						PushUrlReceived?.Invoke (this, raw ["route"]);
 				});
 
 			//Optional: Callback when none 
@@ -235,6 +242,8 @@ namespace TownFish.App
 		public event EventHandler BackButtonPressed;
 
 		public event EventHandler AppCloseRequested;
+
+		public event EventHandler<string> PushUrlReceived;
 
 		public static new App Current { get { return Application.Current as App; } }
 

@@ -27,8 +27,6 @@ namespace TownFish.App.Pages
 		{
 			InitializeComponent();
 
-			App.Current.BackButtonPressed += App_BackButtonPressed;
-
 			// set my user agent string
 			wbvContent.CustomUserAgent = cCustomUserAgent;
 
@@ -41,7 +39,9 @@ namespace TownFish.App.Pages
 				{ cSchemaAction, cSchemaMethod },
 				{ cMenusVisibleAction, cMenusVisibleMethod },
 				{ cPopupMenuAction, cPopupMenuMethod },
-				{ cPushAction, cPushMethod }
+				{ cPushAction, cPushMethod },
+				{ cFeedShowAction, cFeedShowValue },
+				{ cFeedHideAction, cFeedHideValue }
 			};
 
 			wbvContent.ScriptMessageReceived += UberWebView_ScriptMessageReceived;
@@ -67,14 +67,81 @@ namespace TownFish.App.Pages
 
 			gstLocationImage.Tapped += LocationTapped;
 			gstLocationLabel.Tapped += LocationTapped;
-
-			// continue initialisation below once caller has set binding context
-			BindingContextChanged += BrowserPage_BindingContextChanged;
 		}
 
 		#endregion Construction
 
 		#region Methods
+
+		protected override void OnAppearing()
+		{
+			App.Current.BackButtonPressed += App_BackButtonPressed;
+			App.Current.PushUrlReceived += App_PushUrlReceived;
+
+			base.OnAppearing();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			App.Current.BackButtonPressed -= App_BackButtonPressed;
+			App.Current.PushUrlReceived -= App_PushUrlReceived;
+		}
+
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+
+			if (ViewModel == null)
+				return;
+
+			// start in loading state
+			ShowLoading();
+
+			// manually set this as span isn't bindable
+			spnMemberAgreementLink.ForegroundColor = ViewModel.LocationsLinkColour;
+
+			// Because we use DisplayActionSheet
+			ViewModel.TopActionMoreCommand = new Command (async _ =>
+				{
+					var selection = await DisplayActionSheet (cMoreActions, cCancel, null,
+							ViewModel.OverflowImages.Select (i => i.Value).ToArray<string>());
+
+					var url = ViewModel.OverflowImages.FirstOrDefault (i => i.Value == selection)?.Href;
+					if (!string.IsNullOrWhiteSpace (url))
+						ViewModel.SourceUrl = App.BaseUrl + url + App.QueryString;
+				});
+
+			ViewModel.CallbackRequested += (s, name) => OnCallback (name);
+			ViewModel.MenusLoaded += ViewModel_MenusLoaded;
+			ViewModel.PropertyChanged += ViewModel_PropertyChanged;
+
+			lstLocationSearchResults.ItemTapped += lstLocationSearchResults_ItemTapped;
+			lstAvailableLocations.ItemTapped += lstAvailableLocations_ItemTapped;
+		}
+
+		protected override bool OnBackButtonPressed()
+		{
+			// Hello! When did this appear?!
+
+			return base.OnBackButtonPressed();
+		}
+
+		void App_BackButtonPressed (object sender, EventArgs e)
+		{
+			if (mIsSearchVisible || mShowingSearch)
+				HideSearchPanel();
+			else if (wbvContent.CanGoBack)
+				wbvContent.GoBack();
+			else
+				App.Current.CloseApp();
+		}
+
+		void App_PushUrlReceived (object sender, string url)
+		{
+			ViewModel.SourceUrl = url;
+		}
 
 		async void UberWebView_ScriptMessageReceived (object sender, string msg)
 		{
@@ -128,6 +195,14 @@ namespace TownFish.App.Pages
 
 					case cPushAction:
 						// TODO: implement push!
+						break;
+
+					case cFeedShowAction:
+						// TODO: implement feed!
+						break;
+
+					case cFeedHideAction:
+						// TODO: close/hide feed
 						break;
 				}
 			}
@@ -212,36 +287,6 @@ namespace TownFish.App.Pages
 					"Failed to load the page.\n\n{0}", msg), "Cancel");
 		}
 
-		void BrowserPage_BindingContextChanged (object sender, EventArgs e)
-		{
-			if (ViewModel == null)
-				return;
-
-			// start in loading state
-			ShowLoading();
-
-			// manually set this as span isn't bindable
-			spnMemberAgreementLink.ForegroundColor = ViewModel.LocationsLinkColour;
-
-			// Because we use DisplayActionSheet
-			ViewModel.TopActionMoreCommand = new Command (async _ =>
-				{
-					var selection = await DisplayActionSheet (cMoreActions, cCancel, null,
-							ViewModel.OverflowImages.Select (i => i.Value).ToArray<string>());
-
-					var url = ViewModel.OverflowImages.FirstOrDefault (i => i.Value == selection)?.Href;
-					if (!string.IsNullOrWhiteSpace (url))
-						ViewModel.SourceUrl = App.BaseUrl + url + App.QueryString;
-				});
-
-			ViewModel.CallbackRequested += (s, name) => OnCallback (name);
-			ViewModel.MenusLoaded += ViewModel_MenusLoaded;
-			ViewModel.PropertyChanged += ViewModel_PropertyChanged;
-
-			lstLocationSearchResults.ItemTapped += lstLocationSearchResults_ItemTapped;
-			lstAvailableLocations.ItemTapped += lstAvailableLocations_ItemTapped;
-		}
-
 		void lstLocationSearchResults_ItemTapped (object sender, ItemTappedEventArgs e)
 		{
 			HideSearchPanel();
@@ -261,16 +306,6 @@ namespace TownFish.App.Pages
 			// WebView Source binding is unreliable, so we do it manually here
 			if (pcea.PropertyName == "SourceUrl")
 				wbvContent.Source = ViewModel.SourceUrl;
-		}
-
-		void App_BackButtonPressed (object sender, EventArgs e)
-		{
-			if (mIsSearchVisible || mShowingSearch)
-				HideSearchPanel();
-			else if (wbvContent.CanGoBack)
-				wbvContent.GoBack();
-			else
-				App.Current.CloseApp();
 		}
 
 		void OnMemAgreeClicked (object sender, EventArgs e)
@@ -516,6 +551,11 @@ namespace TownFish.App.Pages
 
 		const string cPushAction = "app_schema_push_messages";
 		const string cPushMethod = "twnfsh.getPushMessages()";
+
+		const string cFeedShowAction = "app_schema_show_feed";
+		const string cFeedShowValue = "true";
+		const string cFeedHideAction = "app_schema_hide_feed";
+		const string cFeedHideValue = "true";
 
 		const string cCallbackFormat = "twnfsh.runCallback('{0}')";
 		const string cCallbackType = "callback";

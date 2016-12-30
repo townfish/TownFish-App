@@ -18,6 +18,88 @@ namespace TownFish.App.ViewModels
 {
 	public class BrowserPageViewModel : ViewModelBase
 	{
+		#region Helper Types
+
+		public class MenuIconModel
+		{
+			#region Construction
+
+			public MenuIconModel (TownFishMenuItem item)
+			{
+				if (item == null)
+					throw new ArgumentNullException ("item can not be null");
+
+				mItem = item;
+			}
+
+			#endregion Construction
+
+			#region Methods
+
+			string GetSource()
+			{
+				if (!IsVisible || string.IsNullOrEmpty (mItem.IconUrl))
+					return null;
+
+				var url = mItem.IconUrl;
+
+				url = url.Replace ("{size}", "hdpi"); // HACK: force sizes for now; should be item.Size);
+				url = url.Replace ("{color}", mItem.Color);
+
+				return App.BaseUrl + url;
+			}
+
+			#endregion Methods
+
+			#region Properties
+
+			public bool IsVisible => mItem.Kind == "icon";
+
+			public string Source => GetSource();
+
+			#endregion Properties
+
+			#region Fields
+
+			TownFishMenuItem mItem;
+
+			#endregion Fields
+		}
+
+		public class MenuLabelModel
+		{
+			#region Construction
+
+			public MenuLabelModel (TownFishMenuItem item)
+			{
+				if (item == null)
+					throw new ArgumentNullException ("item can not be null");
+
+				mItem = item;
+			}
+
+			#endregion Construction
+
+			#region Methods
+			#endregion Methods
+
+			#region Properties
+
+			public bool IsVisible => mItem.Kind == "text";
+
+			public string Text => mItem.Value;
+
+			#endregion Properties
+
+			#region Fields
+
+			TownFishMenuItem mItem;
+
+			#endregion Fields
+		}
+
+		#endregion Helper Types
+
 		#region Properties and Events
 
 		public event EventHandler<string> CallbackRequested;
@@ -244,6 +326,22 @@ namespace TownFish.App.ViewModels
 
 		#endregion Bottom Action 5
 
+		#region Bottom Action 6
+
+		public string BottomAction6Label
+		{
+			get { return Get<string>(); }
+			private set { Set (value); }
+		}
+
+		public ICommand BottomAction6Command
+		{
+			get { return Get<ICommand>(); }
+			private set { Set (value); }
+		}
+
+		#endregion Bottom Action 6
+
 		public bool IsBottomBarVisible
 		{
 			get { return Get<bool>(); }
@@ -266,9 +364,15 @@ namespace TownFish.App.ViewModels
 			private set { Set (value); }
 		}
 
-		public string TopBarRightLabel
+		public MenuLabelModel TopBarRightLabel
 		{
-			get { return Get<string>(); }
+			get { return Get<MenuLabelModel>(); }
+			private set { Set (value); }
+		}
+
+		public MenuIconModel TopBarRightIcon
+		{
+			get { return Get<MenuIconModel>(); }
 			private set { Set (value); }
 		}
 
@@ -278,9 +382,15 @@ namespace TownFish.App.ViewModels
 			private set { Set (value); }
 		}
 
-		public string TopBarRight1Label
+		public MenuLabelModel TopBarRight1Label
 		{
-			get { return Get<string>(); }
+			get { return Get<MenuLabelModel>(); }
+			private set { Set (value); }
+		}
+
+		public MenuIconModel TopBarRight1Icon
+		{
+			get { return Get<MenuIconModel>(); }
 			private set { Set (value); }
 		}
 
@@ -642,6 +752,17 @@ namespace TownFish.App.ViewModels
 			if (menus == null)
 				return;
 
+			// clear everything so we only need to populate what's present
+			TopBarLeftLabel = "";
+			TopBarLeftCommand = null;
+			PageTitle = "";
+			TopBarRightLabel = null;
+			TopBarRightCommand = null;
+			TopBarRightIcon = null;
+			TopBarRight1Label = null;
+			TopBarRight1Command = null;
+			TopBarRight1Icon = null;
+
 			var top = menus.Top;
 			IsTopBarVisible = top != null && top.display;
 
@@ -653,50 +774,39 @@ namespace TownFish.App.ViewModels
 					TopBarLeftLabel = GenerateMenuItem (top.items [0]);
 					TopBarLeftCommand = GenerateMenuAction (top.items [0]);
 				}
-				else
-				{
-					TopBarLeftLabel = "";
-					TopBarLeftCommand = null;
-				}
 
 				var isHeadingItem = top.items.FirstOrDefault (i => i.Type == "heading");
 				if (isHeadingItem != null)
 					PageTitle = GenerateMenuItem (top.items [1]);
-				else
-					PageTitle = "";
 
 				var rightItems = top.items.Where (i => i.Align == "right").ToList();
 				if (rightItems.Count == 1)
 				{
-					TopBarRightLabel = "";
-					TopBarRightCommand = null;
-					TopBarRight1Label = GenerateMenuItem (rightItems [0]);
+					TopBarRight1Label = new MenuLabelModel (rightItems [0]);
 					TopBarRight1Command = GenerateMenuAction (rightItems [0]);
+					TopBarRight1Icon = new MenuIconModel (rightItems [0]);
 				}
 				else if (rightItems.Count == 2)
 				{
-					TopBarRightLabel = GenerateMenuItem (rightItems [0]);
+					TopBarRightLabel = new MenuLabelModel (rightItems [0]);
 					TopBarRightCommand = GenerateMenuAction (rightItems [0]);
-					TopBarRight1Label = GenerateMenuItem (rightItems [1]);
+					TopBarRightIcon = new MenuIconModel (rightItems [0]);
+					TopBarRight1Label = new MenuLabelModel (rightItems [1]);
 					TopBarRight1Command = GenerateMenuAction (rightItems [1]);
-				}
-				else
-				{
-					TopBarRightLabel = "";
-					TopBarRightCommand = null;
-					TopBarRight1Label = "";
-					TopBarRight1Command = null;
+					TopBarRight1Icon = new MenuIconModel (rightItems [1]);
 				}
 			}
-			else
-			{
-				TopBarLeftLabel = "";
-				TopBarLeftCommand = null;
-				TopBarRight1Label = "";
-				TopBarRightCommand = null;
-				TopBarRight1Label = "";
-				TopBarRight1Command = null;
-			}
+
+			TopAction1Label = "";
+			TopAction1Command = null;
+			TopAction2Label = "";
+			TopAction2Command = null;
+			TopAction3Label = "";
+			TopAction3Command = null;
+			TopAction4Label = "";
+			TopAction4Command = null;
+			TopActionMoreLabel = "";
+			OverflowImages = null;
 
 			var topSub = menus.TopSub;
 			IsTopSubBarVisible = topSub != null && topSub.display;
@@ -714,11 +824,6 @@ namespace TownFish.App.ViewModels
 					else
 						TopAction1Bold = FontAttributes.None;
 				}
-				else
-				{
-					TopAction1Label = "";
-					TopAction1Command = null;
-				}
 
 				if (topSub.items.Count > 1 && topSub.items [1] != null)
 				{
@@ -729,11 +834,6 @@ namespace TownFish.App.ViewModels
 						TopAction2Bold = FontAttributes.Bold;
 					else
 						TopAction2Bold = FontAttributes.None;
-				}
-				else
-				{
-					TopAction2Label = "";
-					TopAction2Command = null;
 				}
 
 				if (topSub.items.Count > 2 && topSub.items [2] != null)
@@ -746,11 +846,6 @@ namespace TownFish.App.ViewModels
 					else
 						TopAction3Bold = FontAttributes.None;
 				}
-				else
-				{
-					TopAction3Label = "";
-					TopAction3Command = null;
-				}
 
 				if (topSub.items.Count > 3 && topSub.items [3] != null)
 				{
@@ -762,11 +857,6 @@ namespace TownFish.App.ViewModels
 					else
 						TopAction4Bold = FontAttributes.None;
 				}
-				else
-				{
-					TopAction4Label = "";
-					TopAction4Command = null;
-				}
 
 				if (topSub.items.Count > 4)
 				{
@@ -776,11 +866,6 @@ namespace TownFish.App.ViewModels
 						TopActionMoreLabel = GenerateMenuItem (moreIcon);
 						OverflowImages = topSub.items.Skip (3).Where (i => i.Type != "limitby").ToList();
 					}
-				}
-				else
-				{
-					TopActionMoreLabel = "";
-					OverflowImages = null;
 				}
 			}
 
@@ -804,6 +889,19 @@ namespace TownFish.App.ViewModels
 					PageTitle = GenerateMenuItem (topForm.items [1]);
 			}
 
+			BottomAction1Label = "";
+			BottomAction1Command = null;
+			BottomAction2Label = "";
+			BottomAction2Command = null;
+			BottomAction2HasNumber = false;
+			BottomAction3Label = "";
+			BottomAction3Command = null;
+			BottomAction3HasNumber = false;
+			BottomAction4Label = "";
+			BottomAction4Command = null;
+			BottomAction5Label = "";
+			BottomAction5Command = null;
+
 			var bottom = menus.Bottom;
 			IsBottomBarVisible = bottom != null && bottom.display;
 
@@ -814,11 +912,6 @@ namespace TownFish.App.ViewModels
 				{
 					BottomAction1Label = GenerateMenuItem (bottom.items [0]);
 					BottomAction1Command = GenerateMenuAction (bottom.items [0]);
-				}
-				else
-				{
-					BottomAction1Label = "";
-					BottomAction1Command = null;
 				}
 
 				if (bottom.items.Count > 0 && bottom.items [1] != null)
@@ -832,12 +925,6 @@ namespace TownFish.App.ViewModels
 						BottomAction2Number = bottom.items [1].Super;
 					}
 				}
-				else
-				{
-					BottomAction2Label = "";
-					BottomAction2Command = null;
-					BottomAction2HasNumber = false;
-				}
 
 				if (bottom.items.Count > 0 && bottom.items [2] != null)
 				{
@@ -850,22 +937,11 @@ namespace TownFish.App.ViewModels
 						BottomAction3Number = bottom.items [2].Super;
 					}
 				}
-				else
-				{
-					BottomAction3Label = "";
-					BottomAction3Command = null;
-					BottomAction3HasNumber = false;
-				}
 
 				if (bottom.items.Count > 0 && bottom.items [3] != null)
 				{
 					BottomAction4Label = GenerateMenuItem (bottom.items [3]);
 					BottomAction4Command = GenerateMenuAction (bottom.items [3]);
-				}
-				else
-				{
-					BottomAction4Label = "";
-					BottomAction4Command = null;
 				}
 
 				if (bottom.items.Count > 0 && bottom.items [4] != null)
@@ -873,26 +949,12 @@ namespace TownFish.App.ViewModels
 					BottomAction5Label = GenerateMenuItem (bottom.items [4]);
 					BottomAction5Command = GenerateMenuAction (bottom.items [4]);
 				}
-				else
+
+				if (bottom.items.Count > 0 && bottom.items [5] != null)
 				{
-					BottomAction5Label = "";
-					BottomAction5Command = null;
+					BottomAction6Label = GenerateMenuItem (bottom.items [5]);
+					BottomAction6Command = GenerateMenuAction (bottom.items [5]);
 				}
-			}
-			else
-			{
-				BottomAction1Label = "";
-				BottomAction1Command = null;
-				BottomAction2Label = "";
-				BottomAction2Command = null;
-				BottomAction2HasNumber = false;
-				BottomAction3Label = "";
-				BottomAction3HasNumber = false;
-				BottomAction3Command = null;
-				BottomAction4Label = "";
-				BottomAction4Command = null;
-				BottomAction5Label = "";
-				BottomAction5Command = null;
 			}
 		}
 
