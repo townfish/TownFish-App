@@ -563,19 +563,17 @@ namespace TownFish.App.ViewModels
 				// if collection changes, we may or may not have any items in the new one
 				if (Set (value))
 				{
-					OnPropertyChanged (() => SearchLocationHasResults);
-					OnPropertyChanged (() => SearchLocationHasNoItems);
+					OnPropertyChanged (() => SearchLocationActive);
+					OnPropertyChanged (() => SearchLocationListEmpty);
 				}
 			}
 		}
 
-		public bool SearchHasContent =>
-				!string.IsNullOrWhiteSpace (SearchTerm) && SearchTerm.Length > 0;
+		public bool SearchHasContent => (SearchTerm?.Length ?? 0) > 0;
 
-		public bool SearchLocationHasResults =>
-				LocationSearchItems != null && LocationSearchItems?.Count > 0;
+		public bool SearchLocationActive => !SearchLocationListEmpty || SearchHasContent;
 
-		public bool SearchLocationHasNoItems => !SearchLocationHasResults;
+		public bool SearchLocationListEmpty => (LocationSearchItems?.Count ?? 0) == 0;
 
 		public ICommand CancelSearchCommand =>
 				new Command (_ => CancelLocationSearch());

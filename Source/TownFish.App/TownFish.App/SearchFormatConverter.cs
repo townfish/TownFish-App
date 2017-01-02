@@ -19,11 +19,16 @@ namespace TownFish.App
 			try
 			{
 				var item = value.ToString();
-				var searchTerm = parameter.ToString();
+
+				// sadly converter parameter isn't bindable so we have to hack this with
+				// a global (static) in the view model. Yuck.
+
+				//var searchTerm = parameter.ToString();
+				var searchTerm = BrowserPageViewModel.CurrentSearchTerm;
 
 				var formattedOutput = new FormattedString();
 
-				HighlightTerm (item, BrowserPageViewModel.CurrentSearchTerm, ref formattedOutput);
+				HighlightTerm (item, searchTerm, ref formattedOutput);
 
 				return formattedOutput;
 			}

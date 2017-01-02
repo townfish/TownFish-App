@@ -29,7 +29,7 @@ namespace TownFish.App.Models
 
 		public string CountryName { get; set; }
 
-		public string LocationFormat
+		public string LocationText
 		{
 			get { return Name + ", " + PostCode;  }
 		}

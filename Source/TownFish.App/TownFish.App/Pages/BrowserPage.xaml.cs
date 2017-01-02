@@ -371,7 +371,7 @@ namespace TownFish.App.Pages
 			if (!mIsSearchVisible || mHidingSearch)
 				return;
 
-			if (ViewModel.SearchLocationHasResults)
+			if (ViewModel.SearchLocationActive)
 				ViewModel.CancelLocationSearch();
 
 			// remove focus from search input
