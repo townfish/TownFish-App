@@ -12,8 +12,6 @@ using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
 using StreetHawkCrossplatform;
-using Com.Streethawk.Library.Core;
-using Com.Streethawk.Library.Push;
 
 
 namespace TownFish.App.Droid
@@ -21,7 +19,10 @@ namespace TownFish.App.Droid
 	[Activity (Label = "TownFish.App", Icon = "@drawable/icon",
 		Theme = "@style/townfishTheme", MainLauncher = false,
 		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation,
-		ScreenOrientation = ScreenOrientation.SensorPortrait)]
+		ScreenOrientation = ScreenOrientation.SensorPortrait,
+		// in case this helps - looks like needs to be set programmatically in XF
+		// due to https://bugzilla.xamarin.com/show_bug.cgi?id=39765
+		WindowSoftInputMode = SoftInput.AdjustResize)]
 	public class MainActivity : FormsApplicationActivity
 	{
 		#region Nested Types
@@ -55,7 +56,7 @@ namespace TownFish.App.Droid
 		{
 			base.OnCreate (bundle);
 
-#if DEBUG	
+#if DEBUG
 			if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
 				Android.Webkit.WebView.SetWebContentsDebuggingEnabled (true);
 #endif

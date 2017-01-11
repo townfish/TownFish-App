@@ -6,8 +6,11 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-using Newtonsoft.Json;
 using Xamarin.Forms;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+
+using Newtonsoft.Json;
 
 using Xamify.UberWebViewLib;
 
@@ -75,6 +78,9 @@ namespace TownFish.App.Pages
 
 		protected override void OnAppearing()
 		{
+			// make sure we shrink for keyboard so inputs stay visible
+			App.Current.On<Android>().UseWindowSoftInputModeAdjust (WindowSoftInputModeAdjust.Resize);
+
 			App.Current.BackButtonPressed += App_BackButtonPressed;
 			App.Current.PushUrlReceived += App_PushUrlReceived;
 
