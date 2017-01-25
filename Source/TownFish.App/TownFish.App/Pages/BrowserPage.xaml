@@ -2,12 +2,12 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			 xmlns:xamify="clr-namespace:Xamify.UberWebViewLib;assembly=Xamify.UberWebView"
-			 xmlns:converters="clr-namespace:TownFish.App;assembly=TownFish.App"
+			 xmlns:townfish="clr-namespace:TownFish.App;assembly=TownFish.App"
 			 Title="TownFish"
 			 x:Class="TownFish.App.Pages.BrowserPage">
 	<ContentPage.Resources>
 		<ResourceDictionary>
-			<converters:SearchFormatConverter x:Key="searchCon"></converters:SearchFormatConverter>
+			<townfish:SearchFormatConverter x:Key="searchCon"></townfish:SearchFormatConverter>
 			<Style x:Key="BottomNavBtnStyle" TargetType="Button">
 				<Setter Property="TextColor" Value="#8b8b8b" />
 				<Setter Property="BackgroundColor" Value="White" />
@@ -234,9 +234,9 @@
 		<!-- Location Search Results Panel -->
 		<Grid x:Name="pnlLocationsSearchResults"
 			  IsVisible="{Binding SearchLocationActive}"
-			  WidthRequest="420" HorizontalOptions="Start"
-			  HeightRequest="400" VerticalOptions="Start"
 			  Grid.RowSpan="2" Grid.Row="1">
+			  <!--WidthRequest="420" HorizontalOptions="Start"
+			  HeightRequest="400" VerticalOptions="Start"-->
 			<Grid Padding="2,0,2,2">
 				<ListView x:Name="lstLocationSearchResults"
 						  BackgroundColor="White"
@@ -249,10 +249,10 @@
 								<StackLayout Orientation="Vertical" Spacing="0">
 									<Grid Padding="10,10,10,6">
 										<!-- NOTE: Converter parameter not used due to lack of bindability; see comment in SearchFormatConverter.Convert -->
-										<Label FormattedText="{Binding LocationText, Converter={StaticResource searchCon}, ConverterParameter='lon'}"
+										<Label FormattedText="{Binding LocationText, Converter={StaticResource searchCon}, ConverterParameter='xxx'}"
 											   VerticalOptions="Center"
 											   TextColor="#989898" />
-											   <!-- NOTE: binding DOESN'T WORK here: child spans don't inherit label colour if it's bound -->
+											   <!-- TODO: figure out how to bind colour to BrowserPageViewModel (i.e. not data item) -->
 											   <!--TextColor="{Binding LocationsSearchResultsTextColour}" />-->
 									</Grid>
 									<BoxView Grid.Row="2" Color="{Binding BottomMenuBackgroundColour}" HeightRequest="4"/>
@@ -400,7 +400,7 @@
 				   Text="{Binding TopFormLeftActionLabel}"
 				   FontSize="16">
 				<Label.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding TopFormLeftAction}" />
+					<TapGestureRecognizer Command="{Binding TopFormLeftActionCommand}" />
 				</Label.GestureRecognizers>
 			</Label>
 			<!-- span all cols so we can properly centre this -->
@@ -420,6 +420,24 @@
 			</Label>
 		</Grid>
 
+		<Grid x:Name="pnlFeed" Grid.Row="1" Grid.RowSpan="2"
+			  IsVisible="{Binding IsFeedVisible}">
+			<ListView x:Name="lstFeed"
+					  HasUnevenRows="True" SeparatorVisibility="None"
+					  ItemsSource="{Binding FeedItems}">
+				<ListView.ItemTemplate>
+					<DataTemplate>
+						<ViewCell>
+							<StackLayout Orientation="Vertical" Spacing="0">
+								<townfish:FeedItem />
+								<BoxView Color="#E2E2E2" HeightRequest="10"/>
+							</StackLayout>
+						</ViewCell>
+					</DataTemplate>
+				</ListView.ItemTemplate>
+			</ListView>	
+		</Grid>
+		
 		<!-- Loading Panel -->
 		<Grid x:Name="pnlLoading" IsVisible="{Binding IsLoading}" Grid.Row="1" Grid.RowSpan="2"
 			  BackgroundColor="{Binding MenuBarTextColour}">

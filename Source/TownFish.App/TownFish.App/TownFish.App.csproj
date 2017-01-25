@@ -39,6 +39,9 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="Command.cs" />
+    <Compile Include="FeedItem.xaml.cs">
+      <DependentUpon>FeedItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="IStreetHawk\IStreetHawkAnalytics.cs" />
     <Compile Include="IStreetHawk\IStreetHawkBeacon.cs" />
     <Compile Include="IStreetHawk\IStreetHawkFeeds.cs" />
@@ -47,8 +50,7 @@
     <Compile Include="IStreetHawk\IStreetHawkLocations.cs" />
     <Compile Include="IStreetHawk\IStreetHawkPush.cs" />
     <Compile Include="Models\AvailableLocation.cs" />
-    <Compile Include="Models\BottomMenu.cs" />
-    <Compile Include="Models\NavMenuItem.cs" />
+    <Compile Include="Models\FeedItemViewModel.cs" />
     <Compile Include="Models\TownFishLocationList.cs" />
     <Compile Include="Models\TownFishMenu.cs" />
     <Compile Include="Models\TownFishMenuMap.cs" />
@@ -99,6 +101,16 @@
     <EmbeddedResource Include="App.xaml">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FeedItem.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Images\Dummy\meat.png" />
+    <EmbeddedResource Include="Images\Dummy\muffin.png" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

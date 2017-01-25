@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define NOSTREETHAWKFEED
+
+using System;
 
 using Android.App;
 using Android.Content.PM;
@@ -11,6 +13,7 @@ using Android.Webkit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
+using Com.Streethawk.Library.Feeds;
 using StreetHawkCrossplatform;
 
 
@@ -19,7 +22,9 @@ namespace TownFish.App.Droid
 	[Activity (Label = "TownFish.App", Icon = "@drawable/icon",
 		Theme = "@style/townfishTheme", MainLauncher = false,
 		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation,
-		ScreenOrientation = ScreenOrientation.SensorPortrait,
+		ScreenOrientation = //ScreenOrientation.Portrait |
+							//ScreenOrientation.ReversePortrait |
+							ScreenOrientation.UserPortrait,
 		// in case this helps - looks like needs to be set programmatically in XF
 		// due to https://bugzilla.xamarin.com/show_bug.cgi?id=39765
 		WindowSoftInputMode = SoftInput.AdjustResize)]
@@ -61,9 +66,15 @@ namespace TownFish.App.Droid
 				Android.Webkit.WebView.SetWebContentsDebuggingEnabled (true);
 #endif
 
+			Forms.Init (this, bundle);
+
 			StreetHawkAnalytics.Init (this);
 
-			Forms.Init (this, bundle);
+#if !NOSTREETHAWKFEED
+			// separately initialise SH feeds
+			var shFeeds = DependencyService.Get<ISHFeedItemObserver>();
+			SHFeedItem.GetInstance (this).RegisterFeedItemObserver (shFeeds);
+#endif // !NOSTREETHAWKFEED
 
 			var deviceID = Secure.GetString (ApplicationContext.ContentResolver,
 					Secure.AndroidId);
@@ -98,12 +109,12 @@ namespace TownFish.App.Droid
 			}
 		}
 
-		#endregion Methods
+#endregion Methods
 
-		#region Fields
+#region Fields
 
 		App mApp;
 
-		#endregion Fields
+#endregion Fields
 	}
 }

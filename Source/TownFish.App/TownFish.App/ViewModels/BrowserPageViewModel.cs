@@ -526,7 +526,7 @@ namespace TownFish.App.ViewModels
 			private set { Set (value); }
 		}
 
-		public ICommand TopFormLeftAction
+		public ICommand TopFormLeftActionCommand
 		{
 			get { return Get<ICommand>(); }
 			private set { Set (value); }
@@ -538,7 +538,7 @@ namespace TownFish.App.ViewModels
 			private set { Set (value); }
 		}
 
-		public ICommand TopFormRightAction
+		public ICommand TopFormRightActionCommand
 		{
 			get { return Get<ICommand>(); }
 			private set { Set (value); }
@@ -622,6 +622,22 @@ namespace TownFish.App.ViewModels
 
 		#endregion Locations
 
+		#region Feed
+
+		public bool IsFeedVisible
+		{
+			get { return Get<bool>(); }
+			set { Set (value); }
+		}
+
+		public ObservableCollection<FeedItemViewModel> FeedItems
+		{
+			get { return Get<ObservableCollection<FeedItemViewModel>>(); }
+			set { Set (value); }
+		}
+
+		#endregion Feed
+
 		#endregion Properties and Events
 
 		#region Methods
@@ -655,11 +671,8 @@ namespace TownFish.App.ViewModels
 			SourceUrl = App.BaseUrl + mLocationSetFormat.Replace ("{id}", cityID) + App.QueryString;
 		}
 
-		public void LoadMenuMap (TownFishMenuMap map)
+		public void ClearMenus()
 		{
-			mLocationApiFormat = map.LocationsAPI;
-			mLocationSetFormat = map.LocationSetUrl;
-
 			IsTopBarVisible = false;
 			IsTopSubBarVisible = false;
 			IsTopFormBarVisible = false;
@@ -668,6 +681,54 @@ namespace TownFish.App.ViewModels
 			LeftActionIsLocationPin = false;
 
 			LocationName = "";
+			PageTitle = "";
+
+			TopBarLeftLabel = "";
+			TopBarLeftCommand = null;
+			TopBarRightLabel = null;
+			TopBarRightCommand = null;
+			TopBarRightIcon = null;
+			TopBarRight1Label = null;
+			TopBarRight1Command = null;
+			TopBarRight1Icon = null;
+
+			TopAction1Label = "";
+			TopAction1Command = null;
+			TopAction2Label = "";
+			TopAction2Command = null;
+			TopAction3Label = "";
+			TopAction3Command = null;
+			TopAction4Label = "";
+			TopAction4Command = null;
+			TopActionMoreLabel = "";
+			OverflowImages = null;
+
+			TopFormLeftActionLabel = "";
+			TopFormLeftActionCommand = null;
+			TopFormRightActionLabel = "";
+			TopFormRightActionCommand = null;
+
+			BottomAction1Label = "";
+			BottomAction1Command = null;
+			BottomAction2Label = "";
+			BottomAction2Command = null;
+			BottomAction2HasNumber = false;
+			BottomAction3Label = "";
+			BottomAction3Command = null;
+			BottomAction3HasNumber = false;
+			BottomAction4Label = "";
+			BottomAction4Command = null;
+			BottomAction5Label = "";
+			BottomAction5Command = null;
+		}
+
+		public void LoadMenuMap (TownFishMenuMap map)
+		{
+			// clear everything so we only need to populate what's present
+			ClearMenus();
+
+			mLocationApiFormat = map.LocationsAPI;
+			mLocationSetFormat = map.LocationSetUrl;
 
 			SyncToken = map.SyncToken;
 
@@ -750,17 +811,6 @@ namespace TownFish.App.ViewModels
 			if (menus == null)
 				return;
 
-			// clear everything so we only need to populate what's present
-			TopBarLeftLabel = "";
-			TopBarLeftCommand = null;
-			PageTitle = "";
-			TopBarRightLabel = null;
-			TopBarRightCommand = null;
-			TopBarRightIcon = null;
-			TopBarRight1Label = null;
-			TopBarRight1Command = null;
-			TopBarRight1Icon = null;
-
 			var top = menus.Top;
 			IsTopBarVisible = top != null && top.display;
 
@@ -794,17 +844,6 @@ namespace TownFish.App.ViewModels
 					TopBarRight1Icon = new MenuIconModel (rightItems [1]);
 				}
 			}
-
-			TopAction1Label = "";
-			TopAction1Command = null;
-			TopAction2Label = "";
-			TopAction2Command = null;
-			TopAction3Label = "";
-			TopAction3Command = null;
-			TopAction4Label = "";
-			TopAction4Command = null;
-			TopActionMoreLabel = "";
-			OverflowImages = null;
 
 			var topSub = menus.TopSub;
 			IsTopSubBarVisible = topSub != null && topSub.display;
@@ -873,32 +912,19 @@ namespace TownFish.App.ViewModels
 			if (IsTopFormBarVisible)
 			{
 				TopFormLeftActionLabel = GenerateMenuItem (topForm.items [0]);
-				TopFormLeftAction = GenerateMenuAction (topForm.items [0]);
+				TopFormLeftActionCommand = GenerateMenuAction (topForm.items [0]);
 
 				var topFormRightItem = topForm.items.FirstOrDefault (i => i.Align == "right");
 				if (topFormRightItem != null)
 				{
 					TopFormRightActionLabel = GenerateMenuItem (topFormRightItem);
-					TopFormRightAction = GenerateMenuAction (topFormRightItem);
+					TopFormRightActionCommand = GenerateMenuAction (topFormRightItem);
 				}
 
 				// if 3 items, item 1 is title (we hope!)
 				if (topForm.items.Count > 2 && topForm.items [1] != null)
 					PageTitle = GenerateMenuItem (topForm.items [1]);
 			}
-
-			BottomAction1Label = "";
-			BottomAction1Command = null;
-			BottomAction2Label = "";
-			BottomAction2Command = null;
-			BottomAction2HasNumber = false;
-			BottomAction3Label = "";
-			BottomAction3Command = null;
-			BottomAction3HasNumber = false;
-			BottomAction4Label = "";
-			BottomAction4Command = null;
-			BottomAction5Label = "";
-			BottomAction5Command = null;
 
 			var bottom = menus.Bottom;
 			IsBottomBarVisible = bottom != null && bottom.display;

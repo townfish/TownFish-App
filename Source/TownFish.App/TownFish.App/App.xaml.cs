@@ -1,6 +1,10 @@
-﻿using System;
+﻿//#define NOSTREETHAWKFEED
+
+using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 using Xamarin.Forms;
 
@@ -105,6 +109,11 @@ namespace TownFish.App
 			shBeacon.StartBeaconMonitoring();
 			shGeofence.StartGeofenceMonitoring();
 
+			//----------------------------------------------------------------
+			// Apparently, hooking these stops them from working. Apparently.
+			//
+#if SH_OPTIONAL
+
 			//Optional: callback when install register successfully.
 			shAnalytics.RegisterForInstallEvent (installId =>
 			{
@@ -188,7 +197,6 @@ namespace TownFish.App
 							MainPage.DisplayAlert ("Push Data:", message, "Continue");
 						});
 #endif
-
 					//Mandatory: Send push result.
 					shPush.SendPushResult (pushData.msgID, 1);// SHPushResult.SHPushResult_Accept);
 				});
@@ -207,6 +215,11 @@ namespace TownFish.App
 #endif
 			});
 
+#endif // SH_OPTIONAL
+//
+//----------------------------------------------------------------
+
+#if TRUE // SH_RAWJSON_OPTIONAL
 			//Optional: Callback when receive json push.
 			shPush.RegisterForRawJSON ((title, message, json) =>
 				{
@@ -217,11 +230,20 @@ namespace TownFish.App
 							MainPage.DisplayAlert ("Receive JSON push:", msg, "OK");
 						});
 #endif
-					var raw = JsonConvert.DeserializeObject<Dictionary<string, string>> (json);
-					if (raw ["dataType"] == "vanilla_notification" &&
-							raw ["route"].ToLower().Contains ("townfish.com"))
-						PushUrlReceived?.Invoke (this, raw ["route"]);
+					try
+					{
+						var raw = JsonConvert.DeserializeObject<Dictionary<string, string>> (json);
+						if (raw ["dataType"] == "vanilla_notification" &&
+								raw ["route"].ToLower ().Contains ("townfish.com"))
+							PushUrlReceived?.Invoke (this, raw ["route"]);
+					}
+					catch {}
 				});
+#endif // SH_RAWJSON_OPTIONAL
+
+//----------------------------------------------------------------
+//
+#if SH_OPTIONAL
 
 			//Optional: Callback when none 
 			shPush.OnReceiveNonSHPushPayload (payload =>
@@ -231,6 +253,76 @@ namespace TownFish.App
 					MainPage.DisplayAlert ("Receive non-StreetHawk push:", payload, "OK"));
 #endif
 			});
+
+#endif // SH_OPTIONAL
+//
+//----------------------------------------------------------------
+
+		}
+
+		public static Task<IList<SHFeedObject>> GetSHFeed()
+		{
+			var tcs = new TaskCompletionSource <IList<SHFeedObject>>();
+			var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
+
+#if NOSTREETHAWKFEED
+			Task.Run (() => tcs.TrySetResult (null));
+#else
+			// if it takes too long to return (call my callback below), give up to prevent leaks
+			var cts = new CancellationTokenSource (5000);
+			cts.Token.Register (() => tcs.TrySetException (new TimeoutException()));
+
+			try
+			{
+				shFeeds.ReadFeedData (0, (arrayFeeds, error) =>
+					{
+						// now we're back from callback we can cancel the timeout
+						cts.Dispose();
+
+						Device.BeginInvokeOnMainThread (() =>
+							{
+								try
+								{
+									if (error != null)
+									{
+#if DEBUG
+										Current.MainPage.DisplayAlert ("New feeds available but fetch failed:", error, "OK");
+#endif
+										throw new Exception (error);
+									}
+									else
+									{
+#if DEBUG
+										var feeds = string.Empty;
+
+										for (int i = 0; i < arrayFeeds.Count; i++)
+										{
+											var feed = arrayFeeds[i];
+											feeds = $"Title: {feed.title}; Message: {feed.message}; Content: {feed.content}. \r\n{feeds}";
+											shFeeds.SendFeedAck (feed.feed_id);
+											shFeeds.NotifyFeedResult (feed.feed_id, 1);
+										}
+
+										Current.MainPage.DisplayAlert ($"New feeds available and fetched {arrayFeeds.Count}:", feeds, "OK");
+#endif
+
+										tcs.TrySetResult (arrayFeeds);
+									}
+								}
+								catch (Exception ex)
+								{
+									tcs.TrySetException (ex);
+								}
+							});
+					});
+			}
+			catch (Exception ex)
+			{
+				tcs.TrySetException (ex);
+			}
+#endif // !NOSTREETHAWKFEED
+
+			return tcs.Task;
 		}
 
 		#endregion StreetHawk
