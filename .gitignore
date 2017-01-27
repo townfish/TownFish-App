@@ -153,8 +153,9 @@ publish/
 csx/
 *.build.csdef
 
-# Windows Store app package directory
+# Windows Store app package & bundle artefacts
 AppPackages/
+BundleArtifacts/
 
 # Visual Studio cache files
 # files ending in .cache can be ignored
