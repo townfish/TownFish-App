@@ -1,6 +1,4 @@
-﻿#define STREETHAWKWORKING
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -70,9 +68,6 @@ namespace TownFish.App.Pages
 				pad.Top += cTopPaddingiOS;
 				pnlTopForm.Padding = pad;
 			}
-
-			gstLocationImage.Tapped += LocationTapped;
-			gstLocationLabel.Tapped += LocationTapped;
 		}
 
 		#endregion Construction
@@ -86,6 +81,8 @@ namespace TownFish.App.Pages
 
 			App.Current.BackButtonPressed += App_BackButtonPressed;
 			App.Current.PushUrlReceived += App_PushUrlReceived;
+			App.Current.SHFeedItemsAvailable += App_FeedItemsAvailable;
+			App.Current.AppResumed += App_Resumed;
 
 			base.OnAppearing();
 		}
@@ -96,6 +93,8 @@ namespace TownFish.App.Pages
 
 			App.Current.BackButtonPressed -= App_BackButtonPressed;
 			App.Current.PushUrlReceived -= App_PushUrlReceived;
+			App.Current.SHFeedItemsAvailable += App_FeedItemsAvailable;
+			App.Current.AppResumed -= App_Resumed;
 		}
 
 		protected override void OnBindingContextChanged()
@@ -109,7 +108,7 @@ namespace TownFish.App.Pages
 			ShowLoading();
 
 			// manually set this as span isn't bindable
-			spnMemberAgreementLink.ForegroundColor = ViewModel.LocationsLinkColour;
+			spnMemberAgreementLink.ForegroundColor = ViewModel.FeedLinkColour;
 
 			// Because we use DisplayActionSheet
 			ViewModel.TopActionMoreCommand = new Command (async _ =>
@@ -122,12 +121,10 @@ namespace TownFish.App.Pages
 						ViewModel.SourceUrl = App.BaseUrl + url + App.QueryString;
 				});
 
-			ViewModel.CallbackRequested += (s, name) => OnCallback (name);
-			ViewModel.MenusLoaded += ViewModel_MenusLoaded;
-			ViewModel.PropertyChanged += ViewModel_PropertyChanged;
-
-			lstLocationSearchResults.ItemTapped += lstLocationSearchResults_ItemTapped;
-			lstAvailableLocations.ItemTapped += lstAvailableLocations_ItemTapped;
+			ViewModel.LocationTapped += LocationTapped;
+			ViewModel.CallbackRequested += CallbackRequested;
+			ViewModel.MenusLoaded += MenusLoaded;
+			ViewModel.PropertyChanged += ViewModelPropertyChanged;
 		}
 
 		protected override bool OnBackButtonPressed()
@@ -141,6 +138,8 @@ namespace TownFish.App.Pages
 		{
 			if (mIsSearchVisible || mShowingSearch)
 				HideSearchPanel();
+			else if (ViewModel.IsFeedVisible)
+				HideFeed();
 			else if (wbvContent.CanGoBack)
 				wbvContent.GoBack();
 			else
@@ -150,6 +149,16 @@ namespace TownFish.App.Pages
 		void App_PushUrlReceived (object sender, string url)
 		{
 			ViewModel.SourceUrl = url;
+		}
+
+		private void App_Resumed (object sender, EventArgs e)
+		{
+			// on app suspending, make sure loading isn't left running so when we resume
+			// later the content is showing
+			HideLoading();
+
+			// and make sure menu is correct
+			RestoreTopMenu();
 		}
 
 		async void UberWebView_ScriptMessageReceived (object sender, string msg)
@@ -198,7 +207,7 @@ namespace TownFish.App.Pages
 
 						var selectedItem = menu.FirstOrDefault (i => i.Value == selection);
 						if (selectedItem?.Type == cCallbackType)
-							OnCallback (selectedItem.Name);
+							CallbackRequested (this, selectedItem.Name);
 
 						break;
 
@@ -206,15 +215,9 @@ namespace TownFish.App.Pages
 						break;
 
 					case cFeedShowAction:
-						try
-						{
-							var feedItems = await App.GetSHFeed();
-							ShowFeed (feedItems);
-						}
-						catch //(Exception ex)
-						{
-							ShowFeed (null);
-						}
+						try { ShowFeed (App.SHFeedItems); }
+						catch /* (Exception ex) */ { ShowFeed (null); }
+
 						break;
 
 					case cFeedHideAction:
@@ -317,14 +320,54 @@ namespace TownFish.App.Pages
 			ViewModel.SetLocation ((e.Item as AvailableLocation).ID);
 		}
 
-		void ViewModel_PropertyChanged (object sender, PropertyChangedEventArgs pcea)
+		async void lstFeed_ItemTapped (object sender, EventArgs e)//ItemTappedEventArgs e)
+		{
+			await HideFeedAsync();
+
+			// when using ListView:
+			//ViewModel.SourceUrl = (e.Item as FeedItemViewModel).LinkUrl;
+
+			// when using StackView:
+			var feedItem = sender as FeedItem;
+			ViewModel.SourceUrl = (feedItem.BindingContext as FeedItemViewModel).LinkUrl;
+		}
+
+		/// <summary>
+		/// Shows new SH feed items count on icon, or clears it if zero.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name=""></param>
+		void App_FeedItemsAvailable (object sender, int newCount)
+		{
+			ViewModel.FeedCount = newCount;
+		}
+
+		async void EditLikesTapped (object sender, EventArgs e)
+		{
+			await HideFeedAsync();
+
+			ViewModel.SourceUrl = App.EditLikesUrl;
+		}
+
+		async void EditProfileTapped (object sender, EventArgs e)
+		{
+			await HideFeedAsync();
+
+			ViewModel.SourceUrl = App.EditProfileUrl;
+		}
+
+		void ViewModelPropertyChanged (object sender, PropertyChangedEventArgs pcea)
 		{ 
 			// WebView Source binding is unreliable, so we do it manually here
 			if (pcea.PropertyName == "SourceUrl")
+			{
+				HideFeed();
+
 				wbvContent.Source = ViewModel.SourceUrl;
+			}
 		}
 
-		void OnMemAgreeClicked (object sender, EventArgs e)
+		void MemAgreeTapped (object sender, EventArgs e)
 		{
 			HideSearchPanel();
 
@@ -333,16 +376,13 @@ namespace TownFish.App.Pages
 
 		void LocationTapped (object sender, EventArgs e)
 		{
-			if (ViewModel.LeftActionIsLocationPin)
-			{
-				if (!mIsSearchVisible && !mShowingSearch)
-					ShowSearchPanel();
-				else
-					HideSearchPanel();
-			}
+			if (!mIsSearchVisible && !mShowingSearch)
+				ShowSearchPanel();
+			else
+				HideSearchPanel();
 		}
 
-		void OnCallback (string name)
+		void CallbackRequested (object sender, string name)
 		{
 			// special-case search within SH Message Feed
 			if (name == cFeedSearch)
@@ -352,146 +392,93 @@ namespace TownFish.App.Pages
 			}
 
 			HideSearchPanel();
-			HideFeed();
+
+			// every feed action results in a new page loading, except closing feed view
+			var showLoading = ViewModel.IsFeedVisible && name != "pushFeed";
+			HideFeed (showLoading);
 
 			Device.BeginInvokeOnMainThread (() =>
 				wbvContent.InvokeScript (string.Format (cCallbackFormat, name)));
 		}
 
-		void ShowFeed (IList<SHFeedObject> feedItems)
+		void ShowFeed (IList<FeedItemViewModel> feedItems)
 		{
 			if (ViewModel.IsFeedVisible)
 				return;
 
-			// create feed menus
-			ViewModel.ClearMenus();
+			// TODO: schema should really give us this on show feed callback
+			// set top menu for feed
+			mCurrentTopMenu = mCurrentMenuMap.Menus.Top;
+			mCurrentFormMenu = mCurrentMenuMap.Menus.TopForm;
+			mCurrentMenuMap.Menus.Top = sFeedTopMenu;
+			mCurrentMenuMap.Menus.TopForm = null;
 
-			// TODO: schema should really push us this on show feed callback
-			ViewModel.LoadMenuMap (new TownFishMenuMap
-			{
-				Menus = new Models.TownFishMenuList
-				{
-					Top = new TownFishMenu
-					{
-						display = true,
-						items = new List<TownFishMenuItem>
-									{
-										// empty left icon
-										new TownFishMenuItem
-										{
-											Align = "left",
-											IconUrl = "/applications/profiles/design/menuicons/clear-hdpi.png",
-											Kind = "icon",
-											Name = "doNothing",
-											Size = "ldpi",
-											Type = "callback",
-											Value = ""
-										},
-										new TownFishMenuItem
-										{
-											Align = "middle",
-											Main = "Discoveries",
-											Type = "heading"
-										},
-										new TownFishMenuItem
-										{
-											Align = "right",
-											IconUrl = "/applications/profiles/design/menuicons/magnifying-search-hdpi-ffffff.png",
-											Kind = "icon",
-											Name = cFeedSearch,
-											Size = "ldpi",
-											Type = "callback",
-											Value = ""
-										}
-									}
-					},
-					Bottom = mCurrentMenuMap.Menus.Bottom
-				}
-			});
+			ViewModel.LoadMenuMap (mCurrentMenuMap);
 
-#if STREETHAWKWORKING
+			// if no items, set new empty list to update visibility properties (side-effects!!)
 			if ((feedItems?.Count ?? 0) == 0)
 			{
-				// create dummy model to show no feed available
-				ViewModel.FeedItems = new ObservableCollection<FeedItemViewModel> (
-					new List<FeedItemViewModel>
-					{
-						new FeedItemViewModel
-						{
-							Title = "Sorry, nothing to see here!"
-						}
-					});
+				ViewModel.FeedItems = new ObservableCollection<FeedItemViewModel>();
 			}
 			else
-#endif
 			{
-				var items = new List<FeedItemViewModel>();
-				foreach (var item in feedItems)
+				ViewModel.FeedItems = new ObservableCollection<FeedItemViewModel> (feedItems);
+
+				// HACK: as iOS ListView isn't working, manually generate content for a StackLayout
+				var kids = lstFeed.Children;
+
+				kids.Clear();
+				for (var i = 0; i < feedItems.Count; i++)
 				{
-					string imgUrl = null;
+					var item = new FeedItem { BindingContext = feedItems [i] };
+					item.Tapped += lstFeed_ItemTapped;
 
-					var lines = item.content.Split ('\n');
-					foreach (var line in lines)
-					{
-						var aLine = line.Split ('=');
-						if (aLine.Length > 1 && aLine [0].Trim() == "img")
-						{
-							imgUrl = aLine [1].Trim (' ', '"',';');
-							break;
-						}
-					}
-
-					items.Add (new FeedItemViewModel
-					{
-						ImageSource = imgUrl,
-						Title = item.title,
-						Text = item.message,
-						TimeStamp = DateTime.Parse (item.created).ToString ("d MMM HH.mm"),
-						Group = ""
-					});
-
-					ViewModel.FeedItems = new ObservableCollection<FeedItemViewModel> (items);
+					kids.Add (item);
 				}
-
-#if !STREETHAWKWORKING
-				// create dummy feed model
-				ViewModel.FeedItems = new ObservableCollection<FeedItemViewModel> (
-					new List<FeedItemViewModel>
-					{
-						new FeedItemViewModel
-						{
-							ImageSource = ImageSource.FromResource (
-									"TownFish.App.Images.Dummy.muffin.png"),
-							Title = "Free Sausage & Egg Muffin",
-							Text = "Bill's Brekkie Bar, Camden. Valid for Today Only!",
-							TimeStamp = "2 May 11.40",
-							Group = "Restaurants & Dining"
-						},
-						new FeedItemViewModel
-						{
-							ImageSource = ImageSource.FromResource (
-									"TownFish.App.Images.Dummy.meat.png"),
-							Title = "Côte de Boeuf for two people with sides or only £20!",
-							Text = "Hawksmoor Steak house in Covent Garden",
-							TimeStamp = "2 May 11.40",
-							Group = "Restaurants & Dining"
-						}
-					});
-#endif
 			}
 
 			ViewModel.IsFeedVisible = true;
 		}
 
-		void HideFeed()
+		/// <summary>
+		/// Fire-and-forget feed hider.
+		/// </summary>
+		async void HideFeed (bool showLoading = true)
 		{
-			if (ViewModel.IsFeedVisible)
+			await HideFeedAsync (showLoading);
+		}
+
+		/// <summary>
+		/// Awaitable feed hider.
+		/// </summary>
+		/// <returns></returns>
+		async Task HideFeedAsync (bool showLoading = true)
+		{
+			if (ViewModel.IsFeedVisible && !mHidingFeed)
 			{
+				mHidingFeed = true;
+
+				if (showLoading)
+					await ShowLoadingAsync(); // wait for it to show before hiding feed
+
 				// clear & hide feed
 				ViewModel.IsFeedVisible = false;
-				ViewModel.FeedItems = null;
+				ViewModel.FeedItems = null; // side-effect: updates visibility properties!
 
-				// restore last menus
+				// if we're not showing loading we're leaving feed, so just restore menu
+				if (!showLoading)
+					RestoreTopMenu();
+
+				mHidingFeed = false;
+			}
+		}
+
+		void RestoreTopMenu()
+		{
+			if (mCurrentMenuMap != null && (mCurrentTopMenu != null || mCurrentFormMenu != null))
+			{
+				mCurrentMenuMap.Menus.Top = mCurrentTopMenu;
+				mCurrentMenuMap.Menus.TopForm = mCurrentFormMenu;
 				ViewModel.LoadMenuMap (mCurrentMenuMap);
 			}
 		}
@@ -554,19 +541,40 @@ namespace TownFish.App.Pages
 			mHidingSearch = false;
 		}
 
-		void ShowLoading()
+		/// <summary>
+		/// Fire-and-forget loading revealer.
+		/// </summary>
+		async void ShowLoading()
+		{
+			await ShowLoadingAsync();
+		}
+
+		/// <summary>
+		/// Awaitable loading revealer.
+		/// </summary>
+		/// <returns></returns>
+		async Task ShowLoadingAsync()
 		{
 			if (ViewModel.IsLoading)
 				return;
+
+			// show empty top menu
+			if (mCurrentMenuMap != null)
+			{
+				mCurrentMenuMap.Menus.Top = sEmptyTopMenu;
+				ViewModel.LoadMenuMap (mCurrentMenuMap);
+			}
+
+			// set this here in case page loads faster than loading animation completes,
+			// which could result in loading never being removed
+			ViewModel.IsLoading = true;
 
 			if (!mFirstLoading)
 			{
 				pnlLoading.Opacity = 1;
 				pnlLoading.TranslationX = pnlLoading.Width;
-				pnlLoading.TranslateTo (0, 0, cLoadingPanelAnimationTime, Easing.CubicInOut);
+				await pnlLoading.TranslateTo (0, 0, cLoadingPanelAnimationTime, Easing.CubicInOut);
 			}
-
-			ViewModel.IsLoading = true;
 		}
 
 		async void HideLoading()
@@ -585,9 +593,11 @@ namespace TownFish.App.Pages
 			}
 		}
 
-		void ViewModel_MenusLoaded (object sender, string e)
+		void MenusLoaded (object sender, string e)
 		{
-			Device.BeginInvokeOnMainThread (() => HideLoading());
+			// only hide loading if already showing it but not in the process of hiding feed
+			if (ViewModel.IsLoading && !mHidingFeed)
+				Device.BeginInvokeOnMainThread (() => HideLoading());
 
 			// if no sync token, nobody is logged in so don't bother getting ID
 			if (string.IsNullOrEmpty (ViewModel.SyncToken))
@@ -625,7 +635,7 @@ namespace TownFish.App.Pages
 					if (props.TryGetValue (cSHCuid, out obj))
 						userID = obj as string;
 
-#if DEBUG
+#if false//DEBUG
 					Device.BeginInvokeOnMainThread (() =>
 					{
 						var message = string.Format (
@@ -675,16 +685,15 @@ namespace TownFish.App.Pages
 			}
 		}
 
-#endregion Methods
+		#endregion Methods
 
-#region Properties
+		#region Properties
 
-		public BrowserPageViewModel ViewModel
-				{ get { return BindingContext as BrowserPageViewModel; } }
+		public BrowserPageViewModel ViewModel => BindingContext as BrowserPageViewModel;
 
-#endregion Properties
+		#endregion Properties
 
-#region Fields
+		#region Fields
 
 #if DEBUG
 		const uint cLocationPanelAnimationTime = 250;
@@ -735,17 +744,98 @@ namespace TownFish.App.Pages
 
 		const string cFeedSearch = "FeedSearch";
 
+		static List<TownFishMenuItem> sFeedTopMenuItems = new List<TownFishMenuItem>
+		{
+			new TownFishMenuItem // empty left icon
+			{
+				Align = "left",
+				IconUrl = "/applications/profiles/design/menuicons/clear-hdpi.png",
+				Kind = "icon",
+				Size = "ldpi",
+				Type = "noop",
+				Value = ""
+			},
+			new TownFishMenuItem // title
+			{
+				Align = "middle",
+				Main = "Discoveries",
+				Type = "heading"
+			},
+			/*new TownFishMenuItem // search icon
+			{
+				Align = "right",
+				IconUrl = "/applications/profiles/design/menuicons/magnifying-search-hdpi-ffffff.png",
+				Kind = "icon",
+				Name = cFeedSearch,
+				Size = "ldpi",
+				Type = "callback",
+				Value = ""
+			},*/
+			new TownFishMenuItem // info icon
+			{
+				Align = "right",
+				IconUrl = "/applications/profiles/design/menuicons/information-hdpi-ffffff.png",
+				Kind = "icon",
+				Size = "ldpi",
+				Type = "noop",
+				Value = ""
+			}
+		};
+
+		static List<TownFishMenuItem> sEmptyTopMenuItems = new List<TownFishMenuItem>
+		{
+			new TownFishMenuItem // empty left icon
+			{
+				Align = "left",
+				IconUrl = "/applications/profiles/design/menuicons/clear-hdpi.png",
+				Kind = "icon",
+				Size = "ldpi",
+				Type = "noop",
+				Value = ""
+			},
+			new TownFishMenuItem // title
+			{
+				Align = "middle",
+				Main = " ",
+				Type = "heading"
+			},
+			new TownFishMenuItem // info icon
+			{
+				Align = "right",
+				IconUrl = "/applications/profiles/design/menuicons/clear-hdpi.png",
+				Kind = "icon",
+				Size = "ldpi",
+				Type = "noop",
+				Value = ""
+			}
+		};
+
+		static TownFishMenu sFeedTopMenu = new TownFishMenu
+		{
+			display = true,
+			items = sFeedTopMenuItems
+		};
+
+		static TownFishMenu sEmptyTopMenu = new TownFishMenu
+		{
+			display = true,
+			items= sEmptyTopMenuItems
+		};
+
+		TownFishMenuMap mCurrentMenuMap;
+		TownFishMenu mCurrentTopMenu;
+		TownFishMenu mCurrentFormMenu;
+
 		bool mFirstLoading = true;
 		bool mFirstShowing = true;
 
 		bool mIsSearchVisible;
 		bool mShowingSearch;
 		bool mHidingSearch;
+		bool mHidingFeed;
 
 		bool mCheckingCuid;
 
-		TownFishMenuMap mCurrentMenuMap;
-
-#endregion Fields
+		#endregion Fields
 	}
 }

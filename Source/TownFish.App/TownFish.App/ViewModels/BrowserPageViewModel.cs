@@ -16,7 +16,7 @@ using TownFish.App.Models;
 
 namespace TownFish.App.ViewModels
 {
-	public class BrowserPageViewModel : ViewModelBase
+	public class BrowserPageViewModel: ViewModelBase
 	{
 		#region Helper Types
 
@@ -102,6 +102,8 @@ namespace TownFish.App.ViewModels
 
 		#region Properties and Events
 
+		public event EventHandler LocationTapped;
+
 		public event EventHandler<string> CallbackRequested;
 
 		public event EventHandler<string> MenusLoaded;
@@ -137,8 +139,8 @@ namespace TownFish.App.ViewModels
 
 				using (var stm = App.Assembly.GetManifestResourceStream (
 						"TownFish.App.Resources.LoadingAnimation.html"))
-					using (var reader = new StreamReader (stm))
-						return reader.ReadToEnd();
+				using (var reader = new StreamReader (stm))
+					return reader.ReadToEnd();
 			}
 		}
 
@@ -148,74 +150,86 @@ namespace TownFish.App.ViewModels
 
 		public Color MenuBarBackgroundColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#484848")); }
+			get { return Get (() => Color.FromHex ("#484848")); }
 			private set { Set (value); }
 		}
 
 		public Color MenuBarTextColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#ffffff")); }
+			get { return Get (() => Color.FromHex ("#ffffff")); }
 			private set { Set (value); }
 		}
 
 		public Color SubMenuBackgroundColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#e8e8e8")); }
+			get { return Get (() => Color.FromHex ("#e8e8e8")); }
 			private set { Set (value); }
 		}
 
 		public Color BottomMenuBackgroundColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#f2f2f2")); }
+			get { return Get (() => Color.FromHex ("#f2f2f2")); }
 			private set { Set (value); }
 		}
 
 		public Color BottomMenuCounterColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#d62327")); }
+			get { return Get (() => Color.FromHex ("#d62327")); }
 			private set { Set (value); }
 		}
 
 		public Color LocationsBackgroundColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#444444")); }
+			get { return Get (() => Color.FromHex ("#444444")); }
 			private set { Set (value); }
 		}
 
 		public Color LocationsContrastBackgroundColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#333333")); }
+			get { return Get (() => Color.FromHex ("#333333")); }
 			private set { Set (value); }
 		}
 
 		public Color MyLocationsTextColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#c8c8c8")); }
+			get { return Get (() => Color.FromHex ("#c8c8c8")); }
 			private set { Set (value); }
 		}
 
 		public Color LocationsTextColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#ececec")); }
+			get { return Get (() => Color.FromHex ("#ececec")); }
 			private set { Set (value); }
 		}
 
-		public Color LocationsLinkColour
+		public Color LocationLinkColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#4f92eb")); }
+			get { return Get (() => Color.FromHex ("#4f92eb")); }
 			private set { Set (value); }
 		}
 
 		public Color LocationsSearchInputTextColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#b9b9b9")); }
+			get { return Get (() => Color.FromHex ("#b9b9b9")); }
 			private set { Set (value); }
 		}
 
 		public Color LocationsSearchResultsTextColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#989898")); }
+			get { return Get (() => Color.FromHex ("#989898")); }
 			private set { Set (value); }
+		}
+
+		public Color FeedLinkColour
+		{
+			get { return Get (() => Color.FromHex ("#5099f7")); }
+			private set { Set (value); }
+		}
+
+		public int FeedCount
+		{
+			get { return Get<int>(); }
+			set { Set (value); }
 		}
 
 		#endregion Colours
@@ -233,6 +247,18 @@ namespace TownFish.App.ViewModels
 		public ICommand BottomAction1Command
 		{
 			get { return Get<ICommand>(); }
+			private set { Set (value); }
+		}
+
+		public bool BottomAction1HasNumber
+		{
+			get { return Get<bool>(); }
+			private set { Set (value); }
+		}
+
+		public string BottomAction1Number
+		{
+			get { return Get<string>(); }
 			private set { Set (value); }
 		}
 
@@ -308,6 +334,18 @@ namespace TownFish.App.ViewModels
 			private set { Set (value); }
 		}
 
+		public bool BottomAction4HasNumber
+		{
+			get { return Get<bool>(); }
+			private set { Set (value); }
+		}
+
+		public string BottomAction4Number
+		{
+			get { return Get<string>(); }
+			private set { Set (value); }
+		}
+
 		#endregion Bottom Action 4
 
 		#region Bottom Action 5
@@ -324,6 +362,18 @@ namespace TownFish.App.ViewModels
 			private set { Set (value); }
 		}
 
+		public bool BottomAction5HasNumber
+		{
+			get { return Get<bool>(); }
+			private set { Set (value); }
+		}
+
+		public string BottomAction5Number
+		{
+			get { return Get<string>(); }
+			private set { Set (value); }
+		}
+
 		#endregion Bottom Action 5
 
 		#region Bottom Action 6
@@ -337,6 +387,18 @@ namespace TownFish.App.ViewModels
 		public ICommand BottomAction6Command
 		{
 			get { return Get<ICommand>(); }
+			private set { Set (value); }
+		}
+
+		public bool BottomAction6HasNumber
+		{
+			get { return Get<bool>(); }
+			private set { Set (value); }
+		}
+
+		public string BottomAction6Number
+		{
+			get { return Get<string>(); }
 			private set { Set (value); }
 		}
 
@@ -406,8 +468,6 @@ namespace TownFish.App.ViewModels
 			private set { Set (value); }
 		}
 
-		public bool LeftActionIsLocationPin { get; private set; }
-
 		public string LocationName
 		{
 			get { return Get<string>(); }
@@ -476,7 +536,7 @@ namespace TownFish.App.ViewModels
 		{
 			get { return Get<FontAttributes>(); }
 			private set { Set (value); }
-		} 
+		}
 
 		public string TopAction4Label
 		{
@@ -575,8 +635,7 @@ namespace TownFish.App.ViewModels
 
 		public bool SearchLocationListEmpty => (LocationSearchItems?.Count ?? 0) == 0;
 
-		public ICommand CancelSearchCommand =>
-				new Command (_ => CancelLocationSearch());
+		public ICommand CancelSearchCommand => new Command (_ => CancelLocationSearch());
 
 		public string SearchTerm
 		{
@@ -630,10 +689,22 @@ namespace TownFish.App.ViewModels
 			set { Set (value); }
 		}
 
+		public bool IsFeedListVisible => !IsFeedEmpty;
+
+		public bool IsFeedEmpty => (FeedItems?.Count ?? 0) == 0;
+
 		public ObservableCollection<FeedItemViewModel> FeedItems
 		{
 			get { return Get<ObservableCollection<FeedItemViewModel>>(); }
-			set { Set (value); }
+
+			set
+			{
+				if (Set (value))
+				{
+					OnPropertyChanged (() => IsFeedListVisible);
+					OnPropertyChanged (() => IsFeedEmpty);
+				}
+			}
 		}
 
 		#endregion Feed
@@ -673,12 +744,12 @@ namespace TownFish.App.ViewModels
 
 		public void ClearMenus()
 		{
+			/* leave these to avoid content jumping when updating/replacing menus
 			IsTopBarVisible = false;
 			IsTopSubBarVisible = false;
 			IsTopFormBarVisible = false;
 			IsBottomBarVisible = false;
-
-			LeftActionIsLocationPin = false;
+			*/
 
 			LocationName = "";
 			PageTitle = "";
@@ -737,7 +808,7 @@ namespace TownFish.App.ViewModels
 				MenuBarBackgroundColour = Color.FromHex ("#" + map.StatusBarBackgroundColor);
 				MenuBarTextColour = Color.FromHex ("#" + map.StatusBarTextColor);
 			}
-			catch {} // don't care if/why it fails as we'll just use default property values
+			catch { } // don't care if/why it fails as we'll just use default property values
 
 			LoadMenus (map.Menus);
 
@@ -801,6 +872,13 @@ namespace TownFish.App.ViewModels
 			MenusLoaded?.Invoke (this, "");
 		}
 
+		void OnLocationTapped()
+		{
+			CancelLocationSearch();
+
+			LocationTapped?.Invoke (this, EventArgs.Empty);
+		}
+
 		void OnCallbackRequested (string callbackName)
 		{
 			CallbackRequested?.Invoke (this, callbackName);
@@ -828,17 +906,19 @@ namespace TownFish.App.ViewModels
 					PageTitle = GenerateMenuItem (top.items [1]);
 
 				var rightItems = top.items.Where (i => i.Align == "right").ToList();
-				if (rightItems.Count == 1)
+				if (rightItems.Count > 0)
 				{
 					TopBarRight1Label = new MenuLabelModel (rightItems [0]);
 					TopBarRight1Command = GenerateMenuAction (rightItems [0]);
 					TopBarRight1Icon = new MenuIconModel (rightItems [0]);
 				}
-				else if (rightItems.Count == 2)
+
+				if (rightItems.Count > 1)
 				{
-					TopBarRightLabel = new MenuLabelModel (rightItems [0]);
-					TopBarRightCommand = GenerateMenuAction (rightItems [0]);
-					TopBarRightIcon = new MenuIconModel (rightItems [0]);
+					TopBarRightLabel = TopBarRight1Label;
+					TopBarRightCommand = TopBarRight1Command;
+					TopBarRightIcon = TopBarRight1Icon;
+
 					TopBarRight1Label = new MenuLabelModel (rightItems [1]);
 					TopBarRight1Command = GenerateMenuAction (rightItems [1]);
 					TopBarRight1Icon = new MenuIconModel (rightItems [1]);
@@ -936,6 +1016,13 @@ namespace TownFish.App.ViewModels
 				{
 					BottomAction1Label = GenerateMenuItem (bottom.items [0]);
 					BottomAction1Command = GenerateMenuAction (bottom.items [0]);
+
+					bool hasNumber;
+					string number;
+					GetSuperNumber (bottom, 0, out hasNumber, out number);
+
+					BottomAction1HasNumber = hasNumber;
+					BottomAction1Number = number;
 				}
 
 				if (bottom.items.Count > 0 && bottom.items [1] != null)
@@ -943,43 +1030,85 @@ namespace TownFish.App.ViewModels
 					BottomAction2Label = GenerateMenuItem (bottom.items [1]);
 					BottomAction2Command = GenerateMenuAction (bottom.items [1]);
 
-					if (!string.IsNullOrEmpty (bottom.items [1].Super))
-					{
-						BottomAction2HasNumber = true;
-						BottomAction2Number = bottom.items [1].Super;
-					}
+					bool hasNumber;
+					string number;
+					GetSuperNumber (bottom, 1, out hasNumber, out number);
+
+					BottomAction2HasNumber = hasNumber;
+					BottomAction2Number = number;
 				}
 
 				if (bottom.items.Count > 0 && bottom.items [2] != null)
 				{
 					BottomAction3Label = GenerateMenuItem (bottom.items [2]);
-					BottomAction3Command = GenerateMenuAction (bottom.items [2]); ;
+					BottomAction3Command = GenerateMenuAction (bottom.items [2]);
 
-					if (!string.IsNullOrEmpty (bottom.items [2].Super))
-					{
-						BottomAction3HasNumber = true;
-						BottomAction3Number = bottom.items [2].Super;
-					}
+					bool hasNumber;
+					string number;
+					GetSuperNumber (bottom, 2, out hasNumber, out number);
+
+					BottomAction3HasNumber = hasNumber;
+					BottomAction3Number = number;
 				}
 
 				if (bottom.items.Count > 0 && bottom.items [3] != null)
 				{
 					BottomAction4Label = GenerateMenuItem (bottom.items [3]);
 					BottomAction4Command = GenerateMenuAction (bottom.items [3]);
+
+					bool hasNumber;
+					string number;
+					GetSuperNumber (bottom, 3, out hasNumber, out number);
+
+					BottomAction4HasNumber = hasNumber;
+					BottomAction4Number = number;
 				}
 
 				if (bottom.items.Count > 0 && bottom.items [4] != null)
 				{
 					BottomAction5Label = GenerateMenuItem (bottom.items [4]);
 					BottomAction5Command = GenerateMenuAction (bottom.items [4]);
+
+					bool hasNumber;
+					string number;
+					GetSuperNumber (bottom, 4, out hasNumber, out number);
+
+					BottomAction5HasNumber = hasNumber;
+					BottomAction5Number = number;
 				}
 
 				if (bottom.items.Count > 0 && bottom.items [5] != null)
 				{
 					BottomAction6Label = GenerateMenuItem (bottom.items [5]);
 					BottomAction6Command = GenerateMenuAction (bottom.items [5]);
+
+					bool hasNumber;
+					string number;
+					GetSuperNumber (bottom, 5, out hasNumber, out number);
+
+					BottomAction6HasNumber = hasNumber;
+					BottomAction6Number = number;
 				}
 			}
+		}
+
+		void GetSuperNumber (TownFishMenu menu, int index, out bool hasNumber, out string number)
+		{
+			var super = menu.items [index].Super;
+			var superFormat = menu.items [index].SuperFormat;
+			var hasSuper = !string.IsNullOrEmpty (super);
+			var hasSuperFormat = !string.IsNullOrEmpty (superFormat);
+
+			number = hasSuper ? super : hasSuperFormat ? GetSuperFormatNumber (superFormat) : "";
+			hasNumber = number != "";
+		}
+
+		string GetSuperFormatNumber (string format)
+		{
+			if (format == cFeedCountFormat)
+				return FeedCount.ToString();
+			else
+				return ""; // no more right now
 		}
 
 		string GenerateMenuItem (TownFishMenuItem item)
@@ -1008,9 +1137,8 @@ namespace TownFish.App.ViewModels
 			switch (item.Type)
 			{
 				case "locationpin":
-					LeftActionIsLocationPin = true;
 					return new Command (_ =>
-						CancelLocationSearch());
+						OnLocationTapped());
 
 				case "callback":
 					return new Command (_ =>
@@ -1024,6 +1152,9 @@ namespace TownFish.App.ViewModels
 					return new Command (_ =>
 						{ SourceUrl = App.BaseUrl + item.Href + App.QueryString; });
 
+				case "noop":
+					return sNoOpCommand;
+
 				default:
 					return null;
 			}
@@ -1032,6 +1163,10 @@ namespace TownFish.App.ViewModels
 		#endregion Methods
 
 		#region Fields
+
+		const string cFeedCountFormat = "{DiscoveriesCount}";
+
+		static Command sNoOpCommand = new Command (_ => {});
 
 		public static string CurrentSearchTerm = "";
 

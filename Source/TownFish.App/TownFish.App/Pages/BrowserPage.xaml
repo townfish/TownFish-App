@@ -101,12 +101,17 @@
 				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
 
-			<Image Source="{Binding BottomAction1Label}" HorizontalOptions="Center" WidthRequest="24">
-				<Image.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding BottomAction1Command}"/>
-				</Image.GestureRecognizers>
-			</Image>
-			<Grid Grid.Column="1" BackgroundColor="{Binding BottomMenuBackgroundColour}"  HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
+			<Grid Grid.Column="0" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
+				<Image Source="{Binding BottomAction1Label}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="24">
+					<Image.GestureRecognizers>
+						<TapGestureRecognizer Command="{Binding BottomAction1Command}"/>
+					</Image.GestureRecognizers>
+				</Image>
+				<Grid IsVisible="{Binding BottomAction1HasNumber}" Padding="0" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="End" VerticalOptions="Start">
+					<Label Text="{Binding BottomAction1Number}" TextColor="{Binding BottomMenuCounterColour}" FontAttributes="Bold" FontFamily="Arial" FontSize="13" VerticalOptions="Center" HorizontalOptions="Center" />
+				</Grid>
+			</Grid>
+			<Grid Grid.Column="1" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
 				<Image Source="{Binding BottomAction2Label}"  HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="24">
 					<Image.GestureRecognizers>
 						<TapGestureRecognizer Command="{Binding BottomAction2Command}"/>
@@ -116,32 +121,46 @@
 					<Label Text="{Binding BottomAction2Number}" TextColor="{Binding BottomMenuCounterColour}" FontAttributes="Bold" FontFamily="Arial" FontSize="13" VerticalOptions="Center" HorizontalOptions="Center" />
 				</Grid>
 			</Grid>
-			<Grid Grid.Column="2" HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
-				<Image Source="{Binding BottomAction3Label}" WidthRequest="24" HorizontalOptions="Center" VerticalOptions="Center">
+			<Grid Grid.Column="2" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
+				<Image Source="{Binding BottomAction3Label}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="24">
 					<Image.GestureRecognizers>
 						<TapGestureRecognizer Command="{Binding BottomAction3Command}"/>
 					</Image.GestureRecognizers>
 				</Image>
 				<Grid IsVisible="{Binding BottomAction3HasNumber}" Padding="0" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="End" VerticalOptions="Start">
-					<Label Text="{Binding BottomAction3Number}" TextColor="{Binding BottomMenuCounterColour}" FontAttributes="Bold" FontSize="13" FontFamily="Arial" VerticalOptions="Center" HorizontalOptions="Center" />
+					<Label Text="{Binding BottomAction3Number}" TextColor="{Binding BottomMenuCounterColour}" FontAttributes="Bold" FontFamily="Arial" FontSize="13" VerticalOptions="Center" HorizontalOptions="Center" />
 				</Grid>
 			</Grid>
-			<Image Source="{Binding BottomAction4Label}" Grid.Column="3" HorizontalOptions="Center" WidthRequest="24">
-				<Image.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding BottomAction4Command}"/>
-				</Image.GestureRecognizers>
-			</Image>
-			<Image Grid.Column="4" Source="{Binding BottomAction5Label}" HorizontalOptions="Center" WidthRequest="24">
-				<Image.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding BottomAction5Command}"/>
-				</Image.GestureRecognizers>
-			</Image>
-			<Image Grid.Column="5" Source="{Binding BottomAction6Label}"
-				   HorizontalOptions="Center" WidthRequest="24">
-				<Image.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding BottomAction6Command}"/>
-				</Image.GestureRecognizers>
-			</Image>
+			<Grid Grid.Column="3" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
+				<Image Source="{Binding BottomAction4Label}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="24">
+					<Image.GestureRecognizers>
+						<TapGestureRecognizer Command="{Binding BottomAction4Command}"/>
+					</Image.GestureRecognizers>
+				</Image>
+				<Grid IsVisible="{Binding BottomAction4HasNumber}" Padding="0" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="End" VerticalOptions="Start">
+					<Label Text="{Binding BottomAction4Number}" TextColor="{Binding BottomMenuCounterColour}" FontAttributes="Bold" FontFamily="Arial" FontSize="13" VerticalOptions="Center" HorizontalOptions="Center" />
+				</Grid>
+			</Grid>
+			<Grid Grid.Column="4" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
+				<Image Source="{Binding BottomAction5Label}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="24">
+					<Image.GestureRecognizers>
+						<TapGestureRecognizer Command="{Binding BottomAction5Command}"/>
+					</Image.GestureRecognizers>
+				</Image>
+				<Grid IsVisible="{Binding BottomAction5HasNumber}" Padding="0" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="End" VerticalOptions="Start">
+					<Label Text="{Binding BottomAction5Number}" TextColor="{Binding BottomMenuCounterColour}" FontAttributes="Bold" FontFamily="Arial" FontSize="13" VerticalOptions="Center" HorizontalOptions="Center" />
+				</Grid>
+			</Grid>
+			<Grid Grid.Column="5" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
+				<Image Source="{Binding BottomAction6Label}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="24">
+					<Image.GestureRecognizers>
+						<TapGestureRecognizer Command="{Binding BottomAction6Command}"/>
+					</Image.GestureRecognizers>
+				</Image>
+				<Grid IsVisible="{Binding BottomActioN6HasNumber}" Padding="0" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="End" VerticalOptions="Start">
+					<Label Text="{Binding BottomAction6Number}" TextColor="{Binding BottomMenuCounterColour}" FontAttributes="Bold" FontFamily="Arial" FontSize="13" VerticalOptions="Center" HorizontalOptions="Center" />
+				</Grid>
+			</Grid>
 		</Grid>
 
 		<!-- Locations Panel
@@ -166,7 +185,8 @@
 			<ListView x:Name="lstAvailableLocations" Grid.Row="1"
 					  BackgroundColor="{Binding LocationsBackgroundColour}"
 					  HasUnevenRows="False" SeparatorVisibility="None"
-					  ItemsSource="{Binding AvailableLocations}">
+					  ItemsSource="{Binding AvailableLocations}"
+					  ItemTapped="lstAvailableLocations_ItemTapped">
 				<ListView.ItemTemplate>
 					<DataTemplate>
 						<ViewCell>
@@ -221,7 +241,7 @@
 						</FormattedString>
 					</Label.FormattedText>
 					<Label.GestureRecognizers>
-						<TapGestureRecognizer Tapped="OnMemAgreeClicked"/>
+						<TapGestureRecognizer Tapped="MemAgreeTapped" />
 					</Label.GestureRecognizers>
 				</Label>
 			</Grid>
@@ -241,7 +261,8 @@
 				<ListView x:Name="lstLocationSearchResults"
 						  BackgroundColor="White"
 						  HasUnevenRows="False" SeparatorVisibility="None"
-						  ItemsSource="{Binding LocationSearchItems}">
+						  ItemsSource="{Binding LocationSearchItems}"
+						  ItemTapped="lstLocationSearchResults_ItemTapped">
 						  <!--BackgroundColor="{Binding BottomMenuBackgroundColour}"-->
 					<ListView.ItemTemplate>
 						<DataTemplate>
@@ -273,7 +294,7 @@
 		<Grid x:Name="pnlTopMenuBar" ColumnSpacing="0"
 			  IsVisible="{Binding IsTopBarVisible}"
 			  BackgroundColor="{Binding MenuBarBackgroundColour}"
-			  HeightRequest="26" Padding="0,4" VerticalOptions="Start">
+			  HeightRequest="32" Padding="0,4" VerticalOptions="Start">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="auto" />
 				<ColumnDefinition />
@@ -287,7 +308,8 @@
 				   Text="{Binding LocationName}"
 				   LineBreakMode="TailTruncation">
 				<Label.GestureRecognizers>
-					<TapGestureRecognizer x:Name="gstLocationLabel" Command="{Binding TopBarLeftCommand}"/>
+					<TapGestureRecognizer x:Name="gstLocationLabel"
+										  Command="{Binding TopBarLeftCommand}"/>
 				</Label.GestureRecognizers>
 			</Label>
 
@@ -376,7 +398,8 @@
 			<Grid Grid.Column="0" Padding="10,0"
 				  BackgroundColor="{Binding MenuBarBackgroundColour}">
 				<Grid.GestureRecognizers>
-					<TapGestureRecognizer x:Name="gstLocationImage" Command="{Binding TopBarLeftCommand}" />
+					<TapGestureRecognizer x:Name="gstLocationImage"
+										  Command="{Binding TopBarLeftCommand}" />
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding TopBarLeftLabel}"
 					   HorizontalOptions="Center" WidthRequest="18" />
@@ -387,7 +410,7 @@
 		<Grid x:Name="pnlTopForm"
 			  IsVisible="{Binding IsTopFormBarVisible}"
 			  BackgroundColor="{Binding MenuBarBackgroundColour}"
-			  HeightRequest="26" Padding="10,4" VerticalOptions="Start">
+			  HeightRequest="32" Padding="10,4" VerticalOptions="Start">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="auto" />
 				<ColumnDefinition Width="*" />
@@ -420,24 +443,64 @@
 			</Label>
 		</Grid>
 
+		<!-- Feed -->
 		<Grid x:Name="pnlFeed" Grid.Row="1" Grid.RowSpan="2"
+			  BackgroundColor="#E2E2E2"
 			  IsVisible="{Binding IsFeedVisible}">
-			<ListView x:Name="lstFeed"
+			<!-- Feed list -->
+			<ScrollView>
+				<StackLayout x:Name="lstFeed" />
+			</ScrollView>
+			<!-- ListView BORKED on iOS!!!! -->
+			<!--<ListView x:Name="lstFeed"
 					  HasUnevenRows="True" SeparatorVisibility="None"
-					  ItemsSource="{Binding FeedItems}">
+					  IsVisible="{Binding IsFeedListVisible}"
+					  ItemsSource="{Binding FeedItems}"
+					  ItemTapped="lstFeed_ItemTapped">
 				<ListView.ItemTemplate>
 					<DataTemplate>
 						<ViewCell>
-							<StackLayout Orientation="Vertical" Spacing="0">
-								<townfish:FeedItem />
-								<BoxView Color="#E2E2E2" HeightRequest="10"/>
-							</StackLayout>
+							<townfish:FeedItem />
 						</ViewCell>
 					</DataTemplate>
 				</ListView.ItemTemplate>
-			</ListView>	
+			</ListView>-->
+
+			<!-- Feed empty -->
+			<StackLayout x:Name="pnlEmpty" Spacing="0" Padding="24,18"
+						 IsVisible="{Binding IsFeedEmpty}">
+				<Label Margin="0,12" XAlign="Center"
+					   TextColor="Black" FontSize="14" FontAttributes="Bold"
+					   Text="There are currently no discoveries" />
+
+				<Label Margin="0,12" XAlign="Center"
+					   TextColor="Black" FontSize="14"
+					   Text="Discoveries are recommendations about local offers, free gifts, events, &amp; information" />
+				<Label Margin="0,12" XAlign="Center"
+					   TextColor="Black" FontSize="14"
+					   Text="We use your profile information to match you to relevant discoveries" />
+				<Label Margin="0,12" XAlign="Center"
+					   TextColor="Black" FontSize="14"
+					   Text="Make sure you’ve completed your profile and added personal interests so we only recommend discoveries that suit you." />
+
+				<Label Margin="0,12" XAlign="Center"
+					   TextColor="{Binding FeedLinkColour}" FontSize="14"
+					   Text="Improve your profile">
+					<Label.GestureRecognizers>
+						<TapGestureRecognizer Tapped="EditProfileTapped" />
+					</Label.GestureRecognizers>
+				</Label>
+
+				<Label Margin="0,12" XAlign="Center"
+					   TextColor="{Binding FeedLinkColour}" FontSize="14"
+					   Text="Add more likes &amp; interests">
+					<Label.GestureRecognizers>
+						<TapGestureRecognizer Tapped="EditLikesTapped" />
+					</Label.GestureRecognizers>
+				</Label>
+			</StackLayout>
 		</Grid>
-		
+
 		<!-- Loading Panel -->
 		<Grid x:Name="pnlLoading" IsVisible="{Binding IsLoading}" Grid.Row="1" Grid.RowSpan="2"
 			  BackgroundColor="{Binding MenuBarTextColour}">

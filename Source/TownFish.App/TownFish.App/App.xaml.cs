@@ -1,7 +1,9 @@
 ﻿//#define NOSTREETHAWKFEED
+//#define DUMMYFEED
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,13 +14,14 @@ using Newtonsoft.Json;
 
 using StreetHawkCrossplatform;
 
+using TownFish.App.Helpers;
 using TownFish.App.Pages;
 using TownFish.App.ViewModels;
-
+using TownFish.App.Models;
 
 namespace TownFish.App
 {
-	public partial class App : Application
+	public partial class App: Application
 	{
 		#region Construction
 
@@ -46,12 +49,12 @@ namespace TownFish.App
 
 		protected override void OnSleep()
 		{
-			// Handle when your app sleeps
+			AppSuspended?.Invoke (this, EventArgs.Empty);
 		}
 
 		protected override void OnResume()
 		{
-			// Handle when your app resumes
+			AppResumed?.Invoke (this, EventArgs.Empty);
 		}
 
 		public void OnBackButtonPressed()
@@ -66,7 +69,7 @@ namespace TownFish.App
 
 		#region StreetHawk
 
-		void InitStreetHawk()
+		async void InitStreetHawk()
 		{
 			// NOTE: this code is derived from the SH Xamarin demo here:
 			// https://github.com/StreetHawkSDK/XamHawkDemoApp/blob/master/XamHawkDemo/XamHawkDemo/App.xaml.cs
@@ -90,7 +93,7 @@ namespace TownFish.App
 			shAnalytics.Init();
 
 			shPush.RegisterForPushMessaging (GcmSenderID); // GCM push ID (Android only)
-			//shPush.SetGcmSenderId(gcm); // appears to be obsolete in latest SH Xamarin SDK
+														   //shPush.SetGcmSenderId(gcm); // appears to be obsolete in latest SH Xamarin SDK
 
 			//Optional: iOS specific, set AppStore Id for upgrading or rating App.
 			//shAnalytics.SetsiTunesId ("944344799");
@@ -216,8 +219,8 @@ namespace TownFish.App
 			});
 
 #endif // SH_OPTIONAL
-//
-//----------------------------------------------------------------
+			//
+			//----------------------------------------------------------------
 
 #if TRUE // SH_RAWJSON_OPTIONAL
 			//Optional: Callback when receive json push.
@@ -234,15 +237,15 @@ namespace TownFish.App
 					{
 						var raw = JsonConvert.DeserializeObject<Dictionary<string, string>> (json);
 						if (raw ["dataType"] == "vanilla_notification" &&
-								raw ["route"].ToLower ().Contains ("townfish.com"))
+								raw ["route"].ToLower().Contains ("townfish.com"))
 							PushUrlReceived?.Invoke (this, raw ["route"]);
 					}
-					catch {}
+					catch { }
 				});
 #endif // SH_RAWJSON_OPTIONAL
 
-//----------------------------------------------------------------
-//
+			//----------------------------------------------------------------
+			//
 #if SH_OPTIONAL
 
 			//Optional: Callback when none 
@@ -255,26 +258,83 @@ namespace TownFish.App
 			});
 
 #endif // SH_OPTIONAL
-//
-//----------------------------------------------------------------
+			//
+			//----------------------------------------------------------------
 
+#if NOSTREETHAWKFEED
+			SHFeedItems = await GetSHFeed();
+#else
+			shFeeds.OnNewFeedAvailableCallback (async () => SHFeedItems = await GetSHFeed());
+#endif
 		}
 
-		public static Task<IList<SHFeedObject>> GetSHFeed()
+		public static Task<IList<FeedItemViewModel>> GetSHFeed()
 		{
-			var tcs = new TaskCompletionSource <IList<SHFeedObject>>();
+			var tcs = new TaskCompletionSource <IList<FeedItemViewModel>>();
 			var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
 
 #if NOSTREETHAWKFEED
-			Task.Run (() => tcs.TrySetResult (null));
-#else
+
+#if DUMMYFEED
+
+			// create dummy feed model
+			var items = new List<FeedItemViewModel>
+			{
+				new FeedItemViewModel
+				{
+					PictureUrl = "TownFish.App.Images.Dummy.muffin.png",
+					LinkUrl = "http://google.com/",
+					Title = "Free Sausage & Egg Muffin",
+					Text = "Bill's Brekkie Bar, Camden. Valid for Today Only!",
+					TimeStamp = DateTime.Now,
+					Group = "Restaurants & Dining"
+				},
+				new FeedItemViewModel
+				{
+					PictureUrl = "TownFish.App.Images.Dummy.meat.png",
+					LinkUrl = "http://google.com/",
+					Title = "Côte de Boeuf for two people with sides for only £20!",
+					Text = "Hawksmoor Steak house in Covent Garden",
+					TimeStamp = DateTime.Now,
+					Group = "Restaurants & Dining"
+				},
+				new FeedItemViewModel
+				{
+					PictureUrl = "TownFish.App.Images.Dummy.muffin.png",
+					LinkUrl = "http://google.com/",
+					Title = "Free Sausage & Egg Muffin",
+					Text = "Bill's Brekkie Bar, Camden. Valid for Today Only!",
+					TimeStamp = DateTime.Now,
+					Group = "Restaurants & Dining"
+				},
+				new FeedItemViewModel
+				{
+					PictureUrl = "TownFish.App.Images.Dummy.meat.png",
+					LinkUrl = "http://google.com/",
+					Title = "Côte de Boeuf for two people with sides for only £20!",
+					Text = "Hawksmoor Steak house in Covent Garden",
+					TimeStamp = DateTime.Now,
+					Group = "Restaurants & Dining"
+				}
+			};
+
+#else // !DUMMYFEED (i.e. empty dummy feed)
+
+			var items = new List<FeedItemViewModel>();
+
+#endif // !DUMMYFEED
+
+			Task.Run (() => tcs.TrySetResult (items));
+
+#else // !NOSTREETHAWKFEED
+
 			// if it takes too long to return (call my callback below), give up to prevent leaks
 			var cts = new CancellationTokenSource (5000);
 			cts.Token.Register (() => tcs.TrySetException (new TimeoutException()));
 
 			try
 			{
-				shFeeds.ReadFeedData (0, (arrayFeeds, error) =>
+				shFeeds.ReadFeedData (0, (feedItems, error) =>
 					{
 						// now we're back from callback we can cancel the timeout
 						cts.Dispose();
@@ -295,18 +355,50 @@ namespace TownFish.App
 #if DEBUG
 										var feeds = string.Empty;
 
-										for (int i = 0; i < arrayFeeds.Count; i++)
+										for (int i = 0; i < feedItems.Count; i++)
 										{
-											var feed = arrayFeeds[i];
+											var feed = feedItems[i];
 											feeds = $"Title: {feed.title}; Message: {feed.message}; Content: {feed.content}. \r\n{feeds}";
 											shFeeds.SendFeedAck (feed.feed_id);
 											shFeeds.NotifyFeedResult (feed.feed_id, 1);
 										}
 
-										Current.MainPage.DisplayAlert ($"New feeds available and fetched {arrayFeeds.Count}:", feeds, "OK");
+										//Current.MainPage.DisplayAlert ($"New feeds available and fetched {arrayFeeds.Count}:", feeds, "OK");
 #endif
+										var items = new List<FeedItemViewModel>();
+										foreach (var item in feedItems)
+										{
+											string imgUrl = null;
+											string linkUrl = null;
 
-										tcs.TrySetResult (arrayFeeds);
+											var lines = item.content.Split ('\n');
+											foreach (var line in lines)
+											{
+												var aLine = line.Split ('=');
+												if (aLine.Length > 1)
+												{
+													var key = aLine [0].Trim (' ', '"');
+													var val = aLine [1].Trim (' ', '"', ';');
+
+													if (key == "img")
+														imgUrl = val;
+													else if (key == "url" || key.StartsWith ("deeplink"))
+														linkUrl = val;
+												}
+											}
+
+											items.Add (new FeedItemViewModel
+											{
+												PictureUrl = imgUrl,
+												LinkUrl = linkUrl,
+												Title = item.title.Trim(),
+												Text = item.message.Trim(),
+												TimeStamp = DateTime.Parse (item.created),
+												Group = ""
+											});
+										}
+
+										tcs.TrySetResult (items);
 									}
 								}
 								catch (Exception ex)
@@ -320,22 +412,60 @@ namespace TownFish.App
 			{
 				tcs.TrySetException (ex);
 			}
+
 #endif // !NOSTREETHAWKFEED
 
 			return tcs.Task;
 		}
 
-		#endregion StreetHawk
+#endregion StreetHawk
 
-		#endregion Methods
+#region App Property Helpers
 
-		#region Properties and Events
+		/// <summary>
+		/// Gets a persistent App property.
+		/// </summary>
+		/// <typeparam name="T">The type of the property</typeparam>
+		/// <param name="key">The key.</param>
+		/// <param name="def">Optional default value to return if the property doesn't exist.</param>
+		/// <returns></returns>
+		public static T GetProp<T> (string key, T def = default (T))
+		{
+			object o;
+			return Current.Properties.TryGetValue (key, out o) ? o.ConvertTo (def) : def;
+		}
+
+		/// <summary>
+		/// Sets or clears a persistent App property.
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="key">The key.</param>
+		/// <param name="value">The value to set, or the default value for T to clear.</param>
+		public static void SetProp<T> (string key, T value)
+		{
+			if (Equals (value, default (T)))
+				Current.Properties.Remove (key);
+			else
+				Current.Properties [key] = value;
+		}
+
+#endregion App Property Helpers
+
+#endregion Methods
+
+#region Properties and Events
+
+		public event EventHandler AppSuspended;
+
+		public event EventHandler AppResumed;
 
 		public event EventHandler BackButtonPressed;
 
 		public event EventHandler AppCloseRequested;
 
 		public event EventHandler<string> PushUrlReceived;
+
+		public event EventHandler<int> SHFeedItemsAvailable;
 
 		public static new App Current { get { return Application.Current as App; } }
 
@@ -354,9 +484,48 @@ namespace TownFish.App
 
 		public string DeviceID { get; }
 
-		#endregion Properties and Events
+		public static DateTime LastSHFeedReadTime
+		{
+			get
+			{
+				if (sLastSHFeedReadTime == DateTime.MinValue)
+					sLastSHFeedReadTime = GetProp<DateTime> (cLastSHFeedReadTimeKey);
 
-		#region Fields
+				return sLastSHFeedReadTime;
+			}
+
+			set
+			{
+				sLastSHFeedReadTime = value;
+
+				SetProp (cLastSHFeedReadTimeKey, value);
+			}
+		}
+
+		public static IList<FeedItemViewModel> SHFeedItems
+		{
+			get
+			{
+				LastSHFeedReadTime = DateTime.Now;
+
+				return sSHFeedItems;
+			}
+
+			set
+			{
+				sSHFeedItems = value;
+
+				// now see how many are new and notify subscribers
+				var t = LastSHFeedReadTime;
+				var c = value.Count (i => i.TimeStamp > t);
+
+				Current.SHFeedItemsAvailable?.Invoke (Current, c);
+			}
+		}
+
+#endregion Properties and Events
+
+#region Fields
 
 		// all magic URLs and paths used in this app
 		public const string SiteDomain = "dev.townfish.com";
@@ -365,6 +534,8 @@ namespace TownFish.App
 		public const string TermsUrl = BaseUrl + "/terms-of-use/";
 		public const string SHCuidUrl = BaseUrl + "/profile/shcuid/{0}?syncToken={1}";
 		public const string SHSyncUrl = BaseUrl + "/profile/shsync/{0}?syncToken={1}";
+		public const string EditProfileUrl = BaseUrl + "/profile/edit/generalinfo";
+		public const string EditLikesUrl = BaseUrl + "/profile/edit/likes";
 
 		public const string QueryParam = "mode=app"; // parameter added to every request
 		public const string QueryString = "?" + QueryParam;
@@ -375,8 +546,15 @@ namespace TownFish.App
 
 		public const string StreetHawkAppKey = "TownFish";
 
+		const string cLastSHFeedReadTimeKey = "LastSHFeedReadTime";
+
 		static Assembly sAssembly = null;
 
-		#endregion Fields
+		// NOTE: use LastSHFeedReadTime property to save persistently
+		static DateTime sLastSHFeedReadTime = DateTime.MinValue;
+
+		static IList<FeedItemViewModel> sSHFeedItems;
+
+#endregion Fields
 	}
 }
