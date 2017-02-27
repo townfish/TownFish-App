@@ -303,31 +303,31 @@
   <ItemGroup>
     <XamarinComponentReference Include="streethawkanalytics">
       <Visible>False</Visible>
-      <Version>1.8.6</Version>
+      <Version>1.8.7</Version>
     </XamarinComponentReference>
     <XamarinComponentReference Include="streethawkbeacon">
       <Visible>False</Visible>
-      <Version>1.8.6</Version>
+      <Version>1.8.7</Version>
     </XamarinComponentReference>
     <XamarinComponentReference Include="streethawkfeeds">
       <Visible>False</Visible>
-      <Version>1.8.6</Version>
+      <Version>1.8.7</Version>
     </XamarinComponentReference>
     <XamarinComponentReference Include="streethawkgeofence">
       <Visible>False</Visible>
-      <Version>1.8.6</Version>
+      <Version>1.8.7</Version>
     </XamarinComponentReference>
     <XamarinComponentReference Include="streethawkgrowth">
       <Visible>False</Visible>
-      <Version>1.8.6</Version>
+      <Version>1.8.7</Version>
     </XamarinComponentReference>
     <XamarinComponentReference Include="streethawklocations">
       <Visible>False</Visible>
-      <Version>1.8.6</Version>
+      <Version>1.8.7</Version>
     </XamarinComponentReference>
     <XamarinComponentReference Include="streethawkpush">
       <Visible>False</Visible>
-      <Version>1.8.6</Version>
+      <Version>1.8.7</Version>
     </XamarinComponentReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
