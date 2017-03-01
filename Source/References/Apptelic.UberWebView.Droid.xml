@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Apptelic.UberWebView.Droid</name>
+    </assembly>
+    <members>
+        <member name="T:Apptelic.UberWebViewLib.Droid.UberWebViewRenderer">
+            <summary>
+            Renders the <see cref="T:Apptelic.UberWebViewLib.UberWebView"/> on Android.
+            </summary>
+        </member>
+        <member name="M:Apptelic.UberWebViewLib.Droid.UberWebViewRenderer.UberWebViewClient.OnReceivedError(Android.Webkit.WebView,Android.Webkit.ClientError,System.String,System.String)">
+            <summary>
+            When an HTTP request fails, raises the
+            <see cref="E:Apptelic.UberWebViewLib.UberWebView.NavigationFailed"/> event with an
+            <see cref="T:System.ArgumentException"/> indicating the error description in
+            the message and the error code in the parameter name.
+            </summary>
+            <param name="webView">The web view.</param>
+            <param name="errorCode">The error code.</param>
+            <param name="description">The description.</param>
+            <param name="failingUrl">The failing URL.</param>
+        </member>
+        <member name="M:Apptelic.UberWebViewLib.Droid.UberWebViewRenderer.UberWebViewClient.OnReceivedHttpError(Android.Webkit.WebView,Android.Webkit.IWebResourceRequest,Android.Webkit.WebResourceResponse)">
+            <summary>
+            When an HTTP error is received from the server, raises the
+            <see cref="E:Apptelic.UberWebViewLib.UberWebView.NavigationFailed"/> event with an
+            <see cref="T:System.ArgumentException"/> indicating the error reason in
+            the message and the status code in the parameter name.
+            </summary>
+            <param name="webView">The view.</param>
+            <param name="request">The request.</param>
+            <param name="errorResponse">The error response.</param>
+        </member>
+        <member name="M:Apptelic.UberWebViewLib.Droid.UberWebViewRenderer.InvokeScript(System.String)">
+            <summary>
+            Invokes the given script in the underlying WebView.
+            </summary>
+            <param name="script"></param>
+        </member>
+        <member name="M:Apptelic.UberWebViewLib.Droid.UberWebViewRenderer.GetCookies(System.Uri)">
+            <summary>
+            Gets the get cookies.
+            </summary>
+        </member>
+        <member name="M:Apptelic.UberWebViewLib.Droid.UberWebViewRenderer.SetCookies(System.Net.CookieCollection)">
+            <summary>
+            Sets the cookies to be used for subsequent requests.
+            </summary>
+            <param name="cookieJar">The cookie jar.</param>
+        </member>
+        <member name="M:Apptelic.UberWebViewLib.Droid.UberWebViewRenderer.DeleteCookies(System.Uri)">
+            <summary>
+            Clears cookies for given site/url.
+            </summary>
+            <param name="uri"></param>
+        </member>
+        <member name="M:Apptelic.UberWebViewLib.Droid.UberWebViewRenderer.OnElementChanged(Xamarin.Forms.Platform.Android.ElementChangedEventArgs{Xamarin.Forms.WebView})">
+            <summary>
+            Connects and/or disconnects an <see cref="T:Apptelic.UberWebViewLib.UberWebView"/> instance to this renderer.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="P:Apptelic.UberWebViewLib.Droid.UberWebViewRenderer.Source">
+            <summary>
+            Gets or sets the source URL.
+            </summary>
+        </member>
+    </members>
+</doc>

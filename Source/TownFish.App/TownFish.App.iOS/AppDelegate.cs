@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 using Xamarin.Forms;
+using Xamarin.Forms.Platform.iOS;
 
 using Foundation;
 using UIKit;
 
-using StreethawkIOS.Core;
-using StreethawkIOS.Push;
+using Apptelic.UberWebViewLib.iOS;
 
 
 namespace TownFish.App.iOS
@@ -17,7 +15,7 @@ namespace TownFish.App.iOS
 	// User Interface of the application, as well as listening (and optionally responding) to 
 	// application events from iOS.
 	[Register("AppDelegate")]
-	public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate
+	public partial class AppDelegate : FormsApplicationDelegate
 	{
 		//
 		// This method is invoked when the application has loaded and is ready to run. In this 
@@ -44,7 +42,7 @@ namespace TownFish.App.iOS
 			UIApplication.SharedApplication.SetStatusBarHidden (false, false);
 
 			// reference these to make sure they're included by linker (?!)
-			var load1 = new Xamify.UberWebViewLib.iOS.UberWebViewRenderer();
+			var load1 = new UberWebViewRenderer();
 			var load2 = new Renderers.TownFishEntryRenderer();
 
 			Forms.Init();

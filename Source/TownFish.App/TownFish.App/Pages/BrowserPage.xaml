@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-			 xmlns:xamify="clr-namespace:Xamify.UberWebViewLib;assembly=Xamify.UberWebView"
+			 xmlns:apptelic="clr-namespace:Apptelic.UberWebViewLib;assembly=Apptelic.UberWebView"
 			 xmlns:townfish="clr-namespace:TownFish.App;assembly=TownFish.App"
 			 Title="TownFish"
 			 x:Class="TownFish.App.Pages.BrowserPage">
@@ -33,7 +33,7 @@
 		</Grid.RowDefinitions>
 
 		<!-- WebView -->
-		<xamify:UberWebView x:Name="wbvContent" Grid.Row="2"
+		<apptelic:UberWebView x:Name="wbvContent" Grid.Row="2"
 							VerticalOptions="Fill" HorizontalOptions="Fill" />
 							<!--
 							**Source binding is unreliable, so we do it manually in code-behind**
@@ -101,65 +101,112 @@
 				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
 
-			<Grid Grid.Column="0" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
-				<Image Source="{Binding BottomAction1Label}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="24">
-					<Image.GestureRecognizers>
-						<TapGestureRecognizer Command="{Binding BottomAction1Command}"/>
-					</Image.GestureRecognizers>
-				</Image>
-				<Grid IsVisible="{Binding BottomAction1HasNumber}" Padding="0" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="End" VerticalOptions="Start">
-					<Label Text="{Binding BottomAction1Number}" TextColor="{Binding BottomMenuCounterColour}" FontAttributes="Bold" FontFamily="Arial" FontSize="13" VerticalOptions="Center" HorizontalOptions="Center" />
-				</Grid>
+			<Grid Grid.Column="0" BindingContext="{Binding BottomActions[0]}"
+				  BackgroundColor="{Binding BackgroundColour}"
+				  HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
+				<Grid.GestureRecognizers>
+					<TapGestureRecognizer Command="{Binding Command}"/>
+				</Grid.GestureRecognizers>
+				<Image Source="{Binding Icon}" WidthRequest="24"
+					   HorizontalOptions="Center" VerticalOptions="Center" />
+				<Frame IsVisible="{Binding HasSuperCount}" Padding="4,0"
+					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+					   HorizontalOptions="End" VerticalOptions="Start"
+					   CornerRadius="7" HasShadow="False">
+					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
+						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
+						   VerticalOptions="Center" HorizontalOptions="Center" />
+				</Frame>
 			</Grid>
-			<Grid Grid.Column="1" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
-				<Image Source="{Binding BottomAction2Label}"  HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="24">
-					<Image.GestureRecognizers>
-						<TapGestureRecognizer Command="{Binding BottomAction2Command}"/>
-					</Image.GestureRecognizers>
-				</Image>
-				<Grid IsVisible="{Binding BottomAction2HasNumber}" Padding="0" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="End" VerticalOptions="Start">
-					<Label Text="{Binding BottomAction2Number}" TextColor="{Binding BottomMenuCounterColour}" FontAttributes="Bold" FontFamily="Arial" FontSize="13" VerticalOptions="Center" HorizontalOptions="Center" />
-				</Grid>
+
+			<Grid Grid.Column="1" BindingContext="{Binding BottomActions[1]}"
+				  BackgroundColor="{Binding BackgroundColour}"
+				  HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
+				<Grid.GestureRecognizers>
+					<TapGestureRecognizer Command="{Binding Command}"/>
+				</Grid.GestureRecognizers>
+				<Image Source="{Binding Icon}" WidthRequest="24"
+					   HorizontalOptions="Center" VerticalOptions="Center" />
+				<Frame IsVisible="{Binding HasSuperCount}" Padding="4,0"
+					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+					   HorizontalOptions="End" VerticalOptions="Start"
+					   CornerRadius="7" HasShadow="False">
+					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
+						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
+						   VerticalOptions="Center" HorizontalOptions="Center" />
+				</Frame>
 			</Grid>
-			<Grid Grid.Column="2" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
-				<Image Source="{Binding BottomAction3Label}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="24">
-					<Image.GestureRecognizers>
-						<TapGestureRecognizer Command="{Binding BottomAction3Command}"/>
-					</Image.GestureRecognizers>
-				</Image>
-				<Grid IsVisible="{Binding BottomAction3HasNumber}" Padding="0" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="End" VerticalOptions="Start">
-					<Label Text="{Binding BottomAction3Number}" TextColor="{Binding BottomMenuCounterColour}" FontAttributes="Bold" FontFamily="Arial" FontSize="13" VerticalOptions="Center" HorizontalOptions="Center" />
-				</Grid>
+
+			<Grid Grid.Column="2" BindingContext="{Binding BottomActions[2]}"
+				  BackgroundColor="{Binding BackgroundColour}"
+				  HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
+				<Grid.GestureRecognizers>
+					<TapGestureRecognizer Command="{Binding Command}"/>
+				</Grid.GestureRecognizers>
+				<Image Source="{Binding Icon}" WidthRequest="24"
+					   HorizontalOptions="Center" VerticalOptions="Center" />
+				<Frame IsVisible="{Binding HasSuperCount}" Padding="4,0"
+					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+					   HorizontalOptions="End" VerticalOptions="Start"
+					   CornerRadius="7" HasShadow="False">
+					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
+						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
+						   VerticalOptions="Center" HorizontalOptions="Center" />
+				</Frame>
 			</Grid>
-			<Grid Grid.Column="3" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
-				<Image Source="{Binding BottomAction4Label}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="24">
-					<Image.GestureRecognizers>
-						<TapGestureRecognizer Command="{Binding BottomAction4Command}"/>
-					</Image.GestureRecognizers>
-				</Image>
-				<Grid IsVisible="{Binding BottomAction4HasNumber}" Padding="0" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="End" VerticalOptions="Start">
-					<Label Text="{Binding BottomAction4Number}" TextColor="{Binding BottomMenuCounterColour}" FontAttributes="Bold" FontFamily="Arial" FontSize="13" VerticalOptions="Center" HorizontalOptions="Center" />
-				</Grid>
+
+			<Grid Grid.Column="3" BindingContext="{Binding BottomActions[3]}"
+				  BackgroundColor="{Binding BackgroundColour}"
+				  HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
+				<Grid.GestureRecognizers>
+					<TapGestureRecognizer Command="{Binding Command}"/>
+				</Grid.GestureRecognizers>
+				<Image Source="{Binding Icon}" WidthRequest="24"
+					   HorizontalOptions="Center" VerticalOptions="Center" />
+				<Frame IsVisible="{Binding HasSuperCount}" Padding="4,0"
+					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+					   HorizontalOptions="End" VerticalOptions="Start"
+					   CornerRadius="7" HasShadow="False">
+					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
+						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
+						   VerticalOptions="Center" HorizontalOptions="Center" />
+				</Frame>
 			</Grid>
-			<Grid Grid.Column="4" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
-				<Image Source="{Binding BottomAction5Label}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="24">
-					<Image.GestureRecognizers>
-						<TapGestureRecognizer Command="{Binding BottomAction5Command}"/>
-					</Image.GestureRecognizers>
-				</Image>
-				<Grid IsVisible="{Binding BottomAction5HasNumber}" Padding="0" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="End" VerticalOptions="Start">
-					<Label Text="{Binding BottomAction5Number}" TextColor="{Binding BottomMenuCounterColour}" FontAttributes="Bold" FontFamily="Arial" FontSize="13" VerticalOptions="Center" HorizontalOptions="Center" />
-				</Grid>
+
+			<Grid Grid.Column="4" BindingContext="{Binding BottomActions[4]}"
+				  BackgroundColor="{Binding BackgroundColour}"
+				  HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
+				<Grid.GestureRecognizers>
+					<TapGestureRecognizer Command="{Binding Command}"/>
+				</Grid.GestureRecognizers>
+				<Image Source="{Binding Icon}" WidthRequest="24"
+					   HorizontalOptions="Center" VerticalOptions="Center" />
+				<Frame IsVisible="{Binding HasSuperCount}" Padding="4,0"
+					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+					   HorizontalOptions="End" VerticalOptions="Start"
+					   CornerRadius="7" HasShadow="False">
+					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
+						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
+						   VerticalOptions="Center" HorizontalOptions="Center" />
+				</Frame>
 			</Grid>
-			<Grid Grid.Column="5" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
-				<Image Source="{Binding BottomAction6Label}" HorizontalOptions="Center" VerticalOptions="Center" WidthRequest="24">
-					<Image.GestureRecognizers>
-						<TapGestureRecognizer Command="{Binding BottomAction6Command}"/>
-					</Image.GestureRecognizers>
-				</Image>
-				<Grid IsVisible="{Binding BottomActioN6HasNumber}" Padding="0" BackgroundColor="{Binding BottomMenuBackgroundColour}" HorizontalOptions="End" VerticalOptions="Start">
-					<Label Text="{Binding BottomAction6Number}" TextColor="{Binding BottomMenuCounterColour}" FontAttributes="Bold" FontFamily="Arial" FontSize="13" VerticalOptions="Center" HorizontalOptions="Center" />
-				</Grid>
+
+			<Grid Grid.Column="5" BindingContext="{Binding BottomActions[5]}"
+				  BackgroundColor="{Binding BackgroundColour}"
+				  HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
+				<Grid.GestureRecognizers>
+					<TapGestureRecognizer Command="{Binding Command}"/>
+				</Grid.GestureRecognizers>
+				<Image Source="{Binding Icon}" WidthRequest="24"
+					   HorizontalOptions="Center" VerticalOptions="Center" />
+				<Frame IsVisible="{Binding HasSuperCount}" Padding="4,0"
+					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+					   HorizontalOptions="End" VerticalOptions="Start"
+					   CornerRadius="7" HasShadow="False">
+					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
+						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
+						   VerticalOptions="Center" HorizontalOptions="Center" />
+				</Frame>
 			</Grid>
 		</Grid>
 
@@ -468,10 +515,12 @@
 
 			<!-- Feed empty -->
 			<StackLayout x:Name="pnlEmpty" Spacing="0" Padding="24,18"
-						 IsVisible="{Binding IsFeedEmpty}">
+						 IsVisible="{Binding IsFeedInfoVisible}"
+						 BackgroundColor="#E2E2E2">
 				<Label Margin="0,12" XAlign="Center"
 					   TextColor="Black" FontSize="14" FontAttributes="Bold"
-					   Text="There are currently no discoveries" />
+					   Text="There are currently no discoveries"
+					   IsVisible="{Binding IsFeedEmpty}" />
 
 				<Label Margin="0,12" XAlign="Center"
 					   TextColor="Black" FontSize="14"

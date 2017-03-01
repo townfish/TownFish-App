@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define EMPTY_TOP_MENU_WHEN_LOADING
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -13,7 +15,7 @@ using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 using Newtonsoft.Json;
 
-using Xamify.UberWebViewLib;
+using Apptelic.UberWebViewLib;
 
 using StreetHawkCrossplatform;
 
@@ -81,7 +83,7 @@ namespace TownFish.App.Pages
 
 			App.Current.BackButtonPressed += App_BackButtonPressed;
 			App.Current.PushUrlReceived += App_PushUrlReceived;
-			App.Current.SHFeedItemsAvailable += App_FeedItemsAvailable;
+			App.Current.SHFeedItemsAvailable += App_SHFeedItemsAvailable;
 			App.Current.AppResumed += App_Resumed;
 
 			base.OnAppearing();
@@ -93,7 +95,7 @@ namespace TownFish.App.Pages
 
 			App.Current.BackButtonPressed -= App_BackButtonPressed;
 			App.Current.PushUrlReceived -= App_PushUrlReceived;
-			App.Current.SHFeedItemsAvailable += App_FeedItemsAvailable;
+			App.Current.SHFeedItemsAvailable -= App_SHFeedItemsAvailable;
 			App.Current.AppResumed -= App_Resumed;
 		}
 
@@ -153,12 +155,12 @@ namespace TownFish.App.Pages
 
 		private void App_Resumed (object sender, EventArgs e)
 		{
-			// on app suspending, make sure loading isn't left running so when we resume
-			// later the content is showing
-			HideLoading();
+			// in case we're returning from a remote URL, remember what our last URL really was
+			if (!string.IsNullOrEmpty (mLastSourceUrl))
+				ViewModel.SourceUrl = mLastSourceUrl;
 
 			// and make sure menu is correct
-			RestoreTopMenu();
+			//RestoreTopMenu();
 		}
 
 		async void UberWebView_ScriptMessageReceived (object sender, string msg)
@@ -221,7 +223,8 @@ namespace TownFish.App.Pages
 						break;
 
 					case cFeedHideAction:
-						HideFeed();
+						// HACK: ignore hide feed action to 'fix' Item 20 in Basecamp bug list
+						//HideFeed();
 						break;
 				}
 			}
@@ -264,6 +267,9 @@ namespace TownFish.App.Pages
 
 		void UberWebView_NavigationFinished (object sender, string url)
 		{
+			// in case URL is changed by webview itself, save it here so we now what it is
+			ViewModel.SourceUrl = url;
+
 			/* TODO: Paul said the menus should be hidden at the start of each
 			   page load, but this gives a very 'flashy' experience (and not in
 			   a good way), so I'm removing it for now
@@ -320,9 +326,10 @@ namespace TownFish.App.Pages
 			ViewModel.SetLocation ((e.Item as AvailableLocation).ID);
 		}
 
-		async void lstFeed_ItemTapped (object sender, EventArgs e)//ItemTappedEventArgs e)
+		/*async*/ void lstFeed_ItemTapped (object sender, EventArgs e)//ItemTappedEventArgs e)
 		{
-			await HideFeedAsync();
+			// re: Bug Item 16 - don't return to main page; stay on message feed when item tapped
+			//await HideFeedAsync();
 
 			// when using ListView:
 			//ViewModel.SourceUrl = (e.Item as FeedItemViewModel).LinkUrl;
@@ -337,7 +344,7 @@ namespace TownFish.App.Pages
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name=""></param>
-		void App_FeedItemsAvailable (object sender, int newCount)
+		void App_SHFeedItemsAvailable (object sender, int newCount)
 		{
 			ViewModel.FeedCount = newCount;
 		}
@@ -361,9 +368,22 @@ namespace TownFish.App.Pages
 			// WebView Source binding is unreliable, so we do it manually here
 			if (pcea.PropertyName == "SourceUrl")
 			{
-				HideFeed();
+				var url = ViewModel.SourceUrl;
 
-				wbvContent.Source = ViewModel.SourceUrl;
+				// if we're returning to our last URL, just leave it as webview won't have changed
+				if (url == mLastSourceUrl)
+					return;
+
+				// if it's a new TF URL hide the feed and save URL for returning to later
+				if (url.Contains (App.BaseUrl))
+				{
+					HideFeed();
+
+					// save this in case we come back later from an external URL
+					mLastSourceUrl = url;
+				}
+
+				wbvContent.Source = url;
 			}
 		}
 
@@ -385,17 +405,29 @@ namespace TownFish.App.Pages
 		void CallbackRequested (object sender, string name)
 		{
 			// special-case search within SH Message Feed
-			if (name == cFeedSearch)
+			//if (name == cFeedSearch)
+			//{
+			//	// TODO: search in message feed
+			//	return;
+			//}
+
+			// special-case info icon within SH Message Feed
+			if (name == cFeedInfo)
 			{
-				// TODO:
+				ViewModel.IsFeedInfoVisible = ViewModel.IsFeedEmpty ||
+						!ViewModel.IsFeedInfoVisible;
+
 				return;
 			}
 
 			HideSearchPanel();
 
-			// every feed action results in a new page loading, except closing feed view
-			var showLoading = ViewModel.IsFeedVisible && name != "pushFeed";
-			HideFeed (showLoading);
+			// every non-feed callback action results in feed being hidden and a new page loading
+			//var feedAction = name == cFeedButton || name == cFeedInfo;
+			// TODO: is this necessary when all bottom icons (except feed) are links, not
+			// callbacks? Currently, it doesn't seem so.
+			//if (!feedAction)
+			//	HideFeed (showLoading: ViewModel.IsFeedVisible);
 
 			Device.BeginInvokeOnMainThread (() =>
 				wbvContent.InvokeScript (string.Format (cCallbackFormat, name)));
@@ -418,7 +450,8 @@ namespace TownFish.App.Pages
 			// if no items, set new empty list to update visibility properties (side-effects!!)
 			if ((feedItems?.Count ?? 0) == 0)
 			{
-				ViewModel.FeedItems = new ObservableCollection<FeedItemViewModel>();
+				ViewModel.FeedItems = null;
+				ViewModel.IsFeedInfoVisible = true;
 			}
 			else
 			{
@@ -426,8 +459,8 @@ namespace TownFish.App.Pages
 
 				// HACK: as iOS ListView isn't working, manually generate content for a StackLayout
 				var kids = lstFeed.Children;
-
 				kids.Clear();
+
 				for (var i = 0; i < feedItems.Count; i++)
 				{
 					var item = new FeedItem { BindingContext = feedItems [i] };
@@ -435,9 +468,14 @@ namespace TownFish.App.Pages
 
 					kids.Add (item);
 				}
+
+				ViewModel.IsFeedInfoVisible = false;
 			}
 
 			ViewModel.IsFeedVisible = true;
+
+			// now we've shown it, reset count
+			ViewModel.FeedCount = 0;
 		}
 
 		/// <summary>
@@ -558,12 +596,15 @@ namespace TownFish.App.Pages
 			if (ViewModel.IsLoading)
 				return;
 
+#if EMPTY_TOP_MENU_WHEN_LOADING
+
 			// show empty top menu
 			if (mCurrentMenuMap != null)
 			{
 				mCurrentMenuMap.Menus.Top = sEmptyTopMenu;
 				ViewModel.LoadMenuMap (mCurrentMenuMap);
 			}
+#endif
 
 			// set this here in case page loads faster than loading animation completes,
 			// which could result in loading never being removed
@@ -743,6 +784,8 @@ namespace TownFish.App.Pages
 		const int cSHSyncRetries = 3;
 
 		const string cFeedSearch = "FeedSearch";
+		const string cFeedInfo = "FeedInfo";
+		const string cFeedButton = "pushFeed";
 
 		static List<TownFishMenuItem> sFeedTopMenuItems = new List<TownFishMenuItem>
 		{
@@ -776,11 +819,20 @@ namespace TownFish.App.Pages
 				Align = "right",
 				IconUrl = "/applications/profiles/design/menuicons/information-hdpi-ffffff.png",
 				Kind = "icon",
+				Name = cFeedInfo,
 				Size = "ldpi",
-				Type = "noop",
+				Type = "callback",
 				Value = ""
 			}
 		};
+
+		static TownFishMenu sFeedTopMenu = new TownFishMenu
+		{
+			display = true,
+			items = sFeedTopMenuItems
+		};
+
+#if EMPTY_TOP_MENU_WHEN_LOADING
 
 		static List<TownFishMenuItem> sEmptyTopMenuItems = new List<TownFishMenuItem>
 		{
@@ -810,17 +862,13 @@ namespace TownFish.App.Pages
 			}
 		};
 
-		static TownFishMenu sFeedTopMenu = new TownFishMenu
-		{
-			display = true,
-			items = sFeedTopMenuItems
-		};
-
 		static TownFishMenu sEmptyTopMenu = new TownFishMenu
 		{
 			display = true,
 			items= sEmptyTopMenuItems
 		};
+
+#endif //EMPTY_TOP_MENU_WHEN_LOADING
 
 		TownFishMenuMap mCurrentMenuMap;
 		TownFishMenu mCurrentTopMenu;
@@ -835,6 +883,8 @@ namespace TownFish.App.Pages
 		bool mHidingFeed;
 
 		bool mCheckingCuid;
+
+		string mLastSourceUrl;
 
 		#endregion Fields
 	}

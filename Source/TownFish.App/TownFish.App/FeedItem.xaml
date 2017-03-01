@@ -29,7 +29,7 @@
 
 			<Label x:Name="lblTimeStamp" Grid.Row="3" Margin="12,0,12,12"
 				   TextColor="Gray" FontSize="13"
-				   Text="{Binding TimeStamp}" />
+				   Text="{Binding FormattedTimeStamp}" />
 			<Label x:Name="lblGroup" Grid.Row="3" Grid.Column="1" Margin="12,0,12,12"
 				   TextColor="Gray" FontSize="13" HorizontalOptions="End"
 				   Text="{Binding Group}" />

@@ -67,7 +67,10 @@ namespace StreetHawkCrossplatform
 							  }
 							  if (feedDict["content"] != null)
 							  {
-								  feed.content = feedDict["content"].ToString();
+								  NSError contentError;
+								  NSData contentData = NSJsonSerialization.Serialize(feedDict["content"]/*NSDictionary type*/, 0, out contentError);
+								  NSString contentStr = new NSString(contentData, NSStringEncoding.UTF8);
+								  feed.content = contentStr.ToString();
 							  }
 							  if (feedDict["activates"] != null)
 							  {

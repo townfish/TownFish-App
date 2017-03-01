@@ -7,10 +7,26 @@ using System.Threading.Tasks;
 using Xamarin.Forms;
 
 
-namespace TownFish.App.Models
+namespace TownFish.App.ViewModels
 {
 	public class FeedItemViewModel
 	{
+		#region Methods
+
+		static string FormatTimeStamp (DateTime ts)
+		{
+			var daysAgo = (int) ((DateTime.Now - ts).TotalDays + 0.5);
+			if (daysAgo < 0 || daysAgo >= 7)
+				return ts.ToString ("d MMM HH.mm");
+			else
+				return daysAgo == 0 ? "Today" : daysAgo == 1 ? "Yesterday" :
+					$"{daysAgo} days ago";
+		}
+
+		#endregion Methods
+
+		#region Properties
+
 		public string PictureUrl { get; set; }
 
 		public string LinkUrl { get; set; }
@@ -28,7 +44,9 @@ namespace TownFish.App.Models
 						(ImageSource) PictureUrl : ImageSource.FromResource (PictureUrl));
 
 		public string FormattedTimeStamp =>
-				mFormattedTimeStamp ?? (mFormattedTimeStamp = TimeStamp.ToString ("d MMM HH.mm"));
+				mFormattedTimeStamp ?? (mFormattedTimeStamp = FormatTimeStamp (TimeStamp));
+
+		#endregion Properties
 
 		#region Fields
 

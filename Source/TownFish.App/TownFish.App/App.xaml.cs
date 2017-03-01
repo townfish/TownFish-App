@@ -224,7 +224,7 @@ namespace TownFish.App
 
 #if TRUE // SH_RAWJSON_OPTIONAL
 			//Optional: Callback when receive json push.
-			shPush.RegisterForRawJSON ((title, message, json) =>
+			shPush.RegisterForRawJSON (async (title, message, json) =>
 				{
 #if DEBUG
 					Device.BeginInvokeOnMainThread (() =>
@@ -233,12 +233,21 @@ namespace TownFish.App
 							MainPage.DisplayAlert ("Receive JSON push:", msg, "OK");
 						});
 #endif
+					// TODO: some magic to determine if this notification is related to a new entry
+					// in the message feed, in which case we need to show the message feed (see
+					// Item 15 on Basecamp TODO list).
+
 					try
 					{
-						var raw = JsonConvert.DeserializeObject<Dictionary<string, string>> (json);
-						if (raw ["dataType"] == "vanilla_notification" &&
-								raw ["route"].ToLower().Contains ("townfish.com"))
-							PushUrlReceived?.Invoke (this, raw ["route"]);
+						var content = JsonConvert.DeserializeObject<Dictionary<string, string>> (json);
+						if (content ["dataType"] == "vanilla_notification" &&
+								content ["route"].ToLower().Contains ("townfish.com"))
+							PushUrlReceived?.Invoke (this, content ["route"]);
+
+						// JSON push messages might be added to feed, so use this to trigger
+						// a feed update
+
+						SHFeedItems = await GetSHFeed();
 					}
 					catch { }
 				});
@@ -264,13 +273,18 @@ namespace TownFish.App
 #if NOSTREETHAWKFEED
 			SHFeedItems = await GetSHFeed();
 #else
-			shFeeds.OnNewFeedAvailableCallback (async () => SHFeedItems = await GetSHFeed());
+			// Apparently this isn't needed if we're using RegisterForRawJSON, and isn't
+			// real-time anyway, and possibly blocks other push notifications from showing (?!)
+			//shFeeds.OnNewFeedAvailableCallback (async() => SHFeedItems = await GetSHFeed());
+
+			// however, on app load, we need to get feed anyway to show count and get items
+			SHFeedItems = await GetSHFeed();
 #endif
 		}
 
 		public static Task<IList<FeedItemViewModel>> GetSHFeed()
 		{
-			var tcs = new TaskCompletionSource <IList<FeedItemViewModel>>();
+			var tcs = new TaskCompletionSource<IList<FeedItemViewModel>>();
 			var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
 
 #if NOSTREETHAWKFEED
@@ -340,72 +354,7 @@ namespace TownFish.App
 						cts.Dispose();
 
 						Device.BeginInvokeOnMainThread (() =>
-							{
-								try
-								{
-									if (error != null)
-									{
-#if DEBUG
-										Current.MainPage.DisplayAlert ("New feeds available but fetch failed:", error, "OK");
-#endif
-										throw new Exception (error);
-									}
-									else
-									{
-#if DEBUG
-										var feeds = string.Empty;
-
-										for (int i = 0; i < feedItems.Count; i++)
-										{
-											var feed = feedItems[i];
-											feeds = $"Title: {feed.title}; Message: {feed.message}; Content: {feed.content}. \r\n{feeds}";
-											shFeeds.SendFeedAck (feed.feed_id);
-											shFeeds.NotifyFeedResult (feed.feed_id, 1);
-										}
-
-										//Current.MainPage.DisplayAlert ($"New feeds available and fetched {arrayFeeds.Count}:", feeds, "OK");
-#endif
-										var items = new List<FeedItemViewModel>();
-										foreach (var item in feedItems)
-										{
-											string imgUrl = null;
-											string linkUrl = null;
-
-											var lines = item.content.Split ('\n');
-											foreach (var line in lines)
-											{
-												var aLine = line.Split ('=');
-												if (aLine.Length > 1)
-												{
-													var key = aLine [0].Trim (' ', '"');
-													var val = aLine [1].Trim (' ', '"', ';');
-
-													if (key == "img")
-														imgUrl = val;
-													else if (key == "url" || key.StartsWith ("deeplink"))
-														linkUrl = val;
-												}
-											}
-
-											items.Add (new FeedItemViewModel
-											{
-												PictureUrl = imgUrl,
-												LinkUrl = linkUrl,
-												Title = item.title.Trim(),
-												Text = item.message.Trim(),
-												TimeStamp = DateTime.Parse (item.created),
-												Group = ""
-											});
-										}
-
-										tcs.TrySetResult (items);
-									}
-								}
-								catch (Exception ex)
-								{
-									tcs.TrySetException (ex);
-								}
-							});
+							HandleFeeds (tcs, shFeeds, feedItems, error));
 					});
 			}
 			catch (Exception ex)
@@ -418,9 +367,73 @@ namespace TownFish.App
 			return tcs.Task;
 		}
 
-#endregion StreetHawk
+		public static void HandleFeeds (TaskCompletionSource<IList<FeedItemViewModel>> tcs,
+				IStreetHawkFeeds shFeeds, List<SHFeedObject> feedItems, string error)
+		{
+			try
+			{
+				if (error != null)
+				{
+#if DEBUG
+					Current.MainPage.DisplayAlert ("New feeds available but fetch failed:", error, "OK");
+#endif
+					throw new Exception (error);
+				}
+				else
+				{
+#if DEBUG
+					var feeds = string.Empty;
 
-#region App Property Helpers
+					for (int i = 0; i < feedItems.Count; i++)
+					{
+						var feed = feedItems [i];
+						feeds = $"Title: {feed.title}; Message: {feed.message}; Content: {feed.content}. \r\n{feeds}";
+						shFeeds.SendFeedAck (feed.feed_id);
+						shFeeds.NotifyFeedResult (feed.feed_id, 1);
+					}
+
+					//Current.MainPage.DisplayAlert ($"New feeds available and fetched {arrayFeeds.Count}:", feeds, "OK");
+#endif
+					var items = new List<FeedItemViewModel>();
+					foreach (var item in feedItems)
+					{
+						string imgUrl = null;
+						string linkUrl = null;
+
+						var content = JsonConvert.DeserializeObject<Dictionary<string, string>> (item.content);
+						foreach (var key in content.Keys)
+						{
+							var val = content [key];
+
+							if (key == "img")
+								imgUrl = val;
+							else if (key == "url" || key.StartsWith ("deeplink"))
+								linkUrl = val;
+						}
+
+						items.Add (new FeedItemViewModel
+						{
+							PictureUrl = imgUrl,
+							LinkUrl = linkUrl,
+							Title = item.title.Trim(),
+							Text = item.message.Trim(),
+							TimeStamp = DateTime.Parse (item.created),
+							Group = item.campaign
+						});
+					}
+
+					tcs.TrySetResult (items);
+				}
+			}
+			catch (Exception ex)
+			{
+				tcs.TrySetException (ex);
+			}
+		}
+
+		#endregion StreetHawk
+
+		#region App Property Helpers
 
 		/// <summary>
 		/// Gets a persistent App property.
@@ -449,11 +462,11 @@ namespace TownFish.App
 				Current.Properties [key] = value;
 		}
 
-#endregion App Property Helpers
+		#endregion App Property Helpers
 
-#endregion Methods
+		#endregion Methods
 
-#region Properties and Events
+		#region Properties and Events
 
 		public event EventHandler AppSuspended;
 
@@ -523,9 +536,9 @@ namespace TownFish.App
 			}
 		}
 
-#endregion Properties and Events
+		#endregion Properties and Events
 
-#region Fields
+		#region Fields
 
 		// all magic URLs and paths used in this app
 		public const string SiteDomain = "dev.townfish.com";
@@ -555,6 +568,6 @@ namespace TownFish.App
 
 		static IList<FeedItemViewModel> sSHFeedItems;
 
-#endregion Fields
+		#endregion Fields
 	}
 }

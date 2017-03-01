@@ -23,7 +23,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.matt.townfish</string>
 	<key>CFBundleVersion</key>
-	<string>170213</string>
+	<string>170301</string>
 	<key>CFBundleIconFiles</key>
 	<array>
 		<string>Icon-60@2x.png</string>
@@ -32,7 +32,7 @@
 		<string>Icon-Small-40@2x.png</string>
 	</array>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.7</string>
+	<string>1.1.8</string>
 	<key>UIStatusBarTintParameters</key>
 	<dict>
 		<key>UINavigationBar</key>

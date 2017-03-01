@@ -229,184 +229,30 @@ namespace TownFish.App.ViewModels
 		public int FeedCount
 		{
 			get { return Get<int>(); }
-			set { Set (value); }
+
+			set
+			{
+				// if feed count changes and we have a feed menu item in play, update its count
+				if (Set (value) && mFeedMenuItemViewModel != null)
+					mFeedMenuItemViewModel.SuperCount = value;
+			}
 		}
 
 		#endregion Colours
 
 		#region Bottom Bar
 
-		#region Bottom Action 1
-
-		public string BottomAction1Label
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		public ICommand BottomAction1Command
-		{
-			get { return Get<ICommand>(); }
-			private set { Set (value); }
-		}
-
-		public bool BottomAction1HasNumber
-		{
-			get { return Get<bool>(); }
-			private set { Set (value); }
-		}
-
-		public string BottomAction1Number
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		#endregion Bottom Action 1
-
-		#region Bottom Action 2
-
-		public string BottomAction2Label
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		public ICommand BottomAction2Command
-		{
-			get { return Get<ICommand>(); }
-			private set { Set (value); }
-		}
-
-		public bool BottomAction2HasNumber
-		{
-			get { return Get<bool>(); }
-			private set { Set (value); }
-		}
-
-		public string BottomAction2Number
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		#endregion Bottom Action 2
-
-		#region Bottom Action 3
-
-		public string BottomAction3Label
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		public ICommand BottomAction3Command
-		{
-			get { return Get<ICommand>(); }
-			private set { Set (value); }
-		}
-
-		public bool BottomAction3HasNumber
-		{
-			get { return Get<bool>(); }
-			private set { Set (value); }
-		}
-
-		public string BottomAction3Number
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		#endregion Bottom Action 3
-
-		#region Bottom Action 4
-
-		public string BottomAction4Label
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		public ICommand BottomAction4Command
-		{
-			get { return Get<ICommand>(); }
-			private set { Set (value); }
-		}
-
-		public bool BottomAction4HasNumber
-		{
-			get { return Get<bool>(); }
-			private set { Set (value); }
-		}
-
-		public string BottomAction4Number
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		#endregion Bottom Action 4
-
-		#region Bottom Action 5
-
-		public string BottomAction5Label
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		public ICommand BottomAction5Command
-		{
-			get { return Get<ICommand>(); }
-			private set { Set (value); }
-		}
-
-		public bool BottomAction5HasNumber
-		{
-			get { return Get<bool>(); }
-			private set { Set (value); }
-		}
-
-		public string BottomAction5Number
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		#endregion Bottom Action 5
-
-		#region Bottom Action 6
-
-		public string BottomAction6Label
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		public ICommand BottomAction6Command
-		{
-			get { return Get<ICommand>(); }
-			private set { Set (value); }
-		}
-
-		public bool BottomAction6HasNumber
-		{
-			get { return Get<bool>(); }
-			private set { Set (value); }
-		}
-
-		public string BottomAction6Number
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		#endregion Bottom Action 6
-
 		public bool IsBottomBarVisible
 		{
 			get { return Get<bool>(); }
+			set { Set (value); }
+		}
+
+		// I have to comment here about the very funny name this property has ended up with.
+		// Fnaar fnaar.
+		public ObservableCollection<BottomActionViewModel> BottomActions
+		{
+			get { return Get<ObservableCollection<BottomActionViewModel>>(); }
 			set { Set (value); }
 		}
 
@@ -691,6 +537,12 @@ namespace TownFish.App.ViewModels
 
 		public bool IsFeedListVisible => !IsFeedEmpty;
 
+		public bool IsFeedInfoVisible
+		{
+			get { return Get<bool>(); }
+			set { Set (value); }
+		}
+
 		public bool IsFeedEmpty => (FeedItems?.Count ?? 0) == 0;
 
 		public ObservableCollection<FeedItemViewModel> FeedItems
@@ -744,13 +596,6 @@ namespace TownFish.App.ViewModels
 
 		public void ClearMenus()
 		{
-			/* leave these to avoid content jumping when updating/replacing menus
-			IsTopBarVisible = false;
-			IsTopSubBarVisible = false;
-			IsTopFormBarVisible = false;
-			IsBottomBarVisible = false;
-			*/
-
 			LocationName = "";
 			PageTitle = "";
 
@@ -778,19 +623,6 @@ namespace TownFish.App.ViewModels
 			TopFormLeftActionCommand = null;
 			TopFormRightActionLabel = "";
 			TopFormRightActionCommand = null;
-
-			BottomAction1Label = "";
-			BottomAction1Command = null;
-			BottomAction2Label = "";
-			BottomAction2Command = null;
-			BottomAction2HasNumber = false;
-			BottomAction3Label = "";
-			BottomAction3Command = null;
-			BottomAction3HasNumber = false;
-			BottomAction4Label = "";
-			BottomAction4Command = null;
-			BottomAction5Label = "";
-			BottomAction5Command = null;
 		}
 
 		public void LoadMenuMap (TownFishMenuMap map)
@@ -1007,108 +839,49 @@ namespace TownFish.App.ViewModels
 			}
 
 			var bottom = menus.Bottom;
-			IsBottomBarVisible = bottom != null && bottom.display;
+			IsBottomBarVisible = bottom != null && bottom.display && bottom.items?.Count > 0;
 
 			if (IsBottomBarVisible)
 			{
-				// Bottom Menu
-				if (bottom.items.Count > 0 && bottom.items [0] != null)
+				var actions = new ObservableCollection<BottomActionViewModel>();
+
+				for (var i = 0; i < bottom.items.Count; i++)
 				{
-					BottomAction1Label = GenerateMenuItem (bottom.items [0]);
-					BottomAction1Command = GenerateMenuAction (bottom.items [0]);
+					var item = bottom.items [i];
+					var action = new BottomActionViewModel
+					{
+						MainViewModel = this,
+						Icon = GenerateMenuItem (item),
+						Command = GenerateMenuAction (item),
+						SuperCount = GetSuperNumber (item),
+						SuperColour = item.SuperColor,
+					};
 
-					bool hasNumber;
-					string number;
-					GetSuperNumber (bottom, 0, out hasNumber, out number);
+					// remember this in case we need to update its number
+					if (item.SuperFormat == cFeedCountFormat)
+						mFeedMenuItemViewModel = action;
 
-					BottomAction1HasNumber = hasNumber;
-					BottomAction1Number = number;
+					actions.Add (action);
 				}
 
-				if (bottom.items.Count > 0 && bottom.items [1] != null)
-				{
-					BottomAction2Label = GenerateMenuItem (bottom.items [1]);
-					BottomAction2Command = GenerateMenuAction (bottom.items [1]);
+				// view expects 6 items (hard-coded in a grid!!), so pad as necessary
+				for (var i = bottom.items.Count; i++ < 6; )
+					actions.Add (new BottomActionViewModel());
 
-					bool hasNumber;
-					string number;
-					GetSuperNumber (bottom, 1, out hasNumber, out number);
-
-					BottomAction2HasNumber = hasNumber;
-					BottomAction2Number = number;
-				}
-
-				if (bottom.items.Count > 0 && bottom.items [2] != null)
-				{
-					BottomAction3Label = GenerateMenuItem (bottom.items [2]);
-					BottomAction3Command = GenerateMenuAction (bottom.items [2]);
-
-					bool hasNumber;
-					string number;
-					GetSuperNumber (bottom, 2, out hasNumber, out number);
-
-					BottomAction3HasNumber = hasNumber;
-					BottomAction3Number = number;
-				}
-
-				if (bottom.items.Count > 0 && bottom.items [3] != null)
-				{
-					BottomAction4Label = GenerateMenuItem (bottom.items [3]);
-					BottomAction4Command = GenerateMenuAction (bottom.items [3]);
-
-					bool hasNumber;
-					string number;
-					GetSuperNumber (bottom, 3, out hasNumber, out number);
-
-					BottomAction4HasNumber = hasNumber;
-					BottomAction4Number = number;
-				}
-
-				if (bottom.items.Count > 0 && bottom.items [4] != null)
-				{
-					BottomAction5Label = GenerateMenuItem (bottom.items [4]);
-					BottomAction5Command = GenerateMenuAction (bottom.items [4]);
-
-					bool hasNumber;
-					string number;
-					GetSuperNumber (bottom, 4, out hasNumber, out number);
-
-					BottomAction5HasNumber = hasNumber;
-					BottomAction5Number = number;
-				}
-
-				if (bottom.items.Count > 0 && bottom.items [5] != null)
-				{
-					BottomAction6Label = GenerateMenuItem (bottom.items [5]);
-					BottomAction6Command = GenerateMenuAction (bottom.items [5]);
-
-					bool hasNumber;
-					string number;
-					GetSuperNumber (bottom, 5, out hasNumber, out number);
-
-					BottomAction6HasNumber = hasNumber;
-					BottomAction6Number = number;
-				}
+				BottomActions = actions;
 			}
 		}
 
-		void GetSuperNumber (TownFishMenu menu, int index, out bool hasNumber, out string number)
+		int GetSuperNumber (TownFishMenuItem item)
 		{
-			var super = menu.items [index].Super;
-			var superFormat = menu.items [index].SuperFormat;
-			var hasSuper = !string.IsNullOrEmpty (super);
-			var hasSuperFormat = !string.IsNullOrEmpty (superFormat);
+			var number = 0;
 
-			number = hasSuper ? super : hasSuperFormat ? GetSuperFormatNumber (superFormat) : "";
-			hasNumber = number != "";
-		}
-
-		string GetSuperFormatNumber (string format)
-		{
-			if (format == cFeedCountFormat)
-				return FeedCount.ToString();
+			if (item.SuperFormat == cFeedCountFormat)
+				number = FeedCount;
 			else
-				return ""; // no more right now
+				int.TryParse (item.Super, out number);
+
+			return number;
 		}
 
 		string GenerateMenuItem (TownFishMenuItem item)
@@ -1144,10 +917,12 @@ namespace TownFish.App.ViewModels
 					return new Command (_ =>
 						OnCallbackRequested (item.Name));
 
-				case "link":
-					return new Command (_ =>
-						{ SourceUrl = App.BaseUrl + item.Href + App.QueryString + "#" + DateTime.Now.Ticks; }); // TODO: remove nav hash!
+				// # date stamp no longer needed, so link is now same as back
+				//case "link":
+				//	return new Command (_ =>
+				//		{ SourceUrl = App.BaseUrl + item.Href + App.QueryString + "#" + DateTime.Now.Ticks; }); // TODO: remove nav hash!
 
+				case "link":
 				case "back":
 					return new Command (_ =>
 						{ SourceUrl = App.BaseUrl + item.Href + App.QueryString; });
@@ -1172,6 +947,8 @@ namespace TownFish.App.ViewModels
 
 		string mLocationApiFormat = "";
 		string mLocationSetFormat = "";
+
+		BottomActionViewModel mFeedMenuItemViewModel;
 
 		#endregion Fields
 	}
