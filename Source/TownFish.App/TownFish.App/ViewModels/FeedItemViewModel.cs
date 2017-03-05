@@ -40,7 +40,8 @@ namespace TownFish.App.ViewModels
 		public string Group { get; set; }
 
 		public ImageSource PictureSource => // URL may actually be URL or resource file name
-				mPictureSource ?? (mPictureSource = PictureUrl.Contains ("//") ?
+				mPictureSource ?? (mPictureSource = string.IsNullOrEmpty (PictureUrl) ? null :
+						PictureUrl.Contains ("//") ?
 						(ImageSource) PictureUrl : ImageSource.FromResource (PictureUrl));
 
 		public string FormattedTimeStamp =>

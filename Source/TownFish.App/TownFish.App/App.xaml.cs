@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ using StreetHawkCrossplatform;
 using TownFish.App.Helpers;
 using TownFish.App.Pages;
 using TownFish.App.ViewModels;
-using TownFish.App.Models;
+
 
 namespace TownFish.App
 {
@@ -39,6 +40,11 @@ namespace TownFish.App
 		#endregion Construction
 
 		#region Methods
+
+		public void OnPushUrlReceived (string route)
+		{
+			PushUrlReceived?.Invoke (this, route);
+		}
 
 		protected override void OnStart()
 		{
@@ -93,7 +99,7 @@ namespace TownFish.App
 			shAnalytics.Init();
 
 			shPush.RegisterForPushMessaging (GcmSenderID); // GCM push ID (Android only)
-														   //shPush.SetGcmSenderId(gcm); // appears to be obsolete in latest SH Xamarin SDK
+			//shPush.SetGcmSenderId (GcmSenderID); // appears to be obsolete in latest SH Xamarin SDK
 
 			//Optional: iOS specific, set AppStore Id for upgrading or rating App.
 			//shAnalytics.SetsiTunesId ("944344799");
@@ -240,16 +246,20 @@ namespace TownFish.App
 					try
 					{
 						var content = JsonConvert.DeserializeObject<Dictionary<string, string>> (json);
-						if (content ["dataType"] == "vanilla_notification" &&
-								content ["route"].ToLower().Contains ("townfish.com"))
-							PushUrlReceived?.Invoke (this, content ["route"]);
+						string dataType, route;
+
+						if (content.TryGetValue ("dataType", out dataType) &&
+								content.TryGetValue ("route", out route) &&
+								dataType == "vanilla_notification" &&
+								route.ToLower().Contains ("townfish.com"))
+							OnPushUrlReceived (route);
 
 						// JSON push messages might be added to feed, so use this to trigger
 						// a feed update
 
 						SHFeedItems = await GetSHFeed();
 					}
-					catch { }
+					catch {}
 				});
 #endif // SH_RAWJSON_OPTIONAL
 
@@ -284,6 +294,12 @@ namespace TownFish.App
 
 		public static Task<IList<FeedItemViewModel>> GetSHFeed()
 		{
+			if (++sGettingSHFeed > 1)
+			{
+				--sGettingSHFeed;
+				return null;
+			}
+
 			var tcs = new TaskCompletionSource<IList<FeedItemViewModel>>();
 			var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
 
@@ -353,8 +369,7 @@ namespace TownFish.App
 						// now we're back from callback we can cancel the timeout
 						cts.Dispose();
 
-						Device.BeginInvokeOnMainThread (() =>
-							HandleFeeds (tcs, shFeeds, feedItems, error));
+						ProcessSHFeed (tcs, shFeeds, feedItems, error);
 					});
 			}
 			catch (Exception ex)
@@ -364,10 +379,11 @@ namespace TownFish.App
 
 #endif // !NOSTREETHAWKFEED
 
+			--sGettingSHFeed;
 			return tcs.Task;
 		}
 
-		public static void HandleFeeds (TaskCompletionSource<IList<FeedItemViewModel>> tcs,
+		public static void ProcessSHFeed (TaskCompletionSource<IList<FeedItemViewModel>> tcs,
 				IStreetHawkFeeds shFeeds, List<SHFeedObject> feedItems, string error)
 		{
 			try
@@ -428,6 +444,91 @@ namespace TownFish.App
 			catch (Exception ex)
 			{
 				tcs.TrySetException (ex);
+			}
+		}
+
+		public static async void CheckCuid (string syncToken)
+		{
+			// if no sync token, nobody is logged in so don't bother getting ID
+			if (string.IsNullOrEmpty (syncToken))
+			{
+				sCheckedCuid = false; // in case we switch users
+				return;
+			}
+
+			// if we've already checked CUID or we're already checking it, don't bother
+			if (sCheckedCuid || sCheckingCuid)
+				return;
+
+			try
+			{
+				sCheckingCuid = true;
+
+				var http = new HttpClient();
+				var devID = App.Current.DeviceID;
+				var url = string.Format (App.SHCuidUrl, devID, syncToken);
+
+				var result = await http.GetStringAsync (url);
+				var shcuid = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
+
+				string code, newID;
+				if (!shcuid.TryGetValue (cCode, out code) &&
+						shcuid.TryGetValue (cSHCuid, out newID))
+				{
+					var props = App.Current.Properties;
+					object obj;
+					string userID = null;
+
+					if (props.TryGetValue (cSHCuid, out obj))
+						userID = obj as string;
+
+#if false//DEBUG
+					Device.BeginInvokeOnMainThread (() =>
+					{
+						var message = string.Format (
+								"TownFish: userID = {0}; newID = {1}",
+								userID ?? "null", newID ?? "null");
+
+						App.Current.MainPage.DisplayAlert (
+								"StreetHawk Registration", message, "Continue");
+					});
+#endif
+					if (userID != newID)
+					{
+						userID = newID;
+
+						var shAnalytics = DependencyService.Get<IStreetHawkAnalytics>();
+						shAnalytics.TagCuid (userID);
+
+						url = string.Format (App.SHSyncUrl, devID, syncToken);
+
+						for (var i = 0; i++ <= cSHSyncRetries; )
+						{
+							// give SH time to process it
+							await Task.Delay (cSHSyncDelay);
+
+							result = await http.GetStringAsync (url);
+							var syncResult = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
+
+							string sync;
+							if (!shcuid.TryGetValue (cCode, out code) &&
+									syncResult.TryGetValue (cSynced, out sync) &&
+									sync == "true")
+							{
+								props [cSHCuid] = userID;
+
+								// got it, so stop trying
+								break;
+							}
+						}
+					}
+				}
+			}
+			catch {} // if it fails, we don't care
+			finally
+			{
+				sCheckedCuid = true;
+				sCheckingCuid = false;
 			}
 		}
 
@@ -493,8 +594,6 @@ namespace TownFish.App
 			}
 		}
 
-		public bool CheckedCuid { get; set; }
-
 		public string DeviceID { get; }
 
 		public static DateTime LastSHFeedReadTime
@@ -536,6 +635,8 @@ namespace TownFish.App
 			}
 		}
 
+		public static int SHFeedItemCount => sSHFeedItems?.Count ?? 0;
+
 		#endregion Properties and Events
 
 		#region Fields
@@ -561,11 +662,21 @@ namespace TownFish.App
 
 		const string cLastSHFeedReadTimeKey = "LastSHFeedReadTime";
 
+		const string cCode = "Code";
+		const string cSHCuid = "shcuid";
+		const string cSynced = "synced";
+		const int cSHSyncDelay = 3000;
+		const int cSHSyncRetries = 3;
+
+		static bool sCheckingCuid;
+		static bool sCheckedCuid;
+
 		static Assembly sAssembly = null;
 
 		// NOTE: use LastSHFeedReadTime property to save persistently
 		static DateTime sLastSHFeedReadTime = DateTime.MinValue;
 
+		static int sGettingSHFeed;
 		static IList<FeedItemViewModel> sSHFeedItems;
 
 		#endregion Fields

@@ -79,7 +79,7 @@
     <MtouchSdkVersion>10.2</MtouchSdkVersion>
     <MtouchLink>None</MtouchLink>
     <MtouchProfiling>False</MtouchProfiling>
-    <MtouchFastDev>True</MtouchFastDev>
+    <MtouchFastDev>False</MtouchFastDev>
     <MtouchUseLlvm>False</MtouchUseLlvm>
     <MtouchUseThumb>False</MtouchUseThumb>
     <MtouchEnableBitcode>False</MtouchEnableBitcode>
@@ -89,7 +89,7 @@
     <MtouchTlsProvider>Default</MtouchTlsProvider>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchFloat32>False</MtouchFloat32>
-    <DeviceSpecificBuild>True</DeviceSpecificBuild>
+    <DeviceSpecificBuild>False</DeviceSpecificBuild>
     <MtouchNoSymbolStrip>False</MtouchNoSymbolStrip>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">

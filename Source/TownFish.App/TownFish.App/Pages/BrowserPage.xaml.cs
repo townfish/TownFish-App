@@ -6,7 +6,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -16,8 +15,6 @@ using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Newtonsoft.Json;
 
 using Apptelic.UberWebViewLib;
-
-using StreetHawkCrossplatform;
 
 using TownFish.App.Models;
 using TownFish.App.ViewModels;
@@ -217,8 +214,8 @@ namespace TownFish.App.Pages
 						break;
 
 					case cFeedShowAction:
-						try { ShowFeed (App.SHFeedItems); }
-						catch /* (Exception ex) */ { ShowFeed (null); }
+						try { ShowFeed(); }
+						catch (Exception ex) {}
 
 						break;
 
@@ -347,6 +344,30 @@ namespace TownFish.App.Pages
 		void App_SHFeedItemsAvailable (object sender, int newCount)
 		{
 			ViewModel.FeedCount = newCount;
+
+			var feedItems = App.SHFeedItems;
+			var count = App.SHFeedItemCount;
+
+			// if no items, kill previous list
+			if (count == 0)
+				ViewModel.FeedItems = null;
+			else
+				ViewModel.FeedItems = new ObservableCollection<FeedItemViewModel> (feedItems);
+
+			// HACK: as iOS ListView isn't working, so manually generate content for a StackLayout
+			Device.BeginInvokeOnMainThread (() =>
+				{
+					var kids = lstFeed.Children;
+					kids.Clear();
+
+					for (var i = 0; i < count; i++)
+					{
+						var item = new FeedItem { BindingContext = feedItems [i] };
+						item.Tapped += lstFeed_ItemTapped;
+
+						kids.Add (item);
+					}
+				});
 		}
 
 		async void EditLikesTapped (object sender, EventArgs e)
@@ -433,7 +454,7 @@ namespace TownFish.App.Pages
 				wbvContent.InvokeScript (string.Format (cCallbackFormat, name)));
 		}
 
-		void ShowFeed (IList<FeedItemViewModel> feedItems)
+		void ShowFeed()
 		{
 			if (ViewModel.IsFeedVisible)
 				return;
@@ -447,31 +468,7 @@ namespace TownFish.App.Pages
 
 			ViewModel.LoadMenuMap (mCurrentMenuMap);
 
-			// if no items, set new empty list to update visibility properties (side-effects!!)
-			if ((feedItems?.Count ?? 0) == 0)
-			{
-				ViewModel.FeedItems = null;
-				ViewModel.IsFeedInfoVisible = true;
-			}
-			else
-			{
-				ViewModel.FeedItems = new ObservableCollection<FeedItemViewModel> (feedItems);
-
-				// HACK: as iOS ListView isn't working, manually generate content for a StackLayout
-				var kids = lstFeed.Children;
-				kids.Clear();
-
-				for (var i = 0; i < feedItems.Count; i++)
-				{
-					var item = new FeedItem { BindingContext = feedItems [i] };
-					item.Tapped += lstFeed_ItemTapped;
-
-					kids.Add (item);
-				}
-
-				ViewModel.IsFeedInfoVisible = false;
-			}
-
+			ViewModel.IsFeedInfoVisible = ViewModel.IsFeedEmpty;
 			ViewModel.IsFeedVisible = true;
 
 			// now we've shown it, reset count
@@ -640,90 +637,9 @@ namespace TownFish.App.Pages
 			if (ViewModel.IsLoading && !mHidingFeed)
 				Device.BeginInvokeOnMainThread (() => HideLoading());
 
-			// if no sync token, nobody is logged in so don't bother getting ID
-			if (string.IsNullOrEmpty (ViewModel.SyncToken))
-			{
-				App.Current.CheckedCuid = false; // in case we switch users
-				return;
-			}
-
-			// if we haven't checked CUID and we have a sync token, do so now
-			if (!App.Current.CheckedCuid && !mCheckingCuid)
-				CheckCuid();
-		}
-
-		async void CheckCuid()
-		{
-			try
-			{
-				mCheckingCuid = true;
-
-				var cli = new HttpClient();
-				var devID = App.Current.DeviceID;
-				var url = string.Format (App.SHCuidUrl, devID, ViewModel.SyncToken);
-
-				var result = await cli.GetStringAsync (url);
-				var shcuid = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
-
-				string code, newID;
-				if (!shcuid.TryGetValue (cCode, out code) &&
-						shcuid.TryGetValue (cSHCuid, out newID))
-				{
-					var props = App.Current.Properties;
-					object obj;
-					string userID = null;
-
-					if (props.TryGetValue (cSHCuid, out obj))
-						userID = obj as string;
-
-#if false//DEBUG
-					Device.BeginInvokeOnMainThread (() =>
-					{
-						var message = string.Format (
-								"TownFish: userID = {0}; newID = {1}",
-								userID ?? "null", newID ?? "null");
-
-						App.Current.MainPage.DisplayAlert (
-								"StreetHawk Registration", message, "Continue");
-					});
-#endif
-					if (userID != newID)
-					{
-						userID = newID;
-
-						var shAnalytics = DependencyService.Get<IStreetHawkAnalytics>();
-						shAnalytics.TagCuid (userID);
-
-						url = string.Format (App.SHSyncUrl, devID, ViewModel.SyncToken);
-
-						for (var i = 0; i++ <= cSHSyncRetries; )
-						{
-							// give SH time to process it
-							await Task.Delay (cSHSyncDelay);
-
-							result = await cli.GetStringAsync (url);
-							var syncResult = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
-
-							string sync;
-							if (!shcuid.TryGetValue (cCode, out code) &&
-									syncResult.TryGetValue (cSynced, out sync) &&
-									sync == "true")
-							{
-								props [cSHCuid] = userID;
-
-								// got it, so stop trying
-								break;
-							}
-						}
-					}
-				}
-			}
-			catch {} // if it fails, we don't care
-			finally
-			{
-				App.Current.CheckedCuid = true;
-				mCheckingCuid = false;
-			}
+			// tell app to check sync token in case login changed
+			// (i.e. user logged out, or new user logged in)
+			App.CheckCuid (ViewModel.SyncToken);
 		}
 
 		#endregion Methods
@@ -776,12 +692,6 @@ namespace TownFish.App.Pages
 		const string cCancel = "Cancel";
 
 		const string cCustomUserAgent = "com.townfish.app";
-
-		const string cCode = "Code";
-		const string cSHCuid = "shcuid";
-		const string cSynced = "synced";
-		const int cSHSyncDelay = 3000;
-		const int cSHSyncRetries = 3;
 
 		const string cFeedSearch = "FeedSearch";
 		const string cFeedInfo = "FeedInfo";
@@ -881,8 +791,6 @@ namespace TownFish.App.Pages
 		bool mShowingSearch;
 		bool mHidingSearch;
 		bool mHidingFeed;
-
-		bool mCheckingCuid;
 
 		string mLastSourceUrl;
 
