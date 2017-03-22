@@ -30,12 +30,12 @@ namespace StreetHawkCrossplatform
 		const string MODIFIED = "modified";
 		const string DELETED = "deleted";
 
-		public void NotifyFeedResult(int feedid, int result)
+		public void NotifyFeedResult(string feedid, int result)
 		{
 			SHFeedItem.GetInstance(mApplication.ApplicationContext).NotifyFeedResult(feedid,result);
 		}
 
-		public void NotifyFeedResult(int feedid, string stepid, string feedresult, bool feedDelete, bool completed)
+		public void NotifyFeedResult(string feedid, string stepid, string feedresult, bool feedDelete, bool completed)
 		{
 			//TODO: not implement yet
 		}
@@ -54,7 +54,7 @@ namespace StreetHawkCrossplatform
 			SHFeedItem.GetInstance(mApplication.ApplicationContext).ReadFeedData(offset);
 		}
 
-		public void SendFeedAck(int feedid)
+		public void SendFeedAck(string feedid)
 		{
 			SHFeedItem.GetInstance(mApplication.ApplicationContext).SendFeedAck(feedid);
 		}
@@ -71,7 +71,7 @@ namespace StreetHawkCrossplatform
 						{
 							JSONObject jsonObj = feeds.GetJSONObject(i);
 							SHFeedObject obj = new SHFeedObject();
-							obj.feed_id = jsonObj.GetInt(FEED_ID);
+							obj.feed_id = jsonObj.GetString(FEED_ID);
 							obj.title = jsonObj.GetString(TITLE);
 							obj.message = jsonObj.GetString(MESSAGE);
 							obj.campaign = jsonObj.GetString(CAMPAIGN);
@@ -92,6 +92,11 @@ namespace StreetHawkCrossplatform
 					mRegisterForFeedCallBack.Invoke(arrayFeeds,null);
 				}
 			}
+		}
+
+		public void SHNotifyNewFeedItem()
+		{
+			// TODO: get implementation from StreetHawk
 		}
 	}
 }

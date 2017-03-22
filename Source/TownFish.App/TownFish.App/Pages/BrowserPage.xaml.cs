@@ -9,8 +9,6 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
-using Xamarin.Forms.PlatformConfiguration;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 using Newtonsoft.Json;
 
@@ -57,7 +55,7 @@ namespace TownFish.App.Pages
 			wbvContent.QueryParam = App.QueryParam;
 
 			// on iOS we have to allow for the overlapping status bar at top of layout
-			if (Device.OS == TargetPlatform.iOS)
+			if (Device.RuntimePlatform == Device.iOS)
 			{
 				var pad = pnlTopMenuBar.Padding;
 				pad.Top += cTopPaddingiOS;
@@ -75,9 +73,6 @@ namespace TownFish.App.Pages
 
 		protected override void OnAppearing()
 		{
-			// make sure we shrink for keyboard so inputs stay visible
-			App.Current.On<Android>().UseWindowSoftInputModeAdjust (WindowSoftInputModeAdjust.Resize);
-
 			App.Current.BackButtonPressed += App_BackButtonPressed;
 			App.Current.PushUrlReceived += App_PushUrlReceived;
 			App.Current.SHFeedItemsAvailable += App_SHFeedItemsAvailable;
@@ -103,9 +98,6 @@ namespace TownFish.App.Pages
 			if (ViewModel == null)
 				return;
 
-			// start in loading state
-			ShowLoading();
-
 			// manually set this as span isn't bindable
 			spnMemberAgreementLink.ForegroundColor = ViewModel.FeedLinkColour;
 
@@ -117,13 +109,16 @@ namespace TownFish.App.Pages
 
 					var url = ViewModel.OverflowImages.FirstOrDefault (i => i.Value == selection)?.Href;
 					if (!string.IsNullOrWhiteSpace (url))
-						ViewModel.SourceUrl = App.BaseUrl + url + App.QueryString;
+						Navigate (App.BaseUrl + url + App.QueryString);
 				});
 
-			ViewModel.LocationTapped += LocationTapped;
-			ViewModel.CallbackRequested += CallbackRequested;
-			ViewModel.MenusLoaded += MenusLoaded;
-			ViewModel.PropertyChanged += ViewModelPropertyChanged;
+			ViewModel.LocationTapped += ViewModel_LocationTapped;
+			ViewModel.CallbackRequested += ViewModel_CallbackRequested;
+			ViewModel.MenusLoaded += ViewModel_MenusLoaded;
+			ViewModel.NavigateRequested += ViewModel_NavigateRequested;
+
+			// now start at the specified source URL
+			Navigate (ViewModel.SourceUrl);
 		}
 
 		protected override bool OnBackButtonPressed()
@@ -147,14 +142,14 @@ namespace TownFish.App.Pages
 
 		void App_PushUrlReceived (object sender, string url)
 		{
-			ViewModel.SourceUrl = url;
+			Navigate (url);
 		}
 
 		private void App_Resumed (object sender, EventArgs e)
 		{
 			// in case we're returning from a remote URL, remember what our last URL really was
 			if (!string.IsNullOrEmpty (mLastSourceUrl))
-				ViewModel.SourceUrl = mLastSourceUrl;
+				ViewModel.SourceUrl = mLastSourceUrl; // don't use Navigate() here!
 
 			// and make sure menu is correct
 			//RestoreTopMenu();
@@ -206,7 +201,7 @@ namespace TownFish.App.Pages
 
 						var selectedItem = menu.FirstOrDefault (i => i.Value == selection);
 						if (selectedItem?.Type == cCallbackType)
-							CallbackRequested (this, selectedItem.Name);
+							ViewModel_CallbackRequested (this, selectedItem.Name);
 
 						break;
 
@@ -265,7 +260,7 @@ namespace TownFish.App.Pages
 		void UberWebView_NavigationFinished (object sender, string url)
 		{
 			// in case URL is changed by webview itself, save it here so we now what it is
-			ViewModel.SourceUrl = url;
+			ViewModel.SourceUrl = url; // don't use Navigate() here!
 
 			/* TODO: Paul said the menus should be hidden at the start of each
 			   page load, but this gives a very 'flashy' experience (and not in
@@ -295,7 +290,7 @@ namespace TownFish.App.Pages
 		void UberWebView_NavigationFailed (object sender, UberWebView.NavigationException ex)
 		{
 			// HACK! ignore iOS -999 (nav cancelled?) error; appears harmless
-			if (Device.OS == TargetPlatform.iOS && ex.ErrorCode == -999)
+			if (Device.RuntimePlatform == Device.iOS && ex.ErrorCode == -999)
 				return;
 
 			HideLoading();
@@ -323,21 +318,25 @@ namespace TownFish.App.Pages
 			ViewModel.SetLocation ((e.Item as AvailableLocation).ID);
 		}
 
-		/*async*/ void lstFeed_ItemTapped (object sender, EventArgs e)//ItemTappedEventArgs e)
+		void lstFeed_ItemTapped (object sender, EventArgs e)//ItemTappedEventArgs e)
+		//async void lstFeed_ItemTapped (object sender, ItemTappedEventArgs e)
 		{
 			// re: Bug Item 16 - don't return to main page; stay on message feed when item tapped
 			//await HideFeedAsync();
 
 			// when using ListView:
-			//ViewModel.SourceUrl = (e.Item as FeedItemViewModel).LinkUrl;
+			//var fivm = e.Item as FeedItemViewModel;
 
 			// when using StackView:
 			var feedItem = sender as FeedItem;
-			ViewModel.SourceUrl = (feedItem.BindingContext as FeedItemViewModel).LinkUrl;
+			var fivm = feedItem.BindingContext as FeedItemViewModel;
+
+			if (fivm != null)
+				Navigate (fivm.LinkUrl);
 		}
 
 		/// <summary>
-		/// Shows new SH feed items count on icon, or clears it if zero.
+		/// Sets SH feed item count and updates feed item list.
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name=""></param>
@@ -354,7 +353,7 @@ namespace TownFish.App.Pages
 			else
 				ViewModel.FeedItems = new ObservableCollection<FeedItemViewModel> (feedItems);
 
-			// HACK: as iOS ListView isn't working, so manually generate content for a StackLayout
+			// HACK: as iOS ListView isn't working, manually generate content for a StackLayout
 			Device.BeginInvokeOnMainThread (() =>
 				{
 					var kids = lstFeed.Children;
@@ -370,52 +369,39 @@ namespace TownFish.App.Pages
 				});
 		}
 
-		async void EditLikesTapped (object sender, EventArgs e)
+		async void BrowserPage_EditLikesTapped (object sender, EventArgs e)
 		{
 			await HideFeedAsync();
 
-			ViewModel.SourceUrl = App.EditLikesUrl;
+			Navigate (App.EditLikesUrl + App.QueryString);
 		}
 
-		async void EditProfileTapped (object sender, EventArgs e)
+		async void BrowserPage_EditProfileTapped (object sender, EventArgs e)
 		{
 			await HideFeedAsync();
 
-			ViewModel.SourceUrl = App.EditProfileUrl;
+			Navigate (App.EditProfileUrl + App.QueryString);
 		}
 
-		void ViewModelPropertyChanged (object sender, PropertyChangedEventArgs pcea)
-		{ 
-			// WebView Source binding is unreliable, so we do it manually here
-			if (pcea.PropertyName == "SourceUrl")
-			{
-				var url = ViewModel.SourceUrl;
-
-				// if we're returning to our last URL, just leave it as webview won't have changed
-				if (url == mLastSourceUrl)
-					return;
-
-				// if it's a new TF URL hide the feed and save URL for returning to later
-				if (url.Contains (App.BaseUrl))
-				{
-					HideFeed();
-
-					// save this in case we come back later from an external URL
-					mLastSourceUrl = url;
-				}
-
-				wbvContent.Source = url;
-			}
-		}
-
-		void MemAgreeTapped (object sender, EventArgs e)
+		void BrowserPage_MemberAgreementTapped (object sender, EventArgs e)
 		{
 			HideSearchPanel();
 
-			ViewModel.SourceUrl = App.TermsUrl + App.QueryString;
+			Navigate (App.TermsUrl + App.QueryString);
 		}
 
-		void LocationTapped (object sender, EventArgs e)
+		void ViewModel_MenusLoaded (object sender, EventArgs e)
+		{
+			// only hide loading if already showing it but not in the process of hiding feed
+			if (ViewModel.IsLoading && !mHidingFeed)
+				Device.BeginInvokeOnMainThread (() => HideLoading());
+
+			// tell app to check sync token in case login changed
+			// (i.e. user logged out, or new user logged in)
+			App.CheckCuid (ViewModel.SyncToken);
+		}
+
+		void ViewModel_LocationTapped (object sender, EventArgs e)
 		{
 			if (!mIsSearchVisible && !mShowingSearch)
 				ShowSearchPanel();
@@ -423,7 +409,7 @@ namespace TownFish.App.Pages
 				HideSearchPanel();
 		}
 
-		void CallbackRequested (object sender, string name)
+		void ViewModel_CallbackRequested (object sender, string name)
 		{
 			// special-case search within SH Message Feed
 			//if (name == cFeedSearch)
@@ -452,6 +438,30 @@ namespace TownFish.App.Pages
 
 			Device.BeginInvokeOnMainThread (() =>
 				wbvContent.InvokeScript (string.Format (cCallbackFormat, name)));
+		}
+
+		void ViewModel_NavigateRequested (object sender, string url)
+		{
+			Navigate (url);
+		}
+
+		void Navigate (string url)
+		{
+			// if it's a new TF URL hide the feed and save URL for returning to later
+			if (url.StartsWith (App.BaseUrl))
+			{
+				// hide feed and, if it's a new URL, show loading
+				HideFeed (showLoading: url != ViewModel.SourceUrl);
+
+				// save this in case we come back later from an external URL
+				mLastSourceUrl = url;
+			}
+
+			// this should be enough on its own...
+			ViewModel.SourceUrl = url;
+
+			// ... but WebView Source binding is unreliable, so we also do it manually
+			//wbvContent.Source = url;
 		}
 
 		void ShowFeed()
@@ -629,17 +639,6 @@ namespace TownFish.App.Pages
 				mFirstLoading = false;
 				imgSplash.IsVisible = false;
 			}
-		}
-
-		void MenusLoaded (object sender, string e)
-		{
-			// only hide loading if already showing it but not in the process of hiding feed
-			if (ViewModel.IsLoading && !mHidingFeed)
-				Device.BeginInvokeOnMainThread (() => HideLoading());
-
-			// tell app to check sync token in case login changed
-			// (i.e. user logged out, or new user logged in)
-			App.CheckCuid (ViewModel.SyncToken);
 		}
 
 		#endregion Methods

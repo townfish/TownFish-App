@@ -33,12 +33,10 @@
 		</Grid.RowDefinitions>
 
 		<!-- WebView -->
+		<!-- don't bind to SourceUrl as we decide manually whether to navigate in Navigate() -->
+		<!--Source="{Binding SourceUrl}"-->
 		<apptelic:UberWebView x:Name="wbvContent" Grid.Row="2"
 							VerticalOptions="Fill" HorizontalOptions="Fill" />
-							<!--
-							**Source binding is unreliable, so we do it manually in code-behind**
-							Source="{Binding SourceUrl}"
-							-->
 
 		<!-- Top Sub-Menu Bar -->
 		<Grid Grid.Row="1" Padding="10,6" ColumnSpacing="0"
@@ -288,7 +286,7 @@
 						</FormattedString>
 					</Label.FormattedText>
 					<Label.GestureRecognizers>
-						<TapGestureRecognizer Tapped="MemAgreeTapped" />
+						<TapGestureRecognizer Tapped="BrowserPage_MemberAgreementTapped" />
 					</Label.GestureRecognizers>
 				</Label>
 			</Grid>
@@ -536,7 +534,7 @@
 					   TextColor="{Binding FeedLinkColour}" FontSize="14"
 					   Text="Improve your profile">
 					<Label.GestureRecognizers>
-						<TapGestureRecognizer Tapped="EditProfileTapped" />
+						<TapGestureRecognizer Tapped="BrowserPage_EditProfileTapped" />
 					</Label.GestureRecognizers>
 				</Label>
 
@@ -544,7 +542,7 @@
 					   TextColor="{Binding FeedLinkColour}" FontSize="14"
 					   Text="Add more likes &amp; interests">
 					<Label.GestureRecognizers>
-						<TapGestureRecognizer Tapped="EditLikesTapped" />
+						<TapGestureRecognizer Tapped="BrowserPage_EditLikesTapped" />
 					</Label.GestureRecognizers>
 				</Label>
 			</StackLayout>

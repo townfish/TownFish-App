@@ -30,11 +30,13 @@ namespace TownFish.App
 		{
 			DeviceID = deviceID;
 
-			var vm = new BrowserPageViewModel();
-			MainPage = new BrowserPage { BindingContext = vm };
-
-			// now everything's wired up, kick off initial page load
-			vm.SourceUrl = BaseUrl + StartPath + QueryString;
+			MainPage = new BrowserPage
+			{
+				BindingContext = new BrowserPageViewModel
+				{
+					SourceUrl = BaseUrl + StartPath + QueryString
+				}
+			};
 		}
 
 		#endregion Construction
@@ -50,7 +52,9 @@ namespace TownFish.App
 		{
 			// Handle when your app starts
 
-			InitStreetHawk();
+			// for now, don't use StreetHawk on Android
+			if (Device.RuntimePlatform != Device.Android)
+				InitStreetHawk();
 		}
 
 		protected override void OnSleep()
@@ -246,10 +250,8 @@ namespace TownFish.App
 					try
 					{
 						var content = JsonConvert.DeserializeObject<Dictionary<string, string>> (json);
-						string dataType, route;
-
-						if (content.TryGetValue ("dataType", out dataType) &&
-								content.TryGetValue ("route", out route) &&
+						if (content.TryGetValue ("dataType", out var dataType) &&
+								content.TryGetValue ("route", out var route) &&
 								dataType == "vanilla_notification" &&
 								route.ToLower().Contains ("townfish.com"))
 							OnPushUrlReceived (route);
@@ -470,16 +472,13 @@ namespace TownFish.App
 
 				var result = await http.GetStringAsync (url);
 				var shcuid = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
-
-				string code, newID;
-				if (!shcuid.TryGetValue (cCode, out code) &&
-						shcuid.TryGetValue (cSHCuid, out newID))
+				if (!shcuid.TryGetValue (cCode, out var code) &&
+						shcuid.TryGetValue (cSHCuid, out var newID))
 				{
 					var props = App.Current.Properties;
-					object obj;
 					string userID = null;
 
-					if (props.TryGetValue (cSHCuid, out obj))
+					if (props.TryGetValue (cSHCuid, out var obj))
 						userID = obj as string;
 
 #if false//DEBUG
@@ -510,9 +509,8 @@ namespace TownFish.App
 							result = await http.GetStringAsync (url);
 							var syncResult = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
 
-							string sync;
 							if (!shcuid.TryGetValue (cCode, out code) &&
-									syncResult.TryGetValue (cSynced, out sync) &&
+									syncResult.TryGetValue (cSynced, out var sync) &&
 									sync == "true")
 							{
 								props [cSHCuid] = userID;
@@ -543,11 +541,8 @@ namespace TownFish.App
 		/// <param name="key">The key.</param>
 		/// <param name="def">Optional default value to return if the property doesn't exist.</param>
 		/// <returns></returns>
-		public static T GetProp<T> (string key, T def = default (T))
-		{
-			object o;
-			return Current.Properties.TryGetValue (key, out o) ? o.ConvertTo (def) : def;
-		}
+		public static T GetProp<T> (string key, T def = default (T)) =>
+				Current.Properties.TryGetValue (key, out var o) ? o.ConvertTo (def) : def;
 
 		/// <summary>
 		/// Sets or clears a persistent App property.

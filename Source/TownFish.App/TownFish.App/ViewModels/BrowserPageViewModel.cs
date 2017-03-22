@@ -18,7 +18,7 @@ namespace TownFish.App.ViewModels
 {
 	public class BrowserPageViewModel: ViewModelBase
 	{
-		#region Helper Types
+		#region Nested Types
 
 		public class MenuIconModel
 		{
@@ -98,15 +98,17 @@ namespace TownFish.App.ViewModels
 			#endregion Fields
 		}
 
-		#endregion Helper Types
+		#endregion Nested Types
 
 		#region Properties and Events
+
+		public event EventHandler MenusLoaded;
 
 		public event EventHandler LocationTapped;
 
 		public event EventHandler<string> CallbackRequested;
 
-		public event EventHandler<string> MenusLoaded;
+		public event EventHandler<string> NavigateRequested;
 
 		public string SourceUrl
 		{
@@ -591,38 +593,7 @@ namespace TownFish.App.ViewModels
 
 		public void SetLocation (string cityID)
 		{
-			SourceUrl = App.BaseUrl + mLocationSetFormat.Replace ("{id}", cityID) + App.QueryString;
-		}
-
-		public void ClearMenus()
-		{
-			LocationName = "";
-			PageTitle = "";
-
-			TopBarLeftLabel = "";
-			TopBarLeftCommand = null;
-			TopBarRightLabel = null;
-			TopBarRightCommand = null;
-			TopBarRightIcon = null;
-			TopBarRight1Label = null;
-			TopBarRight1Command = null;
-			TopBarRight1Icon = null;
-
-			TopAction1Label = "";
-			TopAction1Command = null;
-			TopAction2Label = "";
-			TopAction2Command = null;
-			TopAction3Label = "";
-			TopAction3Command = null;
-			TopAction4Label = "";
-			TopAction4Command = null;
-			TopActionMoreLabel = "";
-			OverflowImages = null;
-
-			TopFormLeftActionLabel = "";
-			TopFormLeftActionCommand = null;
-			TopFormRightActionLabel = "";
-			TopFormRightActionCommand = null;
+			OnNavigateRequested (App.BaseUrl + mLocationSetFormat.Replace ("{id}", cityID) + App.QueryString);
 		}
 
 		public void LoadMenuMap (TownFishMenuMap map)
@@ -701,7 +672,7 @@ namespace TownFish.App.ViewModels
 
 		void OnMenusLoaded()
 		{
-			MenusLoaded?.Invoke (this, "");
+			MenusLoaded?.Invoke (this, EventArgs.Empty);
 		}
 
 		void OnLocationTapped()
@@ -714,6 +685,49 @@ namespace TownFish.App.ViewModels
 		void OnCallbackRequested (string callbackName)
 		{
 			CallbackRequested?.Invoke (this, callbackName);
+		}
+
+		/// <summary>
+		/// Informs listeners that a navigation is requested.
+		/// </summary>
+		/// <remarks>
+		/// Listeners MUST set SourceUrl to the given URL in order for navigation to happen.
+		/// </remarks>
+		/// <param name="url">The URL.</param>
+		void OnNavigateRequested (string url)
+		{
+			NavigateRequested?.Invoke (this, url);
+		}
+
+		void ClearMenus ()
+		{
+			LocationName = "";
+			PageTitle = "";
+
+			TopBarLeftLabel = "";
+			TopBarLeftCommand = null;
+			TopBarRightLabel = null;
+			TopBarRightCommand = null;
+			TopBarRightIcon = null;
+			TopBarRight1Label = null;
+			TopBarRight1Command = null;
+			TopBarRight1Icon = null;
+
+			TopAction1Label = "";
+			TopAction1Command = null;
+			TopAction2Label = "";
+			TopAction2Command = null;
+			TopAction3Label = "";
+			TopAction3Command = null;
+			TopAction4Label = "";
+			TopAction4Command = null;
+			TopActionMoreLabel = "";
+			OverflowImages = null;
+
+			TopFormLeftActionLabel = "";
+			TopFormLeftActionCommand = null;
+			TopFormRightActionLabel = "";
+			TopFormRightActionCommand = null;
 		}
 
 		void LoadMenus (TownFishMenuList menus)
@@ -920,12 +934,12 @@ namespace TownFish.App.ViewModels
 				// # date stamp no longer needed, so link is now same as back
 				//case "link":
 				//	return new Command (_ =>
-				//		{ SourceUrl = App.BaseUrl + item.Href + App.QueryString + "#" + DateTime.Now.Ticks; }); // TODO: remove nav hash!
+				//		{ OnNavigateRequested ( App.BaseUrl + item.Href + App.QueryString + "#" + DateTime.Now.Ticks;) }); // TODO: remove nav hash!
 
 				case "link":
 				case "back":
 					return new Command (_ =>
-						{ SourceUrl = App.BaseUrl + item.Href + App.QueryString; });
+						{ OnNavigateRequested (App.BaseUrl + item.Href + App.QueryString); });
 
 				case "noop":
 					return sNoOpCommand;

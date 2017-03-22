@@ -13,7 +13,10 @@ using Android.Webkit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
+#if !NOSTREETHAWKFEED
 using Com.Streethawk.Library.Feeds;
+#endif
+
 using StreetHawkCrossplatform;
 
 
@@ -30,10 +33,10 @@ namespace TownFish.App.Droid
 		WindowSoftInputMode = SoftInput.AdjustResize)]
 	public class MainActivity : FormsApplicationActivity
 	{
-		#region Nested Types
+#region Nested Types
 
 #if DEBUG
-		#region WebChromeClient
+#region WebChromeClient
 
 		class WebPlayerWebChromeClient: WebChromeClient
 		{
@@ -51,11 +54,11 @@ namespace TownFish.App.Droid
 			}
 		}
 
-		#endregion WebChromeClient
+#endregion WebChromeClient
 #endif
-		#endregion Nested Types
+#endregion Nested Types
 
-		#region Methods
+#region Methods
 
 		protected override void OnCreate (Bundle bundle)
 		{
