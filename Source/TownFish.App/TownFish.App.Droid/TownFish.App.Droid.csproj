@@ -84,7 +84,7 @@
     </Reference>
     <Reference Include="StreetHawkFeeds, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\References\StreetHawkFeeds.dll</HintPath>
+      <HintPath>..\..\Components\streethawkfeeds-1.8.7\lib\android\StreetHawkFeeds.dll</HintPath>
     </Reference>
     <Reference Include="StreetHawkGeofence">
       <HintPath>..\..\Components\streethawkgeofence-1.8.7\lib\android\StreetHawkGeofence.dll</HintPath>

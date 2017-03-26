@@ -348,6 +348,7 @@
 			</Grid.ColumnDefinitions>
 
 			<Label Grid.Column="1" VerticalOptions="Center"
+				   IsVisible="{Binding IsLocationNameVisible}"
 				   FontSize="16" FontAttributes="Bold"
 				   TextColor="{Binding MenuBarTextColour}"
 				   Text="{Binding LocationName}"

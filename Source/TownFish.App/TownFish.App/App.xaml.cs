@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
@@ -261,7 +262,11 @@ namespace TownFish.App
 
 						SHFeedItems = await GetSHFeed();
 					}
-					catch {}
+					catch (Exception ex)
+					{
+						Debug.WriteLine (
+									$"App.InitStreetHawk/RegisterForRawJSON: {ex.Message}");
+					}
 				});
 #endif // SH_RAWJSON_OPTIONAL
 
@@ -290,7 +295,14 @@ namespace TownFish.App
 			//shFeeds.OnNewFeedAvailableCallback (async() => SHFeedItems = await GetSHFeed());
 
 			// however, on app load, we need to get feed anyway to show count and get items
-			SHFeedItems = await GetSHFeed();
+			try
+			{
+				SHFeedItems = await GetSHFeed();
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine ($"App.InitStreetHawk: {ex.Message}");
+			}
 #endif
 		}
 
@@ -522,7 +534,10 @@ namespace TownFish.App
 					}
 				}
 			}
-			catch {} // if it fails, we don't care
+			catch (Exception ex)
+			{
+				Debug.WriteLine ($"App.CheckCuid: {ex.Message}");
+			}
 			finally
 			{
 				sCheckedCuid = true;

@@ -10,29 +10,44 @@ namespace TownFish.App.Models
 	{
 		#region Properties
 
-		public bool display { get; set; }
+		public bool Display { get; set; }
 
-		public string position { get; set; }
+		public string Position { get; set; }
 
-		public List<TownFishMenuItem> items { get; set; }
+		public List<TownFishMenuItem> Items { get; set; }
 
-		public int limitby { get; set; }
+		public int Limitby { get; set; }
 
-		#endregion
+		public bool IsVisible => Display && Items?.Count > 0;
+
+		#endregion Properties
 	}
 
-	public class TownFishMenuList
+	public class TownFishMenuList: Dictionary<string, TownFishMenu>
 	{
 		#region Properties
 
-		public TownFishMenu Top { get; set; }
+		public TownFishMenu Top => (from kvp in this
+									where kvp.Value.Display &&
+											kvp.Value.Position == "top" &&
+											!kvp.Key.EndsWith ("form")
+									select kvp.Value).FirstOrDefault();
 
-		public TownFishMenu TopSub { get; set; }
+		public TownFishMenu TopSub => (from kvp in this
+									   where kvp.Value.Display &&
+											kvp.Value.Position == "topsub"
+									   select kvp.Value).FirstOrDefault();
 
-		public TownFishMenu TopForm { get; set; }
+		public TownFishMenu TopForm => (from kvp in this
+										where kvp.Value.Display &&
+												kvp.Value.Position == "top" &&
+												kvp.Key.EndsWith ("form")
+										select kvp.Value).FirstOrDefault();
 
-		public TownFishMenu Bottom { get; set; }
+		public TownFishMenu Bottom => (from m in Values
+									   where m.Position == "bottom"
+									   select m).FirstOrDefault();
 
-		#endregion
+		#endregion Properties
 	}
 }

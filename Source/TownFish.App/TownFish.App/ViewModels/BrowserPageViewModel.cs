@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Diagnostics;
 using System.Windows.Input;
 
 using Xamarin.Forms;
@@ -26,10 +27,7 @@ namespace TownFish.App.ViewModels
 
 			public MenuIconModel (TownFishMenuItem item)
 			{
-				if (item == null)
-					throw new ArgumentNullException ("item can not be null");
-
-				mItem = item;
+				mItem = item ?? throw new ArgumentNullException ("item can not be null");
 			}
 
 			#endregion Construction
@@ -72,10 +70,7 @@ namespace TownFish.App.ViewModels
 
 			public MenuLabelModel (TownFishMenuItem item)
 			{
-				if (item == null)
-					throw new ArgumentNullException ("item can not be null");
-
-				mItem = item;
+				mItem = item ?? throw new ArgumentNullException ("item can not be null");
 			}
 
 			#endregion Construction
@@ -98,6 +93,23 @@ namespace TownFish.App.ViewModels
 			#endregion Fields
 		}
 
+		public class CallbackInfo
+		{
+			#region Properties
+
+			public string Name { get; set; }
+
+			public bool IsNative { get; set; }
+
+			#endregion Properties
+
+			#region Fields
+
+			public const string Info = "info";
+
+			#endregion Fields
+		}
+
 		#endregion Nested Types
 
 		#region Properties and Events
@@ -106,7 +118,7 @@ namespace TownFish.App.ViewModels
 
 		public event EventHandler LocationTapped;
 
-		public event EventHandler<string> CallbackRequested;
+		public event EventHandler<CallbackInfo> CallbackRequested;
 
 		public event EventHandler<string> NavigateRequested;
 
@@ -328,6 +340,9 @@ namespace TownFish.App.ViewModels
 			set { Set (value); }
 		}
 
+		// NOTE: notify this changed when those it depends on change
+		public bool IsLocationNameVisible => !IsFeedVisible && !IsFeedInfoVisible;
+
 		#endregion Top Bar
 
 		#region Top Sub
@@ -534,7 +549,13 @@ namespace TownFish.App.ViewModels
 		public bool IsFeedVisible
 		{
 			get { return Get<bool>(); }
-			set { Set (value); }
+
+			set
+			{
+				// NOTE: side-effect - if this changes, location name might change too
+				if (Set (value))
+					OnPropertyChanged (() => IsLocationNameVisible);
+			}
 		}
 
 		public bool IsFeedListVisible => !IsFeedEmpty;
@@ -542,10 +563,18 @@ namespace TownFish.App.ViewModels
 		public bool IsFeedInfoVisible
 		{
 			get { return Get<bool>(); }
-			set { Set (value); }
+
+			set
+			{
+				// NOTE: side-effect - if this changes, location name might change too
+				if (Set (value))
+					OnPropertyChanged (() => IsLocationNameVisible);
+			}
 		}
 
-		public bool IsFeedEmpty => (FeedItems?.Count ?? 0) == 0;
+		public int FeedItemCount => FeedItems?.Count ?? 0;
+
+		public bool IsFeedEmpty => FeedItemCount == 0;
 
 		public ObservableCollection<FeedItemViewModel> FeedItems
 		{
@@ -584,10 +613,11 @@ namespace TownFish.App.ViewModels
 					}
 				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				// TODO Alert the user of this crap up the wall
-				CancelLocationSearch();
+				Debug.WriteLine ($"BrowserPageViewModel.UpdateLocationList: {ex.Message}");
+
+				CancelLocationSearch ();
 			}
 		}
 
@@ -618,7 +648,11 @@ namespace TownFish.App.ViewModels
 			// now we've parsed the menu map we can set location properties, if needed
 			if (IsTopBarVisible)
 			{
-				var locationMenuItem = map.Menus.Top.items.FirstOrDefault (i => i.Type == "locationpin");
+				var locationMenuItem = (from m in map.Menus.Values
+										where m.Position == "top"
+										select m.Items.FirstOrDefault (i => i.Type == "locationpin"))
+										.FirstOrDefault();
+
 				if (locationMenuItem != null)
 				{
 					var size = "mdpi"; // HACK: force sizes for now; should be locationMenuItem.Size;
@@ -670,6 +704,37 @@ namespace TownFish.App.ViewModels
 			SearchTerm = "";
 		}
 
+		public ICommand GenerateMenuAction (TownFishMenuItem item)
+		{
+			switch (item.Type)
+			{
+				case "locationpin":
+					return new Command (_ =>
+						OnLocationTapped());
+
+				case "callback":
+				case "nativeCallback":
+					return new Command (_ =>
+						OnCallbackRequested (item.Name, item.Type == "nativeCallback"));
+
+				// # date stamp no longer needed, so link is now same as back
+				//case "link":
+				//	return new Command (_ =>
+				//		{ OnNavigateRequested ( App.BaseUrl + item.Href + App.QueryString + "#" + DateTime.Now.Ticks;) }); // TODO: remove nav hash!
+
+				case "link":
+				case "back":
+					return new Command (_ =>
+						{ OnNavigateRequested (App.BaseUrl + item.Href + App.QueryString); });
+
+				case "noop":
+					return sNoOpCommand;
+
+				default:
+					return null;
+			}
+		}
+
 		void OnMenusLoaded()
 		{
 			MenusLoaded?.Invoke (this, EventArgs.Empty);
@@ -682,9 +747,10 @@ namespace TownFish.App.ViewModels
 			LocationTapped?.Invoke (this, EventArgs.Empty);
 		}
 
-		void OnCallbackRequested (string callbackName)
+		void OnCallbackRequested (string callbackName, bool isNative)
 		{
-			CallbackRequested?.Invoke (this, callbackName);
+			CallbackRequested?.Invoke (this, new CallbackInfo
+					{ Name = callbackName, IsNative = isNative });
 		}
 
 		/// <summary>
@@ -736,22 +802,22 @@ namespace TownFish.App.ViewModels
 				return;
 
 			var top = menus.Top;
-			IsTopBarVisible = top != null && top.display;
+			IsTopBarVisible = top?.IsVisible ?? false;
 
 			if (IsTopBarVisible)
 			{
-				var topLeftItem = top.items.FirstOrDefault (i => i.Align == "left");
+				var topLeftItem = top.Items.FirstOrDefault (i => i.Align == "left");
 				if (topLeftItem != null)
 				{
-					TopBarLeftLabel = GenerateMenuItem (top.items [0]);
-					TopBarLeftCommand = GenerateMenuAction (top.items [0]);
+					TopBarLeftLabel = GenerateMenuItem (top.Items [0]);
+					TopBarLeftCommand = GenerateMenuAction (top.Items [0]);
 				}
 
-				var isHeadingItem = top.items.FirstOrDefault (i => i.Type == "heading");
+				var isHeadingItem = top.Items.FirstOrDefault (i => i.Type == "heading");
 				if (isHeadingItem != null)
-					PageTitle = GenerateMenuItem (top.items [1]);
+					PageTitle = GenerateMenuItem (top.Items [1]);
 
-				var rightItems = top.items.Where (i => i.Align == "right").ToList();
+				var rightItems = top.Items.Where (i => i.Align == "right").ToList();
 				if (rightItems.Count > 0)
 				{
 					TopBarRight1Label = new MenuLabelModel (rightItems [0]);
@@ -772,75 +838,75 @@ namespace TownFish.App.ViewModels
 			}
 
 			var topSub = menus.TopSub;
-			IsTopSubBarVisible = topSub != null && topSub.display;
+			IsTopSubBarVisible = topSub?.IsVisible ?? false;
 
 			if (IsTopSubBarVisible)
 			{
 				// Top Menu
-				if (topSub.items.Count > 0 && topSub.items [0] != null)
+				if (topSub.Items.Count > 0 && topSub.Items [0] != null)
 				{
-					TopAction1Label = GenerateMenuItem (topSub.items [0]);
-					TopAction1Command = GenerateMenuAction (topSub.items [0]);
+					TopAction1Label = GenerateMenuItem (topSub.Items [0]);
+					TopAction1Command = GenerateMenuAction (topSub.Items [0]);
 
-					if (topSub.items [0].Highlight)
+					if (topSub.Items [0].Highlight)
 						TopAction1Bold = FontAttributes.Bold;
 					else
 						TopAction1Bold = FontAttributes.None;
 				}
 
-				if (topSub.items.Count > 1 && topSub.items [1] != null)
+				if (topSub.Items.Count > 1 && topSub.Items [1] != null)
 				{
-					TopAction2Label = GenerateMenuItem (topSub.items [1]);
-					TopAction2Command = GenerateMenuAction (topSub.items [1]);
+					TopAction2Label = GenerateMenuItem (topSub.Items [1]);
+					TopAction2Command = GenerateMenuAction (topSub.Items [1]);
 
-					if (topSub.items [1].Highlight)
+					if (topSub.Items [1].Highlight)
 						TopAction2Bold = FontAttributes.Bold;
 					else
 						TopAction2Bold = FontAttributes.None;
 				}
 
-				if (topSub.items.Count > 2 && topSub.items [2] != null)
+				if (topSub.Items.Count > 2 && topSub.Items [2] != null)
 				{
-					TopAction3Label = GenerateMenuItem (topSub.items [2]);
-					TopAction3Command = GenerateMenuAction (topSub.items [2]);
+					TopAction3Label = GenerateMenuItem (topSub.Items [2]);
+					TopAction3Command = GenerateMenuAction (topSub.Items [2]);
 
-					if (topSub.items [2].Highlight)
+					if (topSub.Items [2].Highlight)
 						TopAction3Bold = FontAttributes.Bold;
 					else
 						TopAction3Bold = FontAttributes.None;
 				}
 
-				if (topSub.items.Count > 3 && topSub.items [3] != null)
+				if (topSub.Items.Count > 3 && topSub.Items [3] != null)
 				{
-					TopAction4Label = GenerateMenuItem (topSub.items [3]);
-					TopAction4Command = GenerateMenuAction (topSub.items [3]);
+					TopAction4Label = GenerateMenuItem (topSub.Items [3]);
+					TopAction4Command = GenerateMenuAction (topSub.Items [3]);
 
-					if (topSub.items [3].Highlight)
+					if (topSub.Items [3].Highlight)
 						TopAction4Bold = FontAttributes.Bold;
 					else
 						TopAction4Bold = FontAttributes.None;
 				}
 
-				if (topSub.items.Count > 4)
+				if (topSub.Items.Count > 4)
 				{
-					var moreIcon = topSub.items.FirstOrDefault (i => i.Type == "limitby");
+					var moreIcon = topSub.Items.FirstOrDefault (i => i.Type == "limitby");
 					if (moreIcon != null)
 					{
 						TopActionMoreLabel = GenerateMenuItem (moreIcon);
-						OverflowImages = topSub.items.Skip (3).Where (i => i.Type != "limitby").ToList();
+						OverflowImages = topSub.Items.Skip (3).Where (i => i.Type != "limitby").ToList();
 					}
 				}
 			}
 
 			var topForm = menus.TopForm;
-			IsTopFormBarVisible = topForm != null && topForm.display && topForm.items.Count > 0;
+			IsTopFormBarVisible = topForm?.IsVisible ?? false;
 
 			if (IsTopFormBarVisible)
 			{
-				TopFormLeftActionLabel = GenerateMenuItem (topForm.items [0]);
-				TopFormLeftActionCommand = GenerateMenuAction (topForm.items [0]);
+				TopFormLeftActionLabel = GenerateMenuItem (topForm.Items [0]);
+				TopFormLeftActionCommand = GenerateMenuAction (topForm.Items [0]);
 
-				var topFormRightItem = topForm.items.FirstOrDefault (i => i.Align == "right");
+				var topFormRightItem = topForm.Items.FirstOrDefault (i => i.Align == "right");
 				if (topFormRightItem != null)
 				{
 					TopFormRightActionLabel = GenerateMenuItem (topFormRightItem);
@@ -848,20 +914,19 @@ namespace TownFish.App.ViewModels
 				}
 
 				// if 3 items, item 1 is title (we hope!)
-				if (topForm.items.Count > 2 && topForm.items [1] != null)
-					PageTitle = GenerateMenuItem (topForm.items [1]);
+				if (topForm.Items.Count > 2 && topForm.Items [1] != null)
+					PageTitle = GenerateMenuItem (topForm.Items [1]);
 			}
 
 			var bottom = menus.Bottom;
-			IsBottomBarVisible = bottom != null && bottom.display && bottom.items?.Count > 0;
+			IsBottomBarVisible = bottom?.IsVisible ?? false;
 
 			if (IsBottomBarVisible)
 			{
 				var actions = new ObservableCollection<BottomActionViewModel>();
 
-				for (var i = 0; i < bottom.items.Count; i++)
+				foreach (var item in bottom.Items)
 				{
-					var item = bottom.items [i];
 					var action = new BottomActionViewModel
 					{
 						MainViewModel = this,
@@ -878,8 +943,8 @@ namespace TownFish.App.ViewModels
 					actions.Add (action);
 				}
 
-				// view expects 6 items (hard-coded in a grid!!), so pad as necessary
-				for (var i = bottom.items.Count; i++ < 6; )
+				// HACK: view expects 6 items (hard-coded in a grid!!), so pad as necessary
+				for (var i = bottom.Items.Count; i++ < 6; )
 					actions.Add (new BottomActionViewModel());
 
 				BottomActions = actions;
@@ -916,36 +981,6 @@ namespace TownFish.App.ViewModels
 			else
 			{
 				return item.Value;
-			}
-		}
-
-		ICommand GenerateMenuAction (TownFishMenuItem item)
-		{
-			switch (item.Type)
-			{
-				case "locationpin":
-					return new Command (_ =>
-						OnLocationTapped());
-
-				case "callback":
-					return new Command (_ =>
-						OnCallbackRequested (item.Name));
-
-				// # date stamp no longer needed, so link is now same as back
-				//case "link":
-				//	return new Command (_ =>
-				//		{ OnNavigateRequested ( App.BaseUrl + item.Href + App.QueryString + "#" + DateTime.Now.Ticks;) }); // TODO: remove nav hash!
-
-				case "link":
-				case "back":
-					return new Command (_ =>
-						{ OnNavigateRequested (App.BaseUrl + item.Href + App.QueryString); });
-
-				case "noop":
-					return sNoOpCommand;
-
-				default:
-					return null;
 			}
 		}
 

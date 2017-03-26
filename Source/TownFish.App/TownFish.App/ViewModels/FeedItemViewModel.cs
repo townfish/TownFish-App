@@ -15,7 +15,7 @@ namespace TownFish.App.ViewModels
 
 		static string FormatTimeStamp (DateTime ts)
 		{
-			var daysAgo = (int) ((DateTime.Now - ts).TotalDays + 0.5);
+			var daysAgo = (int) ((DateTime.Now.Date - ts.Date).TotalDays);
 			if (daysAgo < 0 || daysAgo >= 7)
 				return ts.ToString ("d MMM HH.mm");
 			else

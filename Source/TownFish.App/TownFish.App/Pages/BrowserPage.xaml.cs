@@ -1,4 +1,5 @@
 ﻿//#define EMPTY_TOP_MENU_WHEN_LOADING
+//#define FAKE_FEED_TOP_MENU
 
 using System;
 using System.Collections.Generic;
@@ -142,7 +143,11 @@ namespace TownFish.App.Pages
 
 		void App_PushUrlReceived (object sender, string url)
 		{
-			Navigate (url);
+			// Basecamp Item 32: only navigate if we're not logged in; if logged
+			// in the Vanilla code takes care of its own notifications
+
+			if (string.IsNullOrEmpty (ViewModel.SyncToken))
+				Navigate (url);
 		}
 
 		private void App_Resumed (object sender, EventArgs e)
@@ -158,72 +163,22 @@ namespace TownFish.App.Pages
 		async void UberWebView_ScriptMessageReceived (object sender, string msg)
 		{
 			string action = null;
-			string result = null;
+			string data = null;
 
 			try
 			{
 				var model = JsonConvert.DeserializeObject<UberWebViewMessage>(msg);
 
 				action = model.Action;
-				result = model.Result;
-
-				Debug.WriteLine ("WebViewAction: Parsing {0}:\n{1}", action, result);
-
-				switch (action)
-				{
-					case cBeginLoadingAction:
-						ShowLoading();
-						break;
-
-					case cSchemaAction:
-						mCurrentMenuMap = JsonConvert.DeserializeObject<TownFishMenuMap> (result);
-						ViewModel.LoadMenuMap (mCurrentMenuMap);
-
-						break;
-
-					case cMenusVisibleAction:
-						if (mCurrentMenuMap == null)
-							break;
-
-						var visibleMenus = JsonConvert.DeserializeObject<string[]> (result);
-						mCurrentMenuMap.SetMenuVisibility (visibleMenus);
-
-						// now reload with new visibility settings
-						ViewModel.LoadMenuMap (mCurrentMenuMap);
-
-						break;
-
-					case cPopupMenuAction:
-						var menu = JsonConvert.DeserializeObject<List<TownFishMenuItem>> (result);
-
-						var selection = await DisplayActionSheet (cMoreActions, cCancel, null,
-								menu.Select (i => i.Value).ToArray());
-
-						var selectedItem = menu.FirstOrDefault (i => i.Value == selection);
-						if (selectedItem?.Type == cCallbackType)
-							ViewModel_CallbackRequested (this, selectedItem.Name);
-
-						break;
-
-					case cPushAction:
-						break;
-
-					case cFeedShowAction:
-						try { ShowFeed(); }
-						catch (Exception ex) {}
-
-						break;
-
-					case cFeedHideAction:
-						// HACK: ignore hide feed action to 'fix' Item 20 in Basecamp bug list
-						//HideFeed();
-						break;
-				}
+				data = model.Result;
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				// TODO: parse failed, so use a default? go to offline page?
-				Debug.WriteLine ("WebViewAction: Parse of:\n{0}\nfailed with error:\n{1}", msg, e.Message);
+				// parse failed, fail gracefully
+
+				Debug.WriteLine (
+						"BrowserPage.UberWebView_ScriptMessageReceived: " +
+						$"Parse of:\n{msg}\nfailed with error:\n{ex.Message}");
 
 				// if it was the schema, just hide everything as it might contain rubbish
 				if (action == cSchemaAction)
@@ -233,8 +188,71 @@ namespace TownFish.App.Pages
 					ViewModel.IsTopFormBarVisible = false;
 					ViewModel.IsBottomBarVisible = false;
 
+					// hide loading so user can see what's going on
 					HideLoading();
+
+					return;
 				}
+			}
+
+			try
+			{
+				Debug.WriteLine (
+						"BrowserPage.UberWebView_ScriptMessageReceived: " +
+						$"Performing {action} on:\n{data}");
+
+				switch (action)
+				{
+					case cBeginLoadingAction:
+						ShowLoading();
+						break;
+
+					case cSchemaAction:
+						mCurrentMenuMap = JsonConvert.DeserializeObject<TownFishMenuMap> (data);
+						ViewModel.LoadMenuMap (mCurrentMenuMap);
+
+						break;
+
+					case cMenusVisibleAction:
+						if (mCurrentMenuMap == null)
+							break;
+
+						var visibleMenus = JsonConvert.DeserializeObject<string[]> (data);
+						mCurrentMenuMap.SetMenuVisibility (visibleMenus);
+
+						// now reload with new visibility settings
+						ViewModel.LoadMenuMap (mCurrentMenuMap);
+
+						break;
+
+					case cPopupMenuAction:
+						var menu = JsonConvert.DeserializeObject<List<TownFishMenuItem>> (data);
+						var items = menu.Select (i => i.Value).ToArray();
+						var selection = await DisplayActionSheet (cMoreActions, cCancel, null, items);
+
+						var menuItem = menu.FirstOrDefault (i => i.Value == selection);
+						if (menuItem != null)
+							ViewModel.GenerateMenuAction (menuItem)?.Execute (null);
+
+						break;
+
+					case cPushAction:
+						break;
+
+					case cFeedShowAction:
+						ShowFeed();
+						break;
+
+					case cFeedHideAction:
+						// just returning to current page, so don't show loading
+						HideFeed (showLoading: false);
+						break;
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine (
+						$"BrowserPage.UberWebView_ScriptMessageReceived: {ex.Message}");
 			}
 		}
 
@@ -329,9 +347,7 @@ namespace TownFish.App.Pages
 
 			// when using StackView:
 			var feedItem = sender as FeedItem;
-			var fivm = feedItem.BindingContext as FeedItemViewModel;
-
-			if (fivm != null)
+			if (feedItem.BindingContext is FeedItemViewModel fivm)
 				Navigate (fivm.LinkUrl);
 		}
 
@@ -344,29 +360,8 @@ namespace TownFish.App.Pages
 		{
 			ViewModel.FeedCount = newCount;
 
-			var feedItems = App.SHFeedItems;
-			var count = App.SHFeedItemCount;
-
-			// if no items, kill previous list
-			if (count == 0)
-				ViewModel.FeedItems = null;
-			else
-				ViewModel.FeedItems = new ObservableCollection<FeedItemViewModel> (feedItems);
-
-			// HACK: as iOS ListView isn't working, manually generate content for a StackLayout
-			Device.BeginInvokeOnMainThread (() =>
-				{
-					var kids = lstFeed.Children;
-					kids.Clear();
-
-					for (var i = 0; i < count; i++)
-					{
-						var item = new FeedItem { BindingContext = feedItems [i] };
-						item.Tapped += lstFeed_ItemTapped;
-
-						kids.Add (item);
-					}
-				});
+			// cache feed items so it shows quickly when revealed
+			UpdateFeedItems();
 		}
 
 		async void BrowserPage_EditLikesTapped (object sender, EventArgs e)
@@ -409,7 +404,7 @@ namespace TownFish.App.Pages
 				HideSearchPanel();
 		}
 
-		void ViewModel_CallbackRequested (object sender, string name)
+		void ViewModel_CallbackRequested (object sender, BrowserPageViewModel.CallbackInfo info)
 		{
 			// special-case search within SH Message Feed
 			//if (name == cFeedSearch)
@@ -419,7 +414,7 @@ namespace TownFish.App.Pages
 			//}
 
 			// special-case info icon within SH Message Feed
-			if (name == cFeedInfo)
+			if (info.IsNative && info.Name == BrowserPageViewModel.CallbackInfo.Info)
 			{
 				ViewModel.IsFeedInfoVisible = ViewModel.IsFeedEmpty ||
 						!ViewModel.IsFeedInfoVisible;
@@ -437,7 +432,7 @@ namespace TownFish.App.Pages
 			//	HideFeed (showLoading: ViewModel.IsFeedVisible);
 
 			Device.BeginInvokeOnMainThread (() =>
-				wbvContent.InvokeScript (string.Format (cCallbackFormat, name)));
+				wbvContent.InvokeScript (string.Format (cCallbackFormat, info.Name)));
 		}
 
 		void ViewModel_NavigateRequested (object sender, string url)
@@ -457,17 +452,19 @@ namespace TownFish.App.Pages
 				mLastSourceUrl = url;
 			}
 
-			// this should be enough on its own...
+			// remember where we're going...
 			ViewModel.SourceUrl = url;
 
-			// ... but WebView Source binding is unreliable, so we also do it manually
-			//wbvContent.Source = url;
+			// ... and as WebView isn't bound to ViewModel.SourceUrl, tell it now
+			wbvContent.Source = url;
 		}
 
 		void ShowFeed()
 		{
 			if (ViewModel.IsFeedVisible)
 				return;
+
+#if FAKE_FEED_TOP_MENU
 
 			// TODO: schema should really give us this on show feed callback
 			// set top menu for feed
@@ -478,11 +475,44 @@ namespace TownFish.App.Pages
 
 			ViewModel.LoadMenuMap (mCurrentMenuMap);
 
+#endif // FAKE_FEED_TOP_MENU
+
+			// make sure we have latest feed items in our list
+			if (ViewModel.IsFeedEmpty)
+				UpdateFeedItems();
+
 			ViewModel.IsFeedInfoVisible = ViewModel.IsFeedEmpty;
 			ViewModel.IsFeedVisible = true;
 
 			// now we've shown it, reset count
 			ViewModel.FeedCount = 0;
+		}
+
+		void UpdateFeedItems()
+		{
+			var feedItems = App.SHFeedItems;
+			var count = App.SHFeedItemCount;
+
+			// if no items, kill previous list
+			if (count == 0)
+				ViewModel.FeedItems = null;
+			else
+				ViewModel.FeedItems = new ObservableCollection<FeedItemViewModel> (feedItems);
+
+			// HACK: as iOS ListView isn't working, manually generate content for a StackLayout
+			Device.BeginInvokeOnMainThread (() =>
+				{
+					var kids = lstFeed.Children;
+					kids.Clear();
+
+					for (var i = 0; i < count; i++)
+					{
+						var item = new FeedItem { BindingContext = feedItems [i] };
+						item.Tapped += lstFeed_ItemTapped;
+
+						kids.Add (item);
+					}
+				});
 		}
 
 		/// <summary>
@@ -510,13 +540,19 @@ namespace TownFish.App.Pages
 				ViewModel.IsFeedVisible = false;
 				ViewModel.FeedItems = null; // side-effect: updates visibility properties!
 
+#if FAKE_FEED_TOP_MENU
+
 				// if we're not showing loading we're leaving feed, so just restore menu
 				if (!showLoading)
 					RestoreTopMenu();
 
+#endif // FAKE_FEED_TOP_MENU
+
 				mHidingFeed = false;
 			}
 		}
+
+#if FAKE_FEED_TOP_MENU
 
 		void RestoreTopMenu()
 		{
@@ -527,6 +563,8 @@ namespace TownFish.App.Pages
 				ViewModel.LoadMenuMap (mCurrentMenuMap);
 			}
 		}
+
+#endif // FAKE_FEED_TOP_MENU
 
 		async void ShowSearchPanel()
 		{
@@ -685,7 +723,6 @@ namespace TownFish.App.Pages
 		const string cFeedHideValue = "true";
 
 		const string cCallbackFormat = "twnfsh.runCallback('{0}')";
-		const string cCallbackType = "callback";
 
 		const string cMoreActions = null; // e.g. "Please Select:";
 		const string cCancel = "Cancel";
@@ -695,6 +732,8 @@ namespace TownFish.App.Pages
 		const string cFeedSearch = "FeedSearch";
 		const string cFeedInfo = "FeedInfo";
 		const string cFeedButton = "pushFeed";
+
+#if FAKE_FEED_TOP_MENU
 
 		static List<TownFishMenuItem> sFeedTopMenuItems = new List<TownFishMenuItem>
 		{
@@ -737,9 +776,11 @@ namespace TownFish.App.Pages
 
 		static TownFishMenu sFeedTopMenu = new TownFishMenu
 		{
-			display = true,
-			items = sFeedTopMenuItems
+			Display = true,
+			Items = sFeedTopMenuItems
 		};
+
+#endif // FAKE_FEED_TOP_MENU
 
 #if EMPTY_TOP_MENU_WHEN_LOADING
 
