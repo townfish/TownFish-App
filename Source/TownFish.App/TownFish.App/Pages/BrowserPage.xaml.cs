@@ -821,8 +821,11 @@ namespace TownFish.App.Pages
 #endif //EMPTY_TOP_MENU_WHEN_LOADING
 
 		TownFishMenuMap mCurrentMenuMap;
+
+#if FAKE_FEED_TOP_MENU
 		TownFishMenu mCurrentTopMenu;
 		TownFishMenu mCurrentFormMenu;
+#endif // FAKE_FEED_TOP_MENU
 
 		bool mFirstLoading = true;
 		bool mFirstShowing = true;
@@ -834,6 +837,6 @@ namespace TownFish.App.Pages
 
 		string mLastSourceUrl;
 
-		#endregion Fields
+#endregion Fields
 	}
 }

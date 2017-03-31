@@ -32,7 +32,8 @@ namespace StreetHawkCrossplatform
 
 		public void NotifyFeedResult(string feedid, int result)
 		{
-			SHFeedItem.GetInstance(mApplication.ApplicationContext).NotifyFeedResult(feedid,result);
+			if (int.TryParse (feedid, out var id))
+				SHFeedItem.GetInstance(mApplication.ApplicationContext).NotifyFeedResult(id,result);
 		}
 
 		public void NotifyFeedResult(string feedid, string stepid, string feedresult, bool feedDelete, bool completed)
@@ -56,7 +57,8 @@ namespace StreetHawkCrossplatform
 
 		public void SendFeedAck(string feedid)
 		{
-			SHFeedItem.GetInstance(mApplication.ApplicationContext).SendFeedAck(feedid);
+			if (int.TryParse (feedid, out var id))
+				SHFeedItem.GetInstance(mApplication.ApplicationContext).SendFeedAck(id);
 		}
 
 		public void ShFeedReceived(JSONArray feeds)
