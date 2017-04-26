@@ -1,4 +1,4 @@
-﻿//#define NOSTREETHAWKFEED
+﻿//#define SH_NO_FEED
 
 using System;
 
@@ -13,7 +13,7 @@ using Android.Webkit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
-#if !NOSTREETHAWKFEED
+#if !SH_NO_FEED
 using Com.Streethawk.Library.Feeds;
 #endif
 
@@ -33,10 +33,10 @@ namespace TownFish.App.Droid
 		WindowSoftInputMode = SoftInput.AdjustResize)]
 	public class MainActivity : FormsApplicationActivity
 	{
-#region Nested Types
+		#region Nested Types
 
 #if DEBUG
-#region WebChromeClient
+		#region WebChromeClient
 
 		class WebPlayerWebChromeClient: WebChromeClient
 		{
@@ -54,11 +54,11 @@ namespace TownFish.App.Droid
 			}
 		}
 
-#endregion WebChromeClient
+		#endregion WebChromeClient
 #endif
-#endregion Nested Types
+		#endregion Nested Types
 
-#region Methods
+		#region Methods
 
 		protected override void OnCreate (Bundle bundle)
 		{
@@ -73,11 +73,11 @@ namespace TownFish.App.Droid
 
 			StreetHawkAnalytics.Init (this);
 
-#if !NOSTREETHAWKFEED
+#if !SH_NO_FEED
 			// separately initialise SH feeds
 			var shFeeds = DependencyService.Get<ISHFeedItemObserver>();
 			SHFeedItem.GetInstance (this).RegisterFeedItemObserver (shFeeds);
-#endif // !NOSTREETHAWKFEED
+#endif // !SH_NO_FEED
 
 			var deviceID = Secure.GetString (ApplicationContext.ContentResolver,
 					Secure.AndroidId);
@@ -112,12 +112,12 @@ namespace TownFish.App.Droid
 			}
 		}
 
-#endregion Methods
+		#endregion Methods
 
-#region Fields
+		#region Fields
 
 		App mApp;
 
-#endregion Fields
+		#endregion Fields
 	}
 }

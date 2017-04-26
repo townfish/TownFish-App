@@ -2,16 +2,16 @@
 
 using Xamarin.Forms;
 
-using TownFish.App.Helpers;
+//using TownFish.App.Helpers;
 
 
 namespace TownFish.App
 {
-	public partial class FeedItem: Grid //StackLayout
+	public partial class DiscoveryItem: Grid //StackLayout
 	{
 		#region Construction
 
-		public FeedItem()
+		public DiscoveryItem()
 		{
 			InitializeComponent();
 
@@ -33,7 +33,7 @@ namespace TownFish.App
 			//						if (loaded)
 			//						{
 			//							var itemCell = imgPicture.Parent?.Parent as ViewCell;
-			//							itemCell?.ForceUpdateSize ();
+			//							itemCell?.ForceUpdateSize();
 			//						}
 			//					});
 			//			}
@@ -66,7 +66,7 @@ namespace TownFish.App
 
 		public Color TimeStampColor => lblTimeStamp.TextColor;
 
-		public Color GroupColor => lblGroup.TextColor;
+		//public Color GroupColor => lblGroup.TextColor;
 
 		#endregion Properties
 	}

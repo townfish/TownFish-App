@@ -107,10 +107,11 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-				<Frame IsVisible="{Binding HasSuperCount}" Padding="4,0"
-					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+				<Frame x:Name="frmSuper0" IsVisible="{Binding HasSuperCount}" Padding="4,0"
 					   HorizontalOptions="End" VerticalOptions="Start"
 					   CornerRadius="7" HasShadow="False">
+					   <!-- Due to crash on Android, BackgroundColor has to be set manually -->
+					   <!--BackgroundColor="{Binding SuperCountBackgroundColour}"-->
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
@@ -125,10 +126,10 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-				<Frame IsVisible="{Binding HasSuperCount}" Padding="4,0"
-					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+				<Frame x:Name="frmSuper1" IsVisible="{Binding HasSuperCount}" Padding="4,0"
 					   HorizontalOptions="End" VerticalOptions="Start"
 					   CornerRadius="7" HasShadow="False">
+					   <!--BackgroundColor="{Binding SuperCountBackgroundColour}"-->
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
@@ -143,10 +144,10 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-				<Frame IsVisible="{Binding HasSuperCount}" Padding="4,0"
-					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+				<Frame x:Name="frmSuper2" IsVisible="{Binding HasSuperCount}" Padding="4,0"
 					   HorizontalOptions="End" VerticalOptions="Start"
 					   CornerRadius="7" HasShadow="False">
+					   <!--BackgroundColor="{Binding SuperCountBackgroundColour}"-->
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
@@ -161,10 +162,10 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-				<Frame IsVisible="{Binding HasSuperCount}" Padding="4,0"
-					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+				<Frame x:Name="frmSuper3" IsVisible="{Binding HasSuperCount}" Padding="4,0"
 					   HorizontalOptions="End" VerticalOptions="Start"
 					   CornerRadius="7" HasShadow="False">
+					   <!--BackgroundColor="{Binding SuperCountBackgroundColour}"-->
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
@@ -179,10 +180,10 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-				<Frame IsVisible="{Binding HasSuperCount}" Padding="4,0"
-					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+				<Frame x:Name="frmSuper4" IsVisible="{Binding HasSuperCount}" Padding="4,0"
 					   HorizontalOptions="End" VerticalOptions="Start"
 					   CornerRadius="7" HasShadow="False">
+					   <!--BackgroundColor="{Binding SuperCountBackgroundColour}"-->
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
@@ -197,10 +198,10 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-				<Frame IsVisible="{Binding HasSuperCount}" Padding="4,0"
-					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+				<Frame x:Name="frmSuper5" IsVisible="{Binding HasSuperCount}" Padding="4,0"
 					   HorizontalOptions="End" VerticalOptions="Start"
 					   CornerRadius="7" HasShadow="False">
+					   <!--BackgroundColor="{Binding SuperCountBackgroundColour}"-->
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
@@ -489,37 +490,37 @@
 			</Label>
 		</Grid>
 
-		<!-- Feed -->
-		<Grid x:Name="pnlFeed" Grid.Row="1" Grid.RowSpan="2"
+		<!-- Discoveries -->
+		<Grid x:Name="pnlDiscoveries" Grid.Row="1" Grid.RowSpan="2"
 			  BackgroundColor="#E2E2E2"
-			  IsVisible="{Binding IsFeedVisible}">
-			<!-- Feed list -->
+			  IsVisible="{Binding IsDiscoveriesVisible}">
+			<!-- Discoveries list -->
 			<ScrollView>
-				<StackLayout x:Name="lstFeed" />
+				<StackLayout x:Name="lstDiscoveries" />
 			</ScrollView>
 			<!-- ListView BORKED on iOS!!!! -->
-			<!--<ListView x:Name="lstFeed"
+			<!--<ListView x:Name="lstDiscoveries"
 					  HasUnevenRows="True" SeparatorVisibility="None"
-					  IsVisible="{Binding IsFeedListVisible}"
-					  ItemsSource="{Binding FeedItems}"
-					  ItemTapped="lstFeed_ItemTapped">
+					  IsVisible="{Binding IsDiscoveriesListVisible}"
+					  ItemsSource="{Binding DiscoveriesItems}"
+					  ItemTapped="lstDiscoveries_ItemTapped">
 				<ListView.ItemTemplate>
 					<DataTemplate>
 						<ViewCell>
-							<townfish:FeedItem />
+							<townfish:DiscoveriesItem />
 						</ViewCell>
 					</DataTemplate>
 				</ListView.ItemTemplate>
 			</ListView>-->
 
-			<!-- Feed empty -->
-			<StackLayout x:Name="pnlEmpty" Spacing="0" Padding="24,18"
-						 IsVisible="{Binding IsFeedInfoVisible}"
+			<!-- Discoveries info -->
+			<StackLayout x:Name="pnlDiscoveriesInfo" Spacing="0" Padding="24,18"
+						 IsVisible="{Binding IsDiscoveriesInfoVisible}"
 						 BackgroundColor="#E2E2E2">
 				<Label Margin="0,12" XAlign="Center"
 					   TextColor="Black" FontSize="14" FontAttributes="Bold"
 					   Text="There are currently no discoveries"
-					   IsVisible="{Binding IsFeedEmpty}" />
+					   IsVisible="{Binding IsDiscoveriesEmpty}" />
 
 				<Label Margin="0,12" XAlign="Center"
 					   TextColor="Black" FontSize="14"
@@ -532,7 +533,7 @@
 					   Text="Make sure you’ve completed your profile and added personal interests so we only recommend discoveries that suit you." />
 
 				<Label Margin="0,12" XAlign="Center"
-					   TextColor="{Binding FeedLinkColour}" FontSize="14"
+					   TextColor="{Binding DiscoveriesLinkColour}" FontSize="14"
 					   Text="Improve your profile">
 					<Label.GestureRecognizers>
 						<TapGestureRecognizer Tapped="BrowserPage_EditProfileTapped" />
@@ -540,7 +541,7 @@
 				</Label>
 
 				<Label Margin="0,12" XAlign="Center"
-					   TextColor="{Binding FeedLinkColour}" FontSize="14"
+					   TextColor="{Binding DiscoveriesLinkColour}" FontSize="14"
 					   Text="Add more likes &amp; interests">
 					<Label.GestureRecognizers>
 						<TapGestureRecognizer Tapped="BrowserPage_EditLikesTapped" />

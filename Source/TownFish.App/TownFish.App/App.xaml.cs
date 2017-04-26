@@ -1,9 +1,12 @@
-﻿//#define NOSTREETHAWKFEED
-//#define DUMMYFEED
+﻿//#define SH_OPTIONAL
+#define SH_RAWJSON_OPTIONAL
+//#define SH_NO_FEED
+//#define SH_DUMMY_FEED
 
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Reflection;
@@ -54,7 +57,7 @@ namespace TownFish.App
 			// Handle when your app starts
 
 			// for now, don't use StreetHawk on Android
-			if (Device.RuntimePlatform != Device.Android)
+			//if (Device.RuntimePlatform != Device.Android)
 				InitStreetHawk();
 		}
 
@@ -70,12 +73,12 @@ namespace TownFish.App
 
 		public void OnBackButtonPressed()
 		{
-			BackButtonPressed?.Invoke (this, new EventArgs());
+			BackButtonPressed?.Invoke (this, EventArgs.Empty);
 		}
 
 		public void CloseApp()
 		{
-			AppCloseRequested?.Invoke (this, new EventArgs());
+			AppCloseRequested?.Invoke (this, EventArgs.Empty);
 		}
 
 		#region StreetHawk
@@ -233,7 +236,7 @@ namespace TownFish.App
 			//
 			//----------------------------------------------------------------
 
-#if TRUE // SH_RAWJSON_OPTIONAL
+#if SH_RAWJSON_OPTIONAL
 			//Optional: Callback when receive json push.
 			shPush.RegisterForRawJSON (async (title, message, json) =>
 				{
@@ -241,7 +244,7 @@ namespace TownFish.App
 					Device.BeginInvokeOnMainThread (() =>
 						{
 							var msg = $"title: {title}\r\nmessage: {message}\r\nJSON: {json}";
-							MainPage.DisplayAlert ("Receive JSON push:", msg, "OK");
+							MainPage.DisplayAlert ("Received JSON push:", msg, "OK");
 						});
 #endif
 					// TODO: some magic to determine if this notification is related to a new entry
@@ -260,7 +263,7 @@ namespace TownFish.App
 						// JSON push messages might be added to feed, so use this to trigger
 						// a feed update
 
-						SHFeedItems = await GetSHFeed();
+						Discoveries = await GetDiscoveries();
 					}
 					catch (Exception ex)
 					{
@@ -287,44 +290,77 @@ namespace TownFish.App
 			//
 			//----------------------------------------------------------------
 
-#if NOSTREETHAWKFEED
-			SHFeedItems = await GetSHFeed();
-#else
-			// Apparently this isn't needed if we're using RegisterForRawJSON, and isn't
-			// real-time anyway, and possibly blocks other push notifications from showing (?!)
-			//shFeeds.OnNewFeedAvailableCallback (async() => SHFeedItems = await GetSHFeed());
-
-			// however, on app load, we need to get feed anyway to show count and get items
+			// on app load, we need to get feed to show count and cache items
 			try
 			{
-				SHFeedItems = await GetSHFeed();
+				Discoveries = await GetDiscoveries();
 			}
 			catch (Exception ex)
 			{
 				Debug.WriteLine ($"App.InitStreetHawk: {ex.Message}");
 			}
-#endif
 		}
 
-		public static Task<IList<FeedItemViewModel>> GetSHFeed()
+		public static Task<IList<DiscoveryItemViewModel>> GetDiscoveries()
 		{
-			if (++sGettingSHFeed > 1)
+			// converts list of SHFeed items to list of Discovery items
+			IList<DiscoveryItemViewModel> GetDiscoveryItems (List<SHFeedObject> feedItems)
 			{
-				--sGettingSHFeed;
+				var items = new List<DiscoveryItemViewModel>();
+				foreach (var item in feedItems)
+				{
+					string imgUrl = null;
+					string linkUrl = null;
+
+					var content = JsonConvert.DeserializeObject<Dictionary<string, string>> (item.content);
+					foreach (var key in content.Keys)
+					{
+						var val = content [key];
+
+						if (key == "img" || key.StartsWith ("image"))
+							imgUrl = val;
+						else if (key == "url" || key.EndsWith ("link"))
+							linkUrl = val;
+					}
+
+					items.Add (new DiscoveryItemViewModel
+					{
+						PictureUrl = imgUrl,
+						LinkUrl = linkUrl,
+						Title = item.title.Trim(),
+						Text = item.message.Trim(),
+						Created = DateTime.Parse (item.created, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal),
+						Modified = DateTime.Parse (item.modified, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal),
+						Expires = DateTime.Parse (item.expires, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal),
+						Group = item.campaign
+					});
+				}
+
+				// return in descending creation order (i.e. reverse date)
+				items.Sort ((a, b) => b.Created.CompareTo (a.Created));
+
+				return items;
+			}
+
+			if (++sGettingDiscoveries > 1)
+			{
+				--sGettingDiscoveries;
+
+				// indicate re-entry by returning null
 				return null;
 			}
 
-			var tcs = new TaskCompletionSource<IList<FeedItemViewModel>>();
+			var tcs = new TaskCompletionSource<IList<DiscoveryItemViewModel>>();
 			var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
 
-#if NOSTREETHAWKFEED
+#if SH_NO_FEED
 
-#if DUMMYFEED
+#if SH_DUMMY_FEED
 
 			// create dummy feed model
-			var items = new List<FeedItemViewModel>
+			var items = new List<DiscoveryItemViewModel>
 			{
-				new FeedItemViewModel
+				new DiscoveryItemViewModel
 				{
 					PictureUrl = "TownFish.App.Images.Dummy.muffin.png",
 					LinkUrl = "http://google.com/",
@@ -333,7 +369,7 @@ namespace TownFish.App
 					TimeStamp = DateTime.Now,
 					Group = "Restaurants & Dining"
 				},
-				new FeedItemViewModel
+				new DiscoveryItemViewModel
 				{
 					PictureUrl = "TownFish.App.Images.Dummy.meat.png",
 					LinkUrl = "http://google.com/",
@@ -342,7 +378,7 @@ namespace TownFish.App
 					TimeStamp = DateTime.Now,
 					Group = "Restaurants & Dining"
 				},
-				new FeedItemViewModel
+				new DiscoveryItemViewModel
 				{
 					PictureUrl = "TownFish.App.Images.Dummy.muffin.png",
 					LinkUrl = "http://google.com/",
@@ -351,7 +387,7 @@ namespace TownFish.App
 					TimeStamp = DateTime.Now,
 					Group = "Restaurants & Dining"
 				},
-				new FeedItemViewModel
+				new DiscoveryItemViewModel
 				{
 					PictureUrl = "TownFish.App.Images.Dummy.meat.png",
 					LinkUrl = "http://google.com/",
@@ -362,18 +398,18 @@ namespace TownFish.App
 				}
 			};
 
-#else // !DUMMYFEED (i.e. empty dummy feed)
+#else // !SH_DUMMY_FEED (i.e. empty dummy feed)
 
-			var items = new List<FeedItemViewModel>();
+			var items = new List<DiscoveryItemViewModel>();
 
-#endif // !DUMMYFEED
+#endif // !SH_DUMMY_FEED
 
 			Task.Run (() => tcs.TrySetResult (items));
 
-#else // !NOSTREETHAWKFEED
+#else // !SH_NO_FEED
 
 			// if it takes too long to return (call my callback below), give up to prevent leaks
-			var cts = new CancellationTokenSource (5000);
+			var cts = new CancellationTokenSource (10000);
 			cts.Token.Register (() => tcs.TrySetException (new TimeoutException()));
 
 			try
@@ -383,7 +419,29 @@ namespace TownFish.App
 						// now we're back from callback we can cancel the timeout
 						cts.Dispose();
 
-						ProcessSHFeed (tcs, shFeeds, feedItems, error);
+						if (error != null)
+						{
+#if DEBUG
+							Current.MainPage.DisplayAlert ("New feeds available but fetch failed:", error, "OK");
+#endif
+							throw new Exception (error);
+						}
+#if false//DEBUG
+						var feedMsg = "";
+
+						foreach (var feedItem in feedItems)
+							feedMsg = $"Title: {feedItem.title}; Message: {feedItem.message}; Content: {feedItem.content}. \r\n{feedMsg}";
+
+						Current.MainPage.DisplayAlert ($"New feeds available and fetched {feedItems.Count}:", feedMsg, "OK");
+#endif
+						// acknowledge receipt to SH and indicate positive result
+						foreach (var feedItem in feedItems)
+						{
+							shFeeds.SendFeedAck (feedItem.feed_id);
+							shFeeds.NotifyFeedResult (feedItem.feed_id, 1);
+						}
+
+						tcs.TrySetResult (GetDiscoveryItems (feedItems));
 					});
 			}
 			catch (Exception ex)
@@ -391,74 +449,11 @@ namespace TownFish.App
 				tcs.TrySetException (ex);
 			}
 
-#endif // !NOSTREETHAWKFEED
+#endif // !SH_NO_FEED
 
-			--sGettingSHFeed;
+			--sGettingDiscoveries;
+
 			return tcs.Task;
-		}
-
-		public static void ProcessSHFeed (TaskCompletionSource<IList<FeedItemViewModel>> tcs,
-				IStreetHawkFeeds shFeeds, List<SHFeedObject> feedItems, string error)
-		{
-			try
-			{
-				if (error != null)
-				{
-#if DEBUG
-					Current.MainPage.DisplayAlert ("New feeds available but fetch failed:", error, "OK");
-#endif
-					throw new Exception (error);
-				}
-				else
-				{
-#if DEBUG
-					var feeds = string.Empty;
-
-					for (int i = 0; i < feedItems.Count; i++)
-					{
-						var feed = feedItems [i];
-						feeds = $"Title: {feed.title}; Message: {feed.message}; Content: {feed.content}. \r\n{feeds}";
-						shFeeds.SendFeedAck (feed.feed_id);
-						shFeeds.NotifyFeedResult (feed.feed_id, 1);
-					}
-
-					//Current.MainPage.DisplayAlert ($"New feeds available and fetched {arrayFeeds.Count}:", feeds, "OK");
-#endif
-					var items = new List<FeedItemViewModel>();
-					foreach (var item in feedItems)
-					{
-						string imgUrl = null;
-						string linkUrl = null;
-
-						var content = JsonConvert.DeserializeObject<Dictionary<string, string>> (item.content);
-						foreach (var key in content.Keys)
-						{
-							var val = content [key];
-
-							if (key == "img")
-								imgUrl = val;
-							else if (key == "url" || key.StartsWith ("deeplink"))
-								linkUrl = val;
-						}
-
-						items.Add (new FeedItemViewModel
-						{
-							PictureUrl = imgUrl,
-							LinkUrl = linkUrl,
-							Title = item.title.Trim(),
-							Text = item.message.Trim(),
-							TimeStamp = DateTime.Parse (item.created),
-							Group = item.campaign
-						});
-					}
-
-					tcs.TrySetResult (items);
-				}
-			}
-			catch (Exception ex)
-			{
-				tcs.TrySetException (ex);
-			}
 		}
 
 		public static async void CheckCuid (string syncToken)
@@ -484,51 +479,54 @@ namespace TownFish.App
 
 				var result = await http.GetStringAsync (url);
 				var shcuid = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
+
 				if (!shcuid.TryGetValue (cCode, out var code) &&
 						shcuid.TryGetValue (cSHCuid, out var newID))
 				{
-					var props = App.Current.Properties;
-					string userID = null;
-
-					if (props.TryGetValue (cSHCuid, out var obj))
-						userID = obj as string;
-
-#if false//DEBUG
-					Device.BeginInvokeOnMainThread (() =>
-					{
-						var message = string.Format (
-								"TownFish: userID = {0}; newID = {1}",
-								userID ?? "null", newID ?? "null");
-
-						App.Current.MainPage.DisplayAlert (
-								"StreetHawk Registration", message, "Continue");
-					});
-#endif
+					var userID = GetProp<string> (cSHCuid);
 					if (userID != newID)
 					{
+#if false//DEBUG
+						Device.BeginInvokeOnMainThread (() =>
+						{
+							var message = string.Format (
+									"TownFish: userID = {0}; newID = {1}",
+									userID ?? "<null>", newID ?? "<null>");
+
+							App.Current.MainPage.DisplayAlert (
+									"StreetHawk Registration", message, "Continue");
+						});
+#endif
 						userID = newID;
 
 						var shAnalytics = DependencyService.Get<IStreetHawkAnalytics>();
 						shAnalytics.TagCuid (userID);
 
-						url = string.Format (App.SHSyncUrl, devID, syncToken);
+						url = string.Format (SHSyncUrl, devID, syncToken);
 
 						for (var i = 0; i++ <= cSHSyncRetries; )
 						{
 							// give SH time to process it
 							await Task.Delay (cSHSyncDelay);
 
-							result = await http.GetStringAsync (url);
-							var syncResult = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
-
-							if (!shcuid.TryGetValue (cCode, out code) &&
-									syncResult.TryGetValue (cSynced, out var sync) &&
-									sync == "true")
+							try
 							{
-								props [cSHCuid] = userID;
+								result = await http.GetStringAsync (url);
+								var syncResult = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
 
-								// got it, so stop trying
-								break;
+								if (!shcuid.TryGetValue (cCode, out code) &&
+										syncResult.TryGetValue (cSynced, out var sync) &&
+										sync == "true")
+								{
+									SetProp (cSHCuid, userID);
+
+									// got it, so stop trying
+									break;
+								}
+							}
+							catch (Exception ex)
+							{
+								Debug.WriteLine ($"App.CheckCuid: Sync attempt {i} to {url} failed with {ex.Message}");
 							}
 						}
 					}
@@ -536,7 +534,7 @@ namespace TownFish.App
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine ($"App.CheckCuid: {ex.Message}");
+				Debug.WriteLine ($"App.CheckCuid: Failed with {ex.Message}");
 			}
 			finally
 			{
@@ -589,7 +587,7 @@ namespace TownFish.App
 
 		public event EventHandler<string> PushUrlReceived;
 
-		public event EventHandler<int> SHFeedItemsAvailable;
+		public event EventHandler DiscoveriesUpdated;
 
 		public static new App Current { get { return Application.Current as App; } }
 
@@ -606,46 +604,54 @@ namespace TownFish.App
 
 		public string DeviceID { get; }
 
-		public static DateTime LastSHFeedReadTime
+		public static DateTime LastDiscoveriesViewTime
 		{
 			get
 			{
-				if (sLastSHFeedReadTime == DateTime.MinValue)
-					sLastSHFeedReadTime = GetProp<DateTime> (cLastSHFeedReadTimeKey);
+				if (sLastDiscoveriesViewTime == DateTime.MinValue)
+					sLastDiscoveriesViewTime = GetProp<DateTime> (cLastDiscoveriesViewTimeKey);
 
-				return sLastSHFeedReadTime;
+				return sLastDiscoveriesViewTime;
 			}
 
 			set
 			{
-				sLastSHFeedReadTime = value;
+				sLastDiscoveriesViewTime = value;
 
-				SetProp (cLastSHFeedReadTimeKey, value);
+				SetProp (cLastDiscoveriesViewTimeKey, value);
 			}
 		}
 
-		public static IList<FeedItemViewModel> SHFeedItems
+		/// <summary>
+		/// Gets or sets the list of discoveries, raising <see cref="DiscoveriesUpdated"/>
+		/// when setting a new value.
+		/// </summary>
+		public static IList<DiscoveryItemViewModel> Discoveries
 		{
-			get
+			get => sDiscoveries;
+
+			private set
 			{
-				LastSHFeedReadTime = DateTime.Now;
+				// null is set if GetDiscoveries fails, so ignore
+				if (value == null)
+					return;
 
-				return sSHFeedItems;
-			}
+				sDiscoveries = value;
 
-			set
-			{
-				sSHFeedItems = value;
-
-				// now see how many are new and notify subscribers
-				var t = LastSHFeedReadTime;
-				var c = value.Count (i => i.TimeStamp > t);
-
-				Current.SHFeedItemsAvailable?.Invoke (Current, c);
+				Current.DiscoveriesUpdated?.Invoke (Current, EventArgs.Empty);
 			}
 		}
 
-		public static int SHFeedItemCount => sSHFeedItems?.Count ?? 0;
+		/// <summary>
+		/// Gets the number of discovery items available, returning 0 if discoveries not loaded.
+		/// </summary>
+		public static int DiscoveriesCount => sDiscoveries?.Count ?? 0;
+
+		/// <summary>
+		/// Gets the number of new discovery items received since last being viewed.
+		/// </summary>
+		public static int NewDiscoveriesCount => Discoveries?.Count (d =>
+				d.Created > LastDiscoveriesViewTime) ?? 0;
 
 		#endregion Properties and Events
 
@@ -670,7 +676,7 @@ namespace TownFish.App
 
 		public const string StreetHawkAppKey = "TownFish";
 
-		const string cLastSHFeedReadTimeKey = "LastSHFeedReadTime";
+		const string cLastDiscoveriesViewTimeKey = "LastDiscoveriesViewTime";
 
 		const string cCode = "Code";
 		const string cSHCuid = "shcuid";
@@ -683,11 +689,11 @@ namespace TownFish.App
 
 		static Assembly sAssembly = null;
 
-		// NOTE: use LastSHFeedReadTime property to save persistently
-		static DateTime sLastSHFeedReadTime = DateTime.MinValue;
+		// NOTE: use LastDiscoveriesViewTime property to save persistently
+		static DateTime sLastDiscoveriesViewTime = DateTime.MinValue;
 
-		static int sGettingSHFeed;
-		static IList<FeedItemViewModel> sSHFeedItems;
+		static int sGettingDiscoveries;
+		static IList<DiscoveryItemViewModel> sDiscoveries;
 
 		#endregion Fields
 	}

@@ -234,22 +234,10 @@ namespace TownFish.App.ViewModels
 			private set { Set (value); }
 		}
 
-		public Color FeedLinkColour
+		public Color DiscoveriesLinkColour
 		{
 			get { return Get (() => Color.FromHex ("#5099f7")); }
 			private set { Set (value); }
-		}
-
-		public int FeedCount
-		{
-			get { return Get<int>(); }
-
-			set
-			{
-				// if feed count changes and we have a feed menu item in play, update its count
-				if (Set (value) && mFeedMenuItemViewModel != null)
-					mFeedMenuItemViewModel.SuperCount = value;
-			}
 		}
 
 		#endregion Colours
@@ -331,7 +319,7 @@ namespace TownFish.App.ViewModels
 		public string LocationName
 		{
 			get { return Get<string>(); }
-			private set { Set (value); }
+			set { Set (value); } // public, as sometimes needs to be set from the view (yuck!)
 		}
 
 		public bool IsTopBarVisible
@@ -341,7 +329,7 @@ namespace TownFish.App.ViewModels
 		}
 
 		// NOTE: notify this changed when those it depends on change
-		public bool IsLocationNameVisible => !IsFeedVisible && !IsFeedInfoVisible;
+		public bool IsLocationNameVisible => !IsDiscoveriesVisible && !IsDiscoveriesInfoVisible;
 
 		#endregion Top Bar
 
@@ -544,9 +532,9 @@ namespace TownFish.App.ViewModels
 
 		#endregion Locations
 
-		#region Feed
+		#region Discoveries
 
-		public bool IsFeedVisible
+		public bool IsDiscoveriesVisible
 		{
 			get { return Get<bool>(); }
 
@@ -558,9 +546,9 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		public bool IsFeedListVisible => !IsFeedEmpty;
+		public bool IsDiscoveriesListVisible => !IsDiscoveriesEmpty;
 
-		public bool IsFeedInfoVisible
+		public bool IsDiscoveriesInfoVisible
 		{
 			get { return Get<bool>(); }
 
@@ -572,25 +560,37 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		public int FeedItemCount => FeedItems?.Count ?? 0;
+		public int DiscoveryItemsCount => DiscoveryItems?.Count ?? 0;
 
-		public bool IsFeedEmpty => FeedItemCount == 0;
+		public bool IsDiscoveriesEmpty => DiscoveryItemsCount == 0;
 
-		public ObservableCollection<FeedItemViewModel> FeedItems
+		public ObservableCollection<DiscoveryItemViewModel> DiscoveryItems
 		{
-			get { return Get<ObservableCollection<FeedItemViewModel>>(); }
+			get { return Get<ObservableCollection<DiscoveryItemViewModel>>(); }
 
 			set
 			{
 				if (Set (value))
 				{
-					OnPropertyChanged (() => IsFeedListVisible);
-					OnPropertyChanged (() => IsFeedEmpty);
+					OnPropertyChanged (() => IsDiscoveriesListVisible);
+					OnPropertyChanged (() => IsDiscoveriesEmpty);
 				}
 			}
 		}
 
-		#endregion Feed
+		public int NewDiscoveriesCount
+		{
+			get { return Get<int>(); }
+
+			set
+			{
+				// if discoveries count changes and we have a discoveries menu item in play, update its count
+				if (Set (value) && mDiscoveriesMenuItemViewModel != null)
+					mDiscoveriesMenuItemViewModel.SuperCount = value;
+			}
+		}
+
+		#endregion Discoveries
 
 		#endregion Properties and Events
 
@@ -617,7 +617,7 @@ namespace TownFish.App.ViewModels
 			{
 				Debug.WriteLine ($"BrowserPageViewModel.UpdateLocationList: {ex.Message}");
 
-				CancelLocationSearch ();
+				CancelLocationSearch();
 			}
 		}
 
@@ -765,7 +765,7 @@ namespace TownFish.App.ViewModels
 			NavigateRequested?.Invoke (this, url);
 		}
 
-		void ClearMenus ()
+		void ClearMenus()
 		{
 			LocationName = "";
 			PageTitle = "";
@@ -937,8 +937,8 @@ namespace TownFish.App.ViewModels
 					};
 
 					// remember this in case we need to update its number
-					if (item.SuperFormat == cFeedCountFormat)
-						mFeedMenuItemViewModel = action;
+					if (item.SuperFormat == cDiscoveriesCountFormat)
+						mDiscoveriesMenuItemViewModel = action;
 
 					actions.Add (action);
 				}
@@ -955,8 +955,8 @@ namespace TownFish.App.ViewModels
 		{
 			var number = 0;
 
-			if (item.SuperFormat == cFeedCountFormat)
-				number = FeedCount;
+			if (item.SuperFormat == cDiscoveriesCountFormat)
+				number = NewDiscoveriesCount;
 			else
 				int.TryParse (item.Super, out number);
 
@@ -988,7 +988,7 @@ namespace TownFish.App.ViewModels
 
 		#region Fields
 
-		const string cFeedCountFormat = "{DiscoveriesCount}";
+		const string cDiscoveriesCountFormat = "{DiscoveriesCount}";
 
 		static Command sNoOpCommand = new Command (_ => {});
 
@@ -997,7 +997,7 @@ namespace TownFish.App.ViewModels
 		string mLocationApiFormat = "";
 		string mLocationSetFormat = "";
 
-		BottomActionViewModel mFeedMenuItemViewModel;
+		BottomActionViewModel mDiscoveriesMenuItemViewModel;
 
 		#endregion Fields
 	}

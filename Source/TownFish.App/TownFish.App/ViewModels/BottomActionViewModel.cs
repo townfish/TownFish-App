@@ -29,7 +29,16 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		public string SuperColour { get; set; }
+		public string SuperColour
+		{
+			get { return Get<string>(); }
+
+			set
+			{
+				if (Set (value))
+					OnPropertyChanged (() => SuperCountBackgroundColour);
+			}
+		}
 
 		//
 		// calculated bindings

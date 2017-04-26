@@ -47,8 +47,11 @@ namespace TownFish.App.iOS
 
 			Forms.Init();
 
-			var id = UIDevice.CurrentDevice.IdentifierForVendor.ToString();
-			LoadApplication (new App (id));
+			// NOTE: .ToString on old (iPhone 4?) device returns runtime junk text before the UUID,
+			// but .AsString seems to return just UUID text in all cases tested.
+			var deviceID = UIDevice.CurrentDevice.IdentifierForVendor.AsString();
+
+			LoadApplication (new App (deviceID));
 
 			return base.FinishedLaunching (app, options);
 		}

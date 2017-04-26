@@ -1,10 +1,6 @@
-﻿//#define EMPTY_TOP_MENU_WHEN_LOADING
-//#define FAKE_FEED_TOP_MENU
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -42,8 +38,8 @@ namespace TownFish.App.Pages
 				{ cMenusVisibleAction, cMenusVisibleMethod },
 				{ cPopupMenuAction, cPopupMenuMethod },
 				{ cPushAction, cPushMethod },
-				{ cFeedShowAction, cFeedShowValue },
-				{ cFeedHideAction, cFeedHideValue }
+				{ cShowDiscoveriesAction, cShowDiscoveriesValue },
+				{ cHideDiscoveriesAction, cHideDiscoveriesValue }
 			};
 
 			wbvContent.ScriptMessageReceived += UberWebView_ScriptMessageReceived;
@@ -54,6 +50,10 @@ namespace TownFish.App.Pages
 
 			wbvContent.QueryParamDomain = App.SiteDomain;
 			wbvContent.QueryParam = App.QueryParam;
+
+			// get bottom action frames so we can manually set the background,
+			// as binding background colour crashes on Android (thanks, Xamarin!)
+			mBottomActionFrames = new Frame[] { frmSuper0, frmSuper1, frmSuper2, frmSuper3, frmSuper4, frmSuper5 };
 
 			// on iOS we have to allow for the overlapping status bar at top of layout
 			if (Device.RuntimePlatform == Device.iOS)
@@ -76,7 +76,7 @@ namespace TownFish.App.Pages
 		{
 			App.Current.BackButtonPressed += App_BackButtonPressed;
 			App.Current.PushUrlReceived += App_PushUrlReceived;
-			App.Current.SHFeedItemsAvailable += App_SHFeedItemsAvailable;
+			App.Current.DiscoveriesUpdated += App_DiscoveriesUpdated;
 			App.Current.AppResumed += App_Resumed;
 
 			base.OnAppearing();
@@ -88,7 +88,7 @@ namespace TownFish.App.Pages
 
 			App.Current.BackButtonPressed -= App_BackButtonPressed;
 			App.Current.PushUrlReceived -= App_PushUrlReceived;
-			App.Current.SHFeedItemsAvailable -= App_SHFeedItemsAvailable;
+			App.Current.DiscoveriesUpdated -= App_DiscoveriesUpdated;
 			App.Current.AppResumed -= App_Resumed;
 		}
 
@@ -100,7 +100,7 @@ namespace TownFish.App.Pages
 				return;
 
 			// manually set this as span isn't bindable
-			spnMemberAgreementLink.ForegroundColor = ViewModel.FeedLinkColour;
+			spnMemberAgreementLink.ForegroundColor = ViewModel.DiscoveriesLinkColour;
 
 			// Because we use DisplayActionSheet
 			ViewModel.TopActionMoreCommand = new Command (async _ =>
@@ -118,8 +118,14 @@ namespace TownFish.App.Pages
 			ViewModel.MenusLoaded += ViewModel_MenusLoaded;
 			ViewModel.NavigateRequested += ViewModel_NavigateRequested;
 
-			// now start at the specified source URL
-			Navigate (ViewModel.SourceUrl);
+			// always start in loading state
+			ShowLoading();
+
+			// now start at the specified source URL, clearing it first to indicate we're not there yet
+			var source = ViewModel.SourceUrl;
+			ViewModel.SourceUrl = null;
+
+			Navigate (source);
 		}
 
 		protected override bool OnBackButtonPressed()
@@ -133,8 +139,8 @@ namespace TownFish.App.Pages
 		{
 			if (mIsSearchVisible || mShowingSearch)
 				HideSearchPanel();
-			else if (ViewModel.IsFeedVisible)
-				HideFeed();
+			else if (ViewModel.IsDiscoveriesVisible)
+				HideDiscoveries();
 			else if (wbvContent.CanGoBack)
 				wbvContent.GoBack();
 			else
@@ -239,13 +245,13 @@ namespace TownFish.App.Pages
 					case cPushAction:
 						break;
 
-					case cFeedShowAction:
-						ShowFeed();
+					case cShowDiscoveriesAction:
+						ShowDiscoveries();
 						break;
 
-					case cFeedHideAction:
+					case cHideDiscoveriesAction:
 						// just returning to current page, so don't show loading
-						HideFeed (showLoading: false);
+						HideDiscoveries (showLoading: false);
 						break;
 				}
 			}
@@ -322,6 +328,8 @@ namespace TownFish.App.Pages
 					"Failed to load the page.\n\n{0}", msg), "Cancel");
 		}
 
+#pragma warning disable IDE1006 // Naming Styles ("lst" is Hungarian Notation prefix used for XAML controls)
+
 		void lstLocationSearchResults_ItemTapped (object sender, ItemTappedEventArgs e)
 		{
 			HideSearchPanel();
@@ -336,44 +344,49 @@ namespace TownFish.App.Pages
 			ViewModel.SetLocation ((e.Item as AvailableLocation).ID);
 		}
 
-		void lstFeed_ItemTapped (object sender, EventArgs e)//ItemTappedEventArgs e)
-		//async void lstFeed_ItemTapped (object sender, ItemTappedEventArgs e)
+		void lstDiscoveries_ItemTapped (object sender, EventArgs e)//ItemTappedEventArgs e)
+		//async void lstDiscoveries_ItemTapped (object sender, ItemTappedEventArgs e)
 		{
-			// re: Bug Item 16 - don't return to main page; stay on message feed when item tapped
-			//await HideFeedAsync();
-
 			// when using ListView:
-			//var fivm = e.Item as FeedItemViewModel;
+			//var fivm = e.Item as DiscoveryItemViewModel;
 
 			// when using StackView:
-			var feedItem = sender as FeedItem;
-			if (feedItem.BindingContext is FeedItemViewModel fivm)
+			var discoveryItem = sender as DiscoveryItem;
+			if (discoveryItem.BindingContext is DiscoveryItemViewModel fivm)
 				Navigate (fivm.LinkUrl);
 		}
 
+#pragma warning restore IDE1006 // Naming Styles
+
 		/// <summary>
-		/// Sets SH feed item count and updates feed item list.
+		/// Sets discoveries count and updates the discoveries list.
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name=""></param>
-		void App_SHFeedItemsAvailable (object sender, int newCount)
+		void App_DiscoveriesUpdated (object sender, EventArgs e)
 		{
-			ViewModel.FeedCount = newCount;
+			// if discoveries already open, just update last viewed time;
+			// otherwise update count to show new arrival(s)
 
-			// cache feed items so it shows quickly when revealed
-			UpdateFeedItems();
+			if (ViewModel.IsDiscoveriesVisible)
+				App.LastDiscoveriesViewTime = DateTime.Now;
+			else
+				ViewModel.NewDiscoveriesCount = App.NewDiscoveriesCount;
+
+			// cache discovery items so it shows quickly when revealed
+			UpdateDiscoveryItems();
 		}
 
 		async void BrowserPage_EditLikesTapped (object sender, EventArgs e)
 		{
-			await HideFeedAsync();
+			await HideDiscoveriesAsync();
 
 			Navigate (App.EditLikesUrl + App.QueryString);
 		}
 
 		async void BrowserPage_EditProfileTapped (object sender, EventArgs e)
 		{
-			await HideFeedAsync();
+			await HideDiscoveriesAsync();
 
 			Navigate (App.EditProfileUrl + App.QueryString);
 		}
@@ -387,8 +400,16 @@ namespace TownFish.App.Pages
 
 		void ViewModel_MenusLoaded (object sender, EventArgs e)
 		{
-			// only hide loading if already showing it but not in the process of hiding feed
-			if (ViewModel.IsLoading && !mHidingFeed)
+			// now update bottom action superscript frame background colours, in case they changed,
+			// but not on Android to avoid the null reference crash on frame background change
+			//if (ViewModel.IsBottomBarVisible)
+			if (Device.RuntimePlatform != Device.Android && ViewModel.IsBottomBarVisible)
+				for (var i = 0; i < 6; i++)
+					mBottomActionFrames [i].BackgroundColor =
+							ViewModel.BottomActions [i].SuperCountBackgroundColour;
+
+			// only hide loading if already showing it but not in the process of hiding discoveries
+			if (ViewModel.IsLoading && !mHidingDiscoveries)
 				Device.BeginInvokeOnMainThread (() => HideLoading());
 
 			// tell app to check sync token in case login changed
@@ -406,30 +427,16 @@ namespace TownFish.App.Pages
 
 		void ViewModel_CallbackRequested (object sender, BrowserPageViewModel.CallbackInfo info)
 		{
-			// special-case search within SH Message Feed
-			//if (name == cFeedSearch)
-			//{
-			//	// TODO: search in message feed
-			//	return;
-			//}
-
-			// special-case info icon within SH Message Feed
+			// special-case info icon within discoveries
 			if (info.IsNative && info.Name == BrowserPageViewModel.CallbackInfo.Info)
 			{
-				ViewModel.IsFeedInfoVisible = ViewModel.IsFeedEmpty ||
-						!ViewModel.IsFeedInfoVisible;
+				ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty ||
+						!ViewModel.IsDiscoveriesInfoVisible;
 
 				return;
 			}
 
 			HideSearchPanel();
-
-			// every non-feed callback action results in feed being hidden and a new page loading
-			//var feedAction = name == cFeedButton || name == cFeedInfo;
-			// TODO: is this necessary when all bottom icons (except feed) are links, not
-			// callbacks? Currently, it doesn't seem so.
-			//if (!feedAction)
-			//	HideFeed (showLoading: ViewModel.IsFeedVisible);
 
 			Device.BeginInvokeOnMainThread (() =>
 				wbvContent.InvokeScript (string.Format (cCallbackFormat, info.Name)));
@@ -442,11 +449,13 @@ namespace TownFish.App.Pages
 
 		void Navigate (string url)
 		{
-			// if it's a new TF URL hide the feed and save URL for returning to later
+			if (string.IsNullOrEmpty (url))
+				return;
+
+			// if it's a TF URL hide the discoveries and save URL for returning to later
 			if (url.StartsWith (App.BaseUrl))
 			{
-				// hide feed and, if it's a new URL, show loading
-				HideFeed (showLoading: url != ViewModel.SourceUrl);
+				HideDiscoveries();
 
 				// save this in case we come back later from an external URL
 				mLastSourceUrl = url;
@@ -459,112 +468,84 @@ namespace TownFish.App.Pages
 			wbvContent.Source = url;
 		}
 
-		void ShowFeed()
+		void UpdateDiscoveryItems()
 		{
-			if (ViewModel.IsFeedVisible)
-				return;
-
-#if FAKE_FEED_TOP_MENU
-
-			// TODO: schema should really give us this on show feed callback
-			// set top menu for feed
-			mCurrentTopMenu = mCurrentMenuMap.Menus.Top;
-			mCurrentFormMenu = mCurrentMenuMap.Menus.TopForm;
-			mCurrentMenuMap.Menus.Top = sFeedTopMenu;
-			mCurrentMenuMap.Menus.TopForm = null;
-
-			ViewModel.LoadMenuMap (mCurrentMenuMap);
-
-#endif // FAKE_FEED_TOP_MENU
-
-			// make sure we have latest feed items in our list
-			if (ViewModel.IsFeedEmpty)
-				UpdateFeedItems();
-
-			ViewModel.IsFeedInfoVisible = ViewModel.IsFeedEmpty;
-			ViewModel.IsFeedVisible = true;
-
-			// now we've shown it, reset count
-			ViewModel.FeedCount = 0;
-		}
-
-		void UpdateFeedItems()
-		{
-			var feedItems = App.SHFeedItems;
-			var count = App.SHFeedItemCount;
+			var discoveryItems = App.Discoveries;
+			var count = App.DiscoveriesCount;
 
 			// if no items, kill previous list
 			if (count == 0)
-				ViewModel.FeedItems = null;
+				ViewModel.DiscoveryItems = null;
 			else
-				ViewModel.FeedItems = new ObservableCollection<FeedItemViewModel> (feedItems);
+				ViewModel.DiscoveryItems = new ObservableCollection<DiscoveryItemViewModel> (discoveryItems);
 
 			// HACK: as iOS ListView isn't working, manually generate content for a StackLayout
 			Device.BeginInvokeOnMainThread (() =>
 				{
-					var kids = lstFeed.Children;
+					var kids = lstDiscoveries.Children;
 					kids.Clear();
 
 					for (var i = 0; i < count; i++)
 					{
-						var item = new FeedItem { BindingContext = feedItems [i] };
-						item.Tapped += lstFeed_ItemTapped;
+						var item = new DiscoveryItem { BindingContext = discoveryItems [i] };
+						item.Tapped += lstDiscoveries_ItemTapped;
 
 						kids.Add (item);
 					}
 				});
 		}
 
-		/// <summary>
-		/// Fire-and-forget feed hider.
-		/// </summary>
-		async void HideFeed (bool showLoading = true)
+		void ShowDiscoveries()
 		{
-			await HideFeedAsync (showLoading);
+			if (ViewModel.IsDiscoveriesVisible)
+				return;
+
+			// make sure we have latest discovery items in our list
+			if (ViewModel.IsDiscoveriesEmpty)
+				UpdateDiscoveryItems();
+
+			ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty;
+			ViewModel.IsDiscoveriesVisible = true;
+
+			// now we've shown discoveries, reset count & last view time
+			ViewModel.NewDiscoveriesCount = 0;
+			App.LastDiscoveriesViewTime = DateTime.Now;
 		}
 
 		/// <summary>
-		/// Awaitable feed hider.
+		/// Fire-and-forget discoveries hider.
+		/// </summary>
+		async void HideDiscoveries (bool showLoading = true)
+		{
+			await HideDiscoveriesAsync (showLoading);
+		}
+
+		/// <summary>
+		/// Awaitable discoveries hider.
 		/// </summary>
 		/// <returns></returns>
-		async Task HideFeedAsync (bool showLoading = true)
+		async Task HideDiscoveriesAsync (bool showLoading = true)
 		{
-			if (ViewModel.IsFeedVisible && !mHidingFeed)
+			if (ViewModel.IsDiscoveriesVisible && !mHidingDiscoveries)
 			{
-				mHidingFeed = true;
+				mHidingDiscoveries = true;
 
 				if (showLoading)
-					await ShowLoadingAsync(); // wait for it to show before hiding feed
+					await ShowLoadingAsync(); // wait for it to show before hiding discoveries
 
-				// clear & hide feed
-				ViewModel.IsFeedVisible = false;
-				ViewModel.FeedItems = null; // side-effect: updates visibility properties!
+				// clear & hide discoveries
+				ViewModel.IsDiscoveriesVisible = false;
+				ViewModel.DiscoveryItems = null; // side-effect: updates visibility properties!
 
-#if FAKE_FEED_TOP_MENU
+				// bitofahack - if returning to locations page it takes a while for the menu to
+				// be reloaded due to server round-trip, during which time the location name will
+				// be visible as well as the discoveries menu, so just clear it here as it will
+				// be set again anyway on completion of page load
+				ViewModel.LocationName = "";
 
-				// if we're not showing loading we're leaving feed, so just restore menu
-				if (!showLoading)
-					RestoreTopMenu();
-
-#endif // FAKE_FEED_TOP_MENU
-
-				mHidingFeed = false;
+				mHidingDiscoveries = false;
 			}
 		}
-
-#if FAKE_FEED_TOP_MENU
-
-		void RestoreTopMenu()
-		{
-			if (mCurrentMenuMap != null && (mCurrentTopMenu != null || mCurrentFormMenu != null))
-			{
-				mCurrentMenuMap.Menus.Top = mCurrentTopMenu;
-				mCurrentMenuMap.Menus.TopForm = mCurrentFormMenu;
-				ViewModel.LoadMenuMap (mCurrentMenuMap);
-			}
-		}
-
-#endif // FAKE_FEED_TOP_MENU
 
 		async void ShowSearchPanel()
 		{
@@ -641,16 +622,6 @@ namespace TownFish.App.Pages
 			if (ViewModel.IsLoading)
 				return;
 
-#if EMPTY_TOP_MENU_WHEN_LOADING
-
-			// show empty top menu
-			if (mCurrentMenuMap != null)
-			{
-				mCurrentMenuMap.Menus.Top = sEmptyTopMenu;
-				ViewModel.LoadMenuMap (mCurrentMenuMap);
-			}
-#endif
-
 			// set this here in case page loads faster than loading animation completes,
 			// which could result in loading never being removed
 			ViewModel.IsLoading = true;
@@ -717,10 +688,10 @@ namespace TownFish.App.Pages
 		const string cPushAction = "app_schema_push_messages";
 		const string cPushMethod = "twnfsh.getPushMessages()";
 
-		const string cFeedShowAction = "app_schema_show_feed";
-		const string cFeedShowValue = "true";
-		const string cFeedHideAction = "app_schema_hide_feed";
-		const string cFeedHideValue = "true";
+		const string cShowDiscoveriesAction = "app_schema_show_feed";
+		const string cShowDiscoveriesValue = "true";
+		const string cHideDiscoveriesAction = "app_schema_hide_feed";
+		const string cHideDiscoveriesValue = "true";
 
 		const string cCallbackFormat = "twnfsh.runCallback('{0}')";
 
@@ -733,99 +704,7 @@ namespace TownFish.App.Pages
 		const string cFeedInfo = "FeedInfo";
 		const string cFeedButton = "pushFeed";
 
-#if FAKE_FEED_TOP_MENU
-
-		static List<TownFishMenuItem> sFeedTopMenuItems = new List<TownFishMenuItem>
-		{
-			new TownFishMenuItem // empty left icon
-			{
-				Align = "left",
-				IconUrl = "/applications/profiles/design/menuicons/clear-hdpi.png",
-				Kind = "icon",
-				Size = "ldpi",
-				Type = "noop",
-				Value = ""
-			},
-			new TownFishMenuItem // title
-			{
-				Align = "middle",
-				Main = "Discoveries",
-				Type = "heading"
-			},
-			/*new TownFishMenuItem // search icon
-			{
-				Align = "right",
-				IconUrl = "/applications/profiles/design/menuicons/magnifying-search-hdpi-ffffff.png",
-				Kind = "icon",
-				Name = cFeedSearch,
-				Size = "ldpi",
-				Type = "callback",
-				Value = ""
-			},*/
-			new TownFishMenuItem // info icon
-			{
-				Align = "right",
-				IconUrl = "/applications/profiles/design/menuicons/information-hdpi-ffffff.png",
-				Kind = "icon",
-				Name = cFeedInfo,
-				Size = "ldpi",
-				Type = "callback",
-				Value = ""
-			}
-		};
-
-		static TownFishMenu sFeedTopMenu = new TownFishMenu
-		{
-			Display = true,
-			Items = sFeedTopMenuItems
-		};
-
-#endif // FAKE_FEED_TOP_MENU
-
-#if EMPTY_TOP_MENU_WHEN_LOADING
-
-		static List<TownFishMenuItem> sEmptyTopMenuItems = new List<TownFishMenuItem>
-		{
-			new TownFishMenuItem // empty left icon
-			{
-				Align = "left",
-				IconUrl = "/applications/profiles/design/menuicons/clear-hdpi.png",
-				Kind = "icon",
-				Size = "ldpi",
-				Type = "noop",
-				Value = ""
-			},
-			new TownFishMenuItem // title
-			{
-				Align = "middle",
-				Main = " ",
-				Type = "heading"
-			},
-			new TownFishMenuItem // info icon
-			{
-				Align = "right",
-				IconUrl = "/applications/profiles/design/menuicons/clear-hdpi.png",
-				Kind = "icon",
-				Size = "ldpi",
-				Type = "noop",
-				Value = ""
-			}
-		};
-
-		static TownFishMenu sEmptyTopMenu = new TownFishMenu
-		{
-			display = true,
-			items= sEmptyTopMenuItems
-		};
-
-#endif //EMPTY_TOP_MENU_WHEN_LOADING
-
 		TownFishMenuMap mCurrentMenuMap;
-
-#if FAKE_FEED_TOP_MENU
-		TownFishMenu mCurrentTopMenu;
-		TownFishMenu mCurrentFormMenu;
-#endif // FAKE_FEED_TOP_MENU
 
 		bool mFirstLoading = true;
 		bool mFirstShowing = true;
@@ -833,9 +712,11 @@ namespace TownFish.App.Pages
 		bool mIsSearchVisible;
 		bool mShowingSearch;
 		bool mHidingSearch;
-		bool mHidingFeed;
+		bool mHidingDiscoveries;
 
 		string mLastSourceUrl;
+
+		Frame[] mBottomActionFrames;
 
 #endregion Fields
 	}

@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Grid xmlns="http://xamarin.com/schemas/2014/forms"
 		xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-		x:Class="TownFish.App.FeedItem">
+		x:Class="TownFish.App.DiscoveryItem">
 	<Grid.GestureRecognizers>
 		<TapGestureRecognizer Tapped="OnTapped" />
 	</Grid.GestureRecognizers>
@@ -11,8 +11,8 @@
 
 		<Grid x:Name="pnlText" ColumnSpacing="0" BackgroundColor="White">
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="auto" />
 			</Grid.ColumnDefinitions>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="auto" />
@@ -27,14 +27,15 @@
 				   TextColor="Black" FontSize="14"
 				   Text="{Binding Text}" />
 
-			<Label x:Name="lblTimeStamp" Grid.Row="3" Margin="12,0,12,12"
-				   TextColor="Gray" FontSize="13"
+			<Label x:Name="lblTimeStamp" Grid.Row="3" Margin="12,0,6,12"
+				   TextColor="Gray" FontSize="10"
 				   Text="{Binding FormattedTimeStamp}" />
-			<Label x:Name="lblGroup" Grid.Row="3" Grid.Column="1" Margin="12,0,12,12"
-				   TextColor="Gray" FontSize="13" HorizontalOptions="End"
-				   Text="{Binding Group}" />
+			<!-- Group not yet coming through from provider -->
+			<!--<Label x:Name="lblGroup" Grid.Row="3" Grid.Column="1" Margin="6,0,12,12"
+				   TextColor="Gray" FontSize="10" HorizontalOptions="End"
+				   Text="{Binding Group}" />-->
 		</Grid>
 
-		<BoxView Color="Transparent" HeightRequest="12"/>
+		<BoxView Color="Transparent" HeightRequest="6"/>
 	</StackLayout>
 </Grid>
