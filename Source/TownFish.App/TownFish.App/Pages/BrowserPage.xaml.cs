@@ -53,7 +53,7 @@ namespace TownFish.App.Pages
 
 			// get bottom action frames so we can manually set the background,
 			// as binding background colour crashes on Android (thanks, Xamarin!)
-			mBottomActionFrames = new Frame[] { frmSuper0, frmSuper1, frmSuper2, frmSuper3, frmSuper4, frmSuper5 };
+			//mBottomActionFrames = new Frame[] { frmSuper0, frmSuper1, frmSuper2, frmSuper3, frmSuper4, frmSuper5 };
 
 			// on iOS we have to allow for the overlapping status bar at top of layout
 			if (Device.RuntimePlatform == Device.iOS)
@@ -400,13 +400,11 @@ namespace TownFish.App.Pages
 
 		void ViewModel_MenusLoaded (object sender, EventArgs e)
 		{
-			// now update bottom action superscript frame background colours, in case they changed,
-			// but not on Android to avoid the null reference crash on frame background change
+			// now update bottom action superscript frame background colours, in case they changed
 			//if (ViewModel.IsBottomBarVisible)
-			if (Device.RuntimePlatform != Device.Android && ViewModel.IsBottomBarVisible)
-				for (var i = 0; i < 6; i++)
-					mBottomActionFrames [i].BackgroundColor =
-							ViewModel.BottomActions [i].SuperCountBackgroundColour;
+			//	for (var i = 0; i < 6; i++)
+			//		mBottomActionFrames [i].BackgroundColor =
+			//				ViewModel.BottomActions [i].SuperCountBackgroundColour;
 
 			// only hide loading if already showing it but not in the process of hiding discoveries
 			if (ViewModel.IsLoading && !mHidingDiscoveries)
@@ -716,8 +714,8 @@ namespace TownFish.App.Pages
 
 		string mLastSourceUrl;
 
-		Frame[] mBottomActionFrames;
+		//Frame[] mBottomActionFrames;
 
-#endregion Fields
+		#endregion Fields
 	}
 }

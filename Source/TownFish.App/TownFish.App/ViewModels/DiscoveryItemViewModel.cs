@@ -11,23 +11,30 @@ namespace TownFish.App.ViewModels
 
 		static string FormatTimeStamp (DateTime created, DateTime expires)
 		{
-			string Ago (int ago) => ago == 0 ? "Today" :
+			string DaysAgo (int ago) => ago == 0 ? "Today" :
 					ago == 1 ? "Yesterday" : $"{ago} days ago";
 
-			string ToGo (int toGo) => toGo == 0 ? "Today" :
+			string Ago (DateTime date, int days) => days < 0 || days >= 7 ?
+					date.ToString ("d MMM") :
+					$"{DaysAgo (days)} at {date.ToString ("HH.mm")}";
+
+			string DaysToGo (int toGo) => toGo == 0 ? "Today" :
 					toGo == 1 ? "Tomorrow" : $"in {toGo} days";
 
-			var dateNow = DateTime.Now.Date;
-			var daysAgo = (int) ((dateNow - created.Date).TotalDays);
-			var daysToGo = (int) ((expires.Date - dateNow).TotalDays);
+			string ToGo (DateTime date, int days) => days < 0 || days >= 7 ?
+					date.ToString ("d MMM") :
+					$"{DaysToGo (days)} at {date.ToString ("HH.mm")}";
 
-			var agoString = daysAgo < 0 || daysAgo >= 7 ? created.ToString ("d MMM") :
-					$"{Ago (daysAgo)} at {created.ToString ("HH.mm")}";
+			var now = DateTime.Now;
+			var daysAgo = (int) ((now.Date - created.Date).TotalDays);
+			var daysToGo = (int) ((expires.Date - now.Date).TotalDays);
 
-			var toGoString = daysToGo < 0 || daysToGo >= 7 ? expires.ToString ("d MMM") :
-					$"{ToGo (daysToGo)} at {expires.ToString ("HH.mm")}";
+			var createdString = Ago (created, daysAgo);
+			var expiresString = (expires < now) ?
+					$"Expired {Ago (expires, -daysToGo)}" :
+					$"Expires {ToGo (expires, daysToGo)}";
 
-			return $"{agoString} | Expires {toGoString}";
+			return $"{createdString} | {expiresString}";
 		}
 
 		#endregion Methods

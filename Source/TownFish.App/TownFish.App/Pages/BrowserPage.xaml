@@ -109,9 +109,8 @@
 					   HorizontalOptions="Center" VerticalOptions="Center" />
 				<Frame x:Name="frmSuper0" IsVisible="{Binding HasSuperCount}" Padding="4,0"
 					   HorizontalOptions="End" VerticalOptions="Start"
-					   CornerRadius="7" HasShadow="False">
-					   <!-- Due to crash on Android, BackgroundColor has to be set manually -->
-					   <!--BackgroundColor="{Binding SuperCountBackgroundColour}"-->
+					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+					   CornerRadius="-1" HasShadow="False">
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
@@ -128,8 +127,8 @@
 					   HorizontalOptions="Center" VerticalOptions="Center" />
 				<Frame x:Name="frmSuper1" IsVisible="{Binding HasSuperCount}" Padding="4,0"
 					   HorizontalOptions="End" VerticalOptions="Start"
-					   CornerRadius="7" HasShadow="False">
-					   <!--BackgroundColor="{Binding SuperCountBackgroundColour}"-->
+					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+					   CornerRadius="-1" HasShadow="False">
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
@@ -146,8 +145,8 @@
 					   HorizontalOptions="Center" VerticalOptions="Center" />
 				<Frame x:Name="frmSuper2" IsVisible="{Binding HasSuperCount}" Padding="4,0"
 					   HorizontalOptions="End" VerticalOptions="Start"
-					   CornerRadius="7" HasShadow="False">
-					   <!--BackgroundColor="{Binding SuperCountBackgroundColour}"-->
+					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+					   CornerRadius="-1" HasShadow="False">
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
@@ -164,8 +163,8 @@
 					   HorizontalOptions="Center" VerticalOptions="Center" />
 				<Frame x:Name="frmSuper3" IsVisible="{Binding HasSuperCount}" Padding="4,0"
 					   HorizontalOptions="End" VerticalOptions="Start"
-					   CornerRadius="7" HasShadow="False">
-					   <!--BackgroundColor="{Binding SuperCountBackgroundColour}"-->
+					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+					   CornerRadius="-1" HasShadow="False">
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
@@ -182,8 +181,8 @@
 					   HorizontalOptions="Center" VerticalOptions="Center" />
 				<Frame x:Name="frmSuper4" IsVisible="{Binding HasSuperCount}" Padding="4,0"
 					   HorizontalOptions="End" VerticalOptions="Start"
-					   CornerRadius="7" HasShadow="False">
-					   <!--BackgroundColor="{Binding SuperCountBackgroundColour}"-->
+					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+					   CornerRadius="-1" HasShadow="False">
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
@@ -200,8 +199,8 @@
 					   HorizontalOptions="Center" VerticalOptions="Center" />
 				<Frame x:Name="frmSuper5" IsVisible="{Binding HasSuperCount}" Padding="4,0"
 					   HorizontalOptions="End" VerticalOptions="Start"
-					   CornerRadius="7" HasShadow="False">
-					   <!--BackgroundColor="{Binding SuperCountBackgroundColour}"-->
+					   BackgroundColor="{Binding SuperCountBackgroundColour}"
+					   CornerRadius="-1" HasShadow="False">
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
