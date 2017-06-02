@@ -19,7 +19,6 @@ using Com.Streethawk.Library.Feeds;
 
 using StreetHawkCrossplatform;
 
-
 namespace TownFish.App.Droid
 {
 	[Activity (Label = "TownFish.App", Icon = "@drawable/icon",
@@ -54,13 +53,25 @@ namespace TownFish.App.Droid
 			}
 		}
 
-		#endregion WebChromeClient
+        #endregion WebChromeClient
 #endif
-		#endregion Nested Types
+        #endregion Nested Types
 
-		#region Methods
+        #region Methods
 
-		protected override void OnCreate (Bundle bundle)
+        protected override void OnPause()
+        {
+            IsActive = false;
+            base.OnPause();
+        }
+
+        protected override void OnResume()
+        {
+            IsActive = true;
+            base.OnResume();
+        }
+
+        protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
 
@@ -117,6 +128,8 @@ namespace TownFish.App.Droid
 		#region Fields
 
 		App mApp;
+
+        public static bool IsActive { get; set; } = true;
 
 		#endregion Fields
 	}
