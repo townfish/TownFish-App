@@ -433,6 +433,10 @@ namespace TownFish.App.Pages
 
 				return;
 			}
+            else if (ViewModel.IsDiscoveriesInfoVisible)
+            {
+                ViewModel.IsDiscoveriesInfoVisible = false;
+            }
 
 			HideSearchPanel();
 
@@ -493,7 +497,7 @@ namespace TownFish.App.Pages
 				});
 		}
 
-		void ShowDiscoveries()
+		public void ShowDiscoveries()
 		{
 			if (ViewModel.IsDiscoveriesVisible)
 				return;

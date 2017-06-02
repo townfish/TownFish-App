@@ -43,31 +43,38 @@ namespace TownFish.App
 			};
 		}
 
-		#endregion Construction
+        private DateTime _startTime;
+        private DateTime? _sleepTime;
+        private DateTime? _resumedTime;
 
-		#region Methods
+        #endregion Construction
 
-		public void OnPushUrlReceived (string route)
+        #region Methods
+
+        public void OnPushUrlReceived (string route)
 		{
 			PushUrlReceived?.Invoke (this, route);
 		}
 
 		protected override void OnStart()
 		{
+            _startTime = DateTime.UtcNow;
+            _sleepTime = null;
+            _resumedTime = null;
 			// Handle when your app starts
-
-			// for now, don't use StreetHawk on Android
-			//if (Device.RuntimePlatform != Device.Android)
-				InitStreetHawk();
+			InitStreetHawk();
 		}
 
 		protected override void OnSleep()
 		{
+            _sleepTime = DateTime.UtcNow;
+            _resumedTime = null;
 			AppSuspended?.Invoke (this, EventArgs.Empty);
 		}
 
 		protected override void OnResume()
 		{
+            _resumedTime = DateTime.UtcNow;
 			AppResumed?.Invoke (this, EventArgs.Empty);
 		}
 
@@ -247,10 +254,6 @@ namespace TownFish.App
 							MainPage.DisplayAlert ("Received JSON push:", msg, "OK");
 						});
 #endif
-					// TODO: some magic to determine if this notification is related to a new entry
-					// in the message feed, in which case we need to show the message feed (see
-					// Item 15 on Basecamp TODO list).
-
 					try
 					{
 						var content = JsonConvert.DeserializeObject<Dictionary<string, string>> (json);
@@ -260,10 +263,15 @@ namespace TownFish.App
 								route.ToLower().Contains ("townfish.com"))
 							OnPushUrlReceived (route);
 
-						// JSON push messages might be added to feed, so use this to trigger
-						// a feed update
-
 						Discoveries = await GetDiscoveries();
+
+                        if (dataType == "messageFeed" || content.TryGetValue("img", out var img))
+                        {
+                            if (DateTime.UtcNow.Subtract(_startTime).TotalSeconds < 5 || (_sleepTime != null && _resumedTime == null) || DateTime.UtcNow.Subtract(_resumedTime.GetValueOrDefault()).TotalSeconds < 5)
+                            {
+                                (MainPage as BrowserPage)?.ShowDiscoveries();
+                            }
+                        }
 					}
 					catch (Exception ex)
 					{

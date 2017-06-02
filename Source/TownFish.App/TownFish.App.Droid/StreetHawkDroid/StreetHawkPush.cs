@@ -7,7 +7,10 @@ using Android.OS;
 
 using Com.Streethawk.Library.Push;
 using StreetHawkCrossplatform;
-
+using Android.Content;
+using TownFish.App.Droid;
+using Android.Support.V7.App;
+using Android.Graphics;
 
 [assembly: Xamarin.Forms.Dependency(typeof(StreetHawkPush))]
 
@@ -160,7 +163,7 @@ namespace StreetHawkCrossplatform
 				appData.badge = pushData.Badge;
 			}
 
-			mPushDataCallback.Invoke(appData);
+			mPushDataCallback?.Invoke(appData);
 		}
 
 		public void OnReceiveResult(Com.Streethawk.Library.Push.PushDataForApplication pushData, int result)
@@ -182,7 +185,7 @@ namespace StreetHawkCrossplatform
 				appData.badge = pushData.Badge;
 			}
 
-			mPushResultCallback.Invoke(appData,result);
+			mPushResultCallback?.Invoke(appData,result);
 		}
 
 		public void ShNotifyAppPage(string appPage)
@@ -195,10 +198,39 @@ namespace StreetHawkCrossplatform
 
 		public void ShReceivedRawJSON(string title, string message, string json)
 		{
-			if (null != mRawJSONCB)
-			{
-				mRawJSONCB.Invoke(title, message, json);
-			}
-		}
-	}
+            if (MainActivity.IsActive)
+            {
+                if (null != mRawJSONCB)
+                {
+                    mRawJSONCB.Invoke(title, message, json);
+                }
+            }
+            else
+            {
+                SendNotification(title, message, json);
+            }
+        }
+
+        void SendNotification(string title, string body, string json)
+        {
+            var intent = new Intent(mApplication.ApplicationContext, typeof(MainActivity));
+            intent.AddFlags(ActivityFlags.NewTask | ActivityFlags.ClearTask);
+            intent.PutExtra("json", json);
+            var pendingIntent = PendingIntent.GetActivity(mApplication.ApplicationContext, 0, intent, PendingIntentFlags.UpdateCurrent);
+
+            var notificationBuilder = new NotificationCompat.Builder(mApplication.ApplicationContext)
+                .SetLargeIcon(BitmapFactory.DecodeResource(mApplication.Resources, Resource.Drawable.icon))
+                .SetSmallIcon(Resource.Drawable.icon)
+                .SetContentTitle(title)
+                .SetContentText(body)
+                .SetAutoCancel(true)
+                .SetExtras(intent.Extras)
+                .SetDefaults((int)(NotificationDefaults.Vibrate | NotificationDefaults.Sound))
+                .SetContentIntent(pendingIntent);
+
+            var notificationManager = (NotificationManager)mApplication.ApplicationContext.GetSystemService(Context.NotificationService);
+            notificationManager.Notify(0, notificationBuilder.Build());
+        }
+
+    }
 }
