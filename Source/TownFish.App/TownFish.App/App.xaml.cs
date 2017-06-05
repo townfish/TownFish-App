@@ -43,38 +43,44 @@ namespace TownFish.App
 			};
 		}
 
-        private DateTime _startTime;
-        private DateTime? _sleepTime;
-        private DateTime? _resumedTime;
-
         #endregion Construction
 
         #region Methods
 
-        public void OnPushUrlReceived (string route)
+        void OnPushUrlReceived (string route, bool wasBackgrounded)
 		{
-			PushUrlReceived?.Invoke (this, route);
+			PushUrlReceived?.Invoke (this, (route, wasBackgrounded));
+		}
+
+		void OnDiscoveriesUpdated()
+		{
+			DiscoveriesUpdated?.Invoke (this, EventArgs.Empty);
+		}
+
+		void OnBackgroundDiscoveriesReceived()
+		{
+			BackgroundDiscoveriesReceived?.Invoke (this, EventArgs.Empty);
 		}
 
 		protected override void OnStart()
 		{
-            _startTime = DateTime.UtcNow;
-            _sleepTime = null;
-            _resumedTime = null;
-			// Handle when your app starts
+            mStartTime = DateTime.UtcNow;
+            mSleepTime = null;
+            mResumedTime = null;
+
 			InitStreetHawk();
 		}
 
 		protected override void OnSleep()
 		{
-            _sleepTime = DateTime.UtcNow;
-            _resumedTime = null;
+            mSleepTime = DateTime.UtcNow;
+            mResumedTime = null;
 			AppSuspended?.Invoke (this, EventArgs.Empty);
 		}
 
 		protected override void OnResume()
 		{
-            _resumedTime = DateTime.UtcNow;
+            mResumedTime = DateTime.UtcNow;
 			AppResumed?.Invoke (this, EventArgs.Empty);
 		}
 
@@ -248,30 +254,32 @@ namespace TownFish.App
 			shPush.RegisterForRawJSON (async (title, message, json) =>
 				{
 #if DEBUG
-					Device.BeginInvokeOnMainThread (() =>
-						{
-							var msg = $"title: {title}\r\nmessage: {message}\r\nJSON: {json}";
-							MainPage.DisplayAlert ("Received JSON push:", msg, "OK");
-						});
+				Device.BeginInvokeOnMainThread (() =>
+					{
+						var msg = $"title: {title}\r\nmessage: {message}\r\nJSON: {json}";
+						MainPage.DisplayAlert ("Received JSON push:", msg, "OK");
+					});
 #endif
 					try
 					{
+						var now = DateTime.UtcNow;
+						var wasBackgrounded = (now - mStartTime).TotalSeconds < 5 ||
+								(mSleepTime != null && mResumedTime == null) ||
+								(now - mResumedTime.GetValueOrDefault ()).TotalSeconds < 5;
+
 						var content = JsonConvert.DeserializeObject<Dictionary<string, string>> (json);
 						if (content.TryGetValue ("dataType", out var dataType) &&
 								content.TryGetValue ("route", out var route) &&
 								dataType == "vanilla_notification" &&
 								route.ToLower().Contains ("townfish.com"))
-							OnPushUrlReceived (route);
+							OnPushUrlReceived (route, wasBackgrounded);
 
 						Discoveries = await GetDiscoveries();
 
-                        if (dataType == "messageFeed" || content.TryGetValue("img", out var img))
-                        {
-                            if (DateTime.UtcNow.Subtract(_startTime).TotalSeconds < 5 || (_sleepTime != null && _resumedTime == null) || DateTime.UtcNow.Subtract(_resumedTime.GetValueOrDefault()).TotalSeconds < 5)
-                            {
-                                (MainPage as BrowserPage)?.ShowDiscoveries();
-                            }
-                        }
+                        if ((dataType == "messageFeed" ||
+								content.TryGetValue("img", out var img)) &&
+								wasBackgrounded)
+							OnBackgroundDiscoveriesReceived();
 					}
 					catch (Exception ex)
 					{
@@ -593,9 +601,11 @@ namespace TownFish.App
 
 		public event EventHandler AppCloseRequested;
 
-		public event EventHandler<string> PushUrlReceived;
+		public event EventHandler<(string, bool)> PushUrlReceived;
 
 		public event EventHandler DiscoveriesUpdated;
+
+		public event EventHandler BackgroundDiscoveriesReceived;
 
 		public static new App Current { get { return Application.Current as App; } }
 
@@ -646,7 +656,7 @@ namespace TownFish.App
 
 				sDiscoveries = value;
 
-				Current.DiscoveriesUpdated?.Invoke (Current, EventArgs.Empty);
+				Current.OnDiscoveriesUpdated();
 			}
 		}
 
@@ -702,6 +712,10 @@ namespace TownFish.App
 
 		static int sGettingDiscoveries;
 		static IList<DiscoveryItemViewModel> sDiscoveries;
+
+        DateTime mStartTime;
+        DateTime? mSleepTime;
+        DateTime? mResumedTime;
 
 		#endregion Fields
 	}

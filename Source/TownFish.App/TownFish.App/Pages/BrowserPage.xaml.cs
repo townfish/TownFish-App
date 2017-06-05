@@ -77,6 +77,7 @@ namespace TownFish.App.Pages
 			App.Current.BackButtonPressed += App_BackButtonPressed;
 			App.Current.PushUrlReceived += App_PushUrlReceived;
 			App.Current.DiscoveriesUpdated += App_DiscoveriesUpdated;
+			App.Current.BackgroundDiscoveriesReceived += App_BackgroundDiscoveriesReceived;
 			App.Current.AppResumed += App_Resumed;
 
 			base.OnAppearing();
@@ -89,6 +90,7 @@ namespace TownFish.App.Pages
 			App.Current.BackButtonPressed -= App_BackButtonPressed;
 			App.Current.PushUrlReceived -= App_PushUrlReceived;
 			App.Current.DiscoveriesUpdated -= App_DiscoveriesUpdated;
+			App.Current.BackgroundDiscoveriesReceived -= App_BackgroundDiscoveriesReceived;
 			App.Current.AppResumed -= App_Resumed;
 		}
 
@@ -147,16 +149,18 @@ namespace TownFish.App.Pages
 				App.Current.CloseApp();
 		}
 
-		void App_PushUrlReceived (object sender, string url)
+		void App_PushUrlReceived (object sender, (string url, bool wasBackgrounded) args)
 		{
 			// Basecamp Item 32: only navigate if we're not logged in; if logged
 			// in the Vanilla code takes care of its own notifications
 
-			if (string.IsNullOrEmpty (ViewModel.SyncToken))
-				Navigate (url);
+			// Basecamp Item 40: navigate anyway if we were backgrounded
+
+			if (string.IsNullOrEmpty (ViewModel.SyncToken) || args.wasBackgrounded)
+				Navigate (args.url);
 		}
 
-		private void App_Resumed (object sender, EventArgs e)
+		void App_Resumed (object sender, EventArgs e)
 		{
 			// in case we're returning from a remote URL, remember what our last URL really was
 			if (!string.IsNullOrEmpty (mLastSourceUrl))
@@ -358,6 +362,16 @@ namespace TownFish.App.Pages
 
 #pragma warning restore IDE1006 // Naming Styles
 
+		void App_BackgroundDiscoveriesReceived (object sender, EventArgs e)
+		{
+			// can't just call ShowDiscoveries here as the menu won't be set;
+			// we have to ask the schema to tell us to show discoveries, then it
+			// sets the menu for us, but as we don't yet have a callback for that...
+
+			// HACK: replace with a callback to schema
+			Navigate (App.BaseUrl + "/profile/showfeed/" + App.QueryString);
+		}
+
 		/// <summary>
 		/// Sets discoveries count and updates the discoveries list.
 		/// </summary>
@@ -433,10 +447,9 @@ namespace TownFish.App.Pages
 
 				return;
 			}
-            else if (ViewModel.IsDiscoveriesInfoVisible)
-            {
-                ViewModel.IsDiscoveriesInfoVisible = false;
-            }
+
+			// make sure this is closed so location name shows
+			ViewModel.IsDiscoveriesInfoVisible = false;
 
 			HideSearchPanel();
 
@@ -497,7 +510,7 @@ namespace TownFish.App.Pages
 				});
 		}
 
-		public void ShowDiscoveries()
+		void ShowDiscoveries()
 		{
 			if (ViewModel.IsDiscoveriesVisible)
 				return;
@@ -701,10 +714,6 @@ namespace TownFish.App.Pages
 		const string cCancel = "Cancel";
 
 		const string cCustomUserAgent = "com.townfish.app";
-
-		const string cFeedSearch = "FeedSearch";
-		const string cFeedInfo = "FeedInfo";
-		const string cFeedButton = "pushFeed";
 
 		TownFishMenuMap mCurrentMenuMap;
 
