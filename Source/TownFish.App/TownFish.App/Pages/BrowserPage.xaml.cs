@@ -369,7 +369,7 @@ namespace TownFish.App.Pages
 			// sets the menu for us, but as we don't yet have a callback for that...
 
 			// HACK: replace with a callback to schema
-			Navigate (App.BaseUrl + "/profile/showfeed/" + App.QueryString);
+			Navigate (App.ShowFeedUrl + App.QueryString);
 		}
 
 		/// <summary>

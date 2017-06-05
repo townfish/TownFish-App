@@ -682,8 +682,9 @@ namespace TownFish.App
 		public const string TermsUrl = BaseUrl + "/terms-of-use/";
 		public const string SHCuidUrl = BaseUrl + "/profile/shcuid/{0}?syncToken={1}";
 		public const string SHSyncUrl = BaseUrl + "/profile/shsync/{0}?syncToken={1}";
-		public const string EditProfileUrl = BaseUrl + "/profile/edit/generalinfo";
-		public const string EditLikesUrl = BaseUrl + "/profile/edit/likes";
+		public const string EditProfileUrl = BaseUrl + "/profile/edit/generalinfo/";
+		public const string EditLikesUrl = BaseUrl + "/profile/edit/likes/";
+		public const string ShowFeedUrl = BaseUrl + "/profile/showfeed/";
 
 		public const string QueryParam = "mode=app"; // parameter added to every request
 		public const string QueryString = "?" + QueryParam;
