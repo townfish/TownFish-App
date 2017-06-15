@@ -26,17 +26,17 @@ namespace TownFish.App.iOS
 		//
 		public override bool FinishedLaunching (UIApplication app, NSDictionary options)
 		{
-			#region StreetHawk
+            #region StreetHawk
 
-			//SHApp.instance().appKey = "TownFish";
-			//SHApp.instance().enableLogs = true;
-			//SHApp.instance().iTunesId = ""; // TODO: insert iTunes ID
-			//SHApp.instance().streethawkinit();
+            //SHApp.instance().appKey = "TownFish";
+            //SHApp.instance().enableLogs = true;
+            //SHApp.instance().iTunesId = ""; // TODO: insert iTunes ID
+            //SHApp.instance().streethawkinit();
 
-			//Simply call one function of Push module to make sure linking to it.
-			//SHPush.instance().isDefaultNotificationEnabled = true;
+            //Simply call one function of Push module to make sure linking to it.
+            //SHPush.instance().isDefaultNotificationEnabled = true;
 
-			#endregion StreetHawk
+            #endregion StreetHawk
 
 			UIApplication.SharedApplication.SetStatusBarStyle (UIStatusBarStyle.LightContent, false);
 			UIApplication.SharedApplication.SetStatusBarHidden (false, false);
@@ -53,7 +53,15 @@ namespace TownFish.App.iOS
 
 			LoadApplication (new App (deviceID));
 
+
+
 			return base.FinishedLaunching (app, options);
 		}
-	}
+
+        public override void OnActivated(UIApplication uiApplication)
+        {
+            uiApplication.ApplicationIconBadgeNumber = 0;
+            base.OnActivated(uiApplication);
+        }
+    }
 }
