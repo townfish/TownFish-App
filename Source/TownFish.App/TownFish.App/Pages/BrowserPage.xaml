@@ -125,10 +125,10 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-				<Frame x:Name="frmSuper1" IsVisible="{Binding HasSuperCount}" Padding="4,0"
+                <Frame x:Name="frmSuper1" IsVisible="{Binding HasSuperCount}" Padding="4,0" HeightRequest="12" MinimumWidthRequest="12"
 					   HorizontalOptions="End" VerticalOptions="Start"
 					   BackgroundColor="{Binding SuperCountBackgroundColour}"
-					   CornerRadius="-1" HasShadow="False">
+					   CornerRadius="6" HasShadow="False">
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
@@ -143,10 +143,10 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-				<Frame x:Name="frmSuper2" IsVisible="{Binding HasSuperCount}" Padding="4,0"
+                <Frame x:Name="frmSuper2" IsVisible="{Binding HasSuperCount}" Padding="4,0" HeightRequest="12" MinimumWidthRequest="12"
 					   HorizontalOptions="End" VerticalOptions="Start"
 					   BackgroundColor="{Binding SuperCountBackgroundColour}"
-					   CornerRadius="-1" HasShadow="False">
+					   CornerRadius="6" HasShadow="False">
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
@@ -161,10 +161,10 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-				<Frame x:Name="frmSuper3" IsVisible="{Binding HasSuperCount}" Padding="4,0"
+                <Frame x:Name="frmSuper3" IsVisible="{Binding HasSuperCount}" Padding="4,0" HeightRequest="12" MinimumWidthRequest="12"
 					   HorizontalOptions="End" VerticalOptions="Start"
 					   BackgroundColor="{Binding SuperCountBackgroundColour}"
-					   CornerRadius="-1" HasShadow="False">
+					   CornerRadius="6" HasShadow="False">
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
@@ -179,10 +179,10 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-				<Frame x:Name="frmSuper4" IsVisible="{Binding HasSuperCount}" Padding="4,0"
+                <Frame x:Name="frmSuper4" IsVisible="{Binding HasSuperCount}" Padding="4,0" HeightRequest="12" MinimumWidthRequest="12"
 					   HorizontalOptions="End" VerticalOptions="Start"
 					   BackgroundColor="{Binding SuperCountBackgroundColour}"
-					   CornerRadius="-1" HasShadow="False">
+					   CornerRadius="6" HasShadow="False">
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />
@@ -197,10 +197,10 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-				<Frame x:Name="frmSuper5" IsVisible="{Binding HasSuperCount}" Padding="4,0"
+				<Frame x:Name="frmSuper5" IsVisible="{Binding HasSuperCount}" Padding="4,0" HeightRequest="12" MinimumWidthRequest="12"
 					   HorizontalOptions="End" VerticalOptions="Start"
 					   BackgroundColor="{Binding SuperCountBackgroundColour}"
-					   CornerRadius="-1" HasShadow="False">
+					   CornerRadius="6" HasShadow="False">
 					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
 						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
 						   VerticalOptions="Center" HorizontalOptions="Center" />

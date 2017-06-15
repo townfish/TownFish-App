@@ -62,15 +62,15 @@ namespace TownFish.App.ViewModels
 						PictureUrl.Contains ("//") ? PictureUrl :
 						ImageSource.FromResource (PictureUrl));
 
-		public string FormattedTimeStamp => mFormattedTimeStamp ??
-				(mFormattedTimeStamp = FormatTimeStamp (Created, Expires));
+		public string FormattedTimeStamp {
+            get { return FormatTimeStamp(Modified, Expires); }
+        }
 
 		#endregion Properties
 
 		#region Fields
 
 		ImageSource mPictureSource;
-		string mFormattedTimeStamp;
 
 		#endregion Fields
 	}

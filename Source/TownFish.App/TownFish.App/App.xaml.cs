@@ -669,7 +669,7 @@ namespace TownFish.App
 		/// Gets the number of new discovery items received since last being viewed.
 		/// </summary>
 		public static int NewDiscoveriesCount => Discoveries?.Count (d =>
-				d.Created > LastDiscoveriesViewTime) ?? 0;
+				d.Modified > LastDiscoveriesViewTime) ?? 0;
 
 		#endregion Properties and Events
 
