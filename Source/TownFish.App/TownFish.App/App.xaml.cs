@@ -528,11 +528,11 @@ namespace TownFish.App
 							try
 							{
 								result = await http.GetStringAsync (url);
-								var syncResult = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
+								var syncResult = JsonConvert.DeserializeObject<Dictionary<string, object>> (result);
 
 								if (!shcuid.TryGetValue (cCode, out code) &&
 										syncResult.TryGetValue (cSynced, out var sync) &&
-										sync == "true")
+										sync as string == "true")
 								{
 									SetProp (cSHCuid, userID);
 
