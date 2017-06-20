@@ -287,7 +287,8 @@ namespace TownFish.App.Pages
 
 		void UberWebView_NavigationFinished (object sender, string url)
 		{
-			// in case URL is changed by webview itself, save it here so we now what it is
+            // in case URL is changed by webview itself, save it here so we now what it is
+            mPreviousUrl = ViewModel.SourceUrl;
 			ViewModel.SourceUrl = url; // don't use Navigate() here!
 
 			/* TODO: Paul said the menus should be hidden at the start of each
@@ -447,15 +448,27 @@ namespace TownFish.App.Pages
 
 				return;
 			}
+            else if (info.Name == "back" && ViewModel.IsDiscoveriesInfoVisible)
+            {
+                ViewModel.IsDiscoveriesInfoVisible = false;
+                return;
+            }
 
-			// make sure this is closed so location name shows
-			ViewModel.IsDiscoveriesInfoVisible = false;
+            // make sure this is closed so location name shows
+            ViewModel.IsDiscoveriesInfoVisible = false;
 
-			HideSearchPanel();
+            HideSearchPanel();
 
-			Device.BeginInvokeOnMainThread (() =>
-				wbvContent.InvokeScript (string.Format (cCallbackFormat, info.Name)));
-		}
+            if (info.Name == "back" && !ViewModel.IsDiscoveriesVisible)
+            {
+                Navigate(mPreviousUrl);
+            }
+            else
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                   wbvContent.InvokeScript(string.Format(cCallbackFormat, info.Name)));
+            }
+        }
 
 		void ViewModel_NavigateRequested (object sender, string url)
 		{
@@ -726,9 +739,10 @@ namespace TownFish.App.Pages
 		bool mHidingDiscoveries;
 
 		string mLastSourceUrl;
+        string mPreviousUrl;
 
-		//Frame[] mBottomActionFrames;
+        //Frame[] mBottomActionFrames;
 
-		#endregion Fields
-	}
+        #endregion Fields
+    }
 }

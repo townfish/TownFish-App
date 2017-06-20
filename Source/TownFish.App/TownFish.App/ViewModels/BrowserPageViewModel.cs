@@ -602,9 +602,9 @@ namespace TownFish.App.ViewModels
 			{
 				using (var client = new HttpClient())
 				{
-					var resultJson = await client.GetStringAsync (
-							App.BaseUrl + mLocationApiFormat.Replace ("{term}", SearchTerm));
+                    var response = await client.GetAsync(App.BaseUrl + mLocationApiFormat.Replace ("{term}", SearchTerm));
 
+                    var resultJson = await response.Content.ReadAsStringAsync();
 					if (!string.IsNullOrEmpty (resultJson))
 					{
 						var model = JsonConvert.DeserializeObject<TownFishLocationList> (resultJson);
@@ -714,9 +714,8 @@ namespace TownFish.App.ViewModels
 
 				case "callback":
 				case "nativeCallback":
-					return new Command (_ =>
-						OnCallbackRequested (item.Name, item.Type == "nativeCallback"));
-
+                    return new Command(_ =>
+                        OnCallbackRequested(item.Name, item.Type == "nativeCallback"));
 				// # date stamp no longer needed, so link is now same as back
 				//case "link":
 				//	return new Command (_ =>

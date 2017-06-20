@@ -37,11 +37,56 @@ namespace TownFish.App.ViewModels
 			return $"{createdString} | {expiresString}";
 		}
 
-		#endregion Methods
+        static string FormatExpiresTimeStamp(DateTime expires)
+        {
+            string DaysAgo(int ago) => ago == 0 ? "Today" :
+                    ago == 1 ? "Yesterday" : $"{ago} days ago";
 
-		#region Properties
+            string Ago(DateTime date, int days) => days < 0 || days >= 7 ?
+                    date.ToString("d MMM") :
+                    $"{DaysAgo(days)} at {date.ToString("HH.mm")}";
 
-		public string PictureUrl { get; set; }
+            string DaysToGo(int toGo) => toGo == 0 ? "Today" :
+                    toGo == 1 ? "Tomorrow" : $"in {toGo} days";
+
+            string ToGo(DateTime date, int days) => days < 0 || days >= 7 ?
+                    date.ToString("d MMM") :
+                    $"{DaysToGo(days)} at {date.ToString("HH.mm")}";
+
+            var now = DateTime.Now;
+            var daysToGo = (int)((expires.Date - now.Date).TotalDays);
+
+            var expiresString = (expires < now) ?
+                    $"Expired {Ago(expires, -daysToGo)}" :
+                    $"Expires {ToGo(expires, daysToGo)}";
+
+            return expiresString;
+        }
+
+
+        static string FormatCreatedTimeStamp(DateTime created)
+        {
+            string DaysAgo(int ago) => ago == 0 ? "Today" :
+                    ago == 1 ? "Yesterday" : $"{ago} days ago";
+
+            string Ago(DateTime date, int days) => days < 0 || days >= 7 ?
+                    date.ToString("d MMM") :
+                    $"{DaysAgo(days)} at {date.ToString("HH.mm")}";
+
+            var now = DateTime.Now;
+            var daysAgo = (int)((now.Date - created.Date).TotalDays);
+
+            var createdString = Ago(created, daysAgo);
+            return $"{createdString}";
+        }
+
+
+
+        #endregion Methods
+
+        #region Properties
+
+        public string PictureUrl { get; set; }
 
 		public string LinkUrl { get; set; }
 
@@ -66,11 +111,21 @@ namespace TownFish.App.ViewModels
             get { return FormatTimeStamp(Modified, Expires); }
         }
 
-		#endregion Properties
+        public string FormattedCreatedTime
+        {
+            get { return FormatCreatedTimeStamp(Modified); }
+        }
 
-		#region Fields
+        public string FormattedExpiresTime
+        {
+            get { return FormatExpiresTimeStamp(Expires); }
+        }
 
-		ImageSource mPictureSource;
+        #endregion Properties
+
+        #region Fields
+
+        ImageSource mPictureSource;
 
 		#endregion Fields
 	}

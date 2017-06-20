@@ -35,8 +35,8 @@
 		<!-- WebView -->
 		<!-- don't bind to SourceUrl as we decide manually whether to navigate in Navigate() -->
 		<!--Source="{Binding SourceUrl}"-->
-		<apptelic:UberWebView x:Name="wbvContent" Grid.Row="2"
-							VerticalOptions="Fill" HorizontalOptions="Fill" />
+		<apptelic:UberWebView x:Name="wbvContent" Grid.Row="2" 
+                              VerticalOptions="Fill" HorizontalOptions="Fill" />
 
 		<!-- Top Sub-Menu Bar -->
 		<Grid Grid.Row="1" Padding="10,6" ColumnSpacing="0"
@@ -484,7 +484,7 @@
 				   Text="{Binding TopFormRightActionLabel}"
 				   FontSize="16">
 				<Label.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding TopFormRightAction}" />
+					<TapGestureRecognizer Command="{Binding TopFormRightActionCommand}" />
 				</Label.GestureRecognizers>
 			</Label>
 		</Grid>
