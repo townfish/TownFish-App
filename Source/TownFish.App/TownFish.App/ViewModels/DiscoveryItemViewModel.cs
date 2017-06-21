@@ -1,66 +1,56 @@
 ﻿using System;
-
+using System.ComponentModel;
 using Xamarin.Forms;
 
 
 namespace TownFish.App.ViewModels
 {
-	public class DiscoveryItemViewModel
+	public class DiscoveryItemViewModel : INotifyPropertyChanged
 	{
 		#region Methods
 
-		static string FormatTimeStamp (DateTime created, DateTime expires)
-		{
-			string DaysAgo (int ago) => ago == 0 ? "Today" :
-					ago == 1 ? "Yesterday" : $"{ago} days ago";
-
-			string Ago (DateTime date, int days) => days < 0 || days >= 7 ?
-					date.ToString ("d MMM") :
-					$"{DaysAgo (days)} at {date.ToString ("HH.mm")}";
-
-			string DaysToGo (int toGo) => toGo == 0 ? "Today" :
-					toGo == 1 ? "Tomorrow" : $"in {toGo} days";
-
-			string ToGo (DateTime date, int days) => days < 0 || days >= 7 ?
-					date.ToString ("d MMM") :
-					$"{DaysToGo (days)} at {date.ToString ("HH.mm")}";
-
-			var now = DateTime.Now;
-			var daysAgo = (int) ((now.Date - created.Date).TotalDays);
-			var daysToGo = (int) ((expires.Date - now.Date).TotalDays);
-
-			var createdString = Ago (created, daysAgo);
-			var expiresString = (expires < now) ?
-					$"Expired {Ago (expires, -daysToGo)}" :
-					$"Expires {ToGo (expires, daysToGo)}";
-
-			return $"{createdString} | {expiresString}";
-		}
-
         static string FormatExpiresTimeStamp(DateTime expires)
         {
-            string DaysAgo(int ago) => ago == 0 ? "Today" :
-                    ago == 1 ? "Yesterday" : $"{ago} days ago";
+            try
+            {
+                var expiresIn = expires.Subtract(DateTime.Now);
 
-            string Ago(DateTime date, int days) => days < 0 || days >= 7 ?
-                    date.ToString("d MMM") :
-                    $"{DaysAgo(days)} at {date.ToString("HH.mm")}";
+                string DaysAgo(int ago) => ago == 0 ? "Today" :
+                        ago == 1 ? "Yesterday" : $"{ago} days ago";
 
-            string DaysToGo(int toGo) => toGo == 0 ? "Today" :
-                    toGo == 1 ? "Tomorrow" : $"in {toGo} days";
+                string Ago(DateTime date, int days) => days < 0 || days >= 7 ?
+                        date.ToString("d MMM") :
+                        $"{DaysAgo(days)} at {date.ToString("HH.mm")}";
 
-            string ToGo(DateTime date, int days) => days < 0 || days >= 7 ?
-                    date.ToString("d MMM") :
-                    $"{DaysToGo(days)} at {date.ToString("HH.mm")}";
+                var daysToGo = (int)((expires.Date - DateTime.Now.Date).TotalDays);
 
-            var now = DateTime.Now;
-            var daysToGo = (int)((expires.Date - now.Date).TotalDays);
-
-            var expiresString = (expires < now) ?
-                    $"Expired {Ago(expires, -daysToGo)}" :
-                    $"Expires {ToGo(expires, daysToGo)}";
-
-            return expiresString;
+                if (expiresIn.TotalSeconds < 0)
+                {
+                    return $"Expired {Ago(expires, -daysToGo)}";
+                }
+                else
+                {
+                    var expiresString = expiresIn.ToString("d'd 'h'h 'm'm 's's'");
+                    if (expiresString.StartsWith("0d "))
+                    {
+                        expiresString = expiresString.Substring(3);
+                    }
+                    if (expiresString.StartsWith("0h "))
+                    {
+                        expiresString = expiresString.Substring(3);
+                    }
+                    if (expiresString.StartsWith("0m "))
+                    {
+                        expiresString = expiresString.Substring(3);
+                    }
+                    return "Expires in " + expiresString;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+            return "";
         }
 
 
@@ -80,9 +70,18 @@ namespace TownFish.App.ViewModels
             return $"{createdString}";
         }
 
-
+        internal void RecalculateExpiry()
+        {
+            Device.BeginInvokeOnMainThread(() => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("FormattedExpiresTime")));
+        }
 
         #endregion Methods
+
+        #region Events
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        #endregion Events
 
         #region Properties
 
@@ -107,10 +106,6 @@ namespace TownFish.App.ViewModels
 						PictureUrl.Contains ("//") ? PictureUrl :
 						ImageSource.FromResource (PictureUrl));
 
-		public string FormattedTimeStamp {
-            get { return FormatTimeStamp(Modified, Expires); }
-        }
-
         public string FormattedCreatedTime
         {
             get { return FormatCreatedTimeStamp(Modified); }
@@ -127,6 +122,6 @@ namespace TownFish.App.ViewModels
 
         ImageSource mPictureSource;
 
-		#endregion Fields
-	}
+        #endregion Fields
+    }
 }

@@ -141,9 +141,28 @@ namespace TownFish.App.Pages
 		{
 			if (mIsSearchVisible || mShowingSearch)
 				HideSearchPanel();
+
+            else if (ViewModel.IsDiscoveriesInfoVisible)
+            {
+                ViewModel.IsDiscoveriesInfoVisible = false;
+                if (ViewModel.IsDiscoveriesEmpty)
+                {
+                    App_BackButtonPressed(this, new EventArgs());
+                }
+            }
 			else if (ViewModel.IsDiscoveriesVisible)
-				HideDiscoveries();
-			else if (wbvContent.CanGoBack)
+            {
+                HideDiscoveries();
+                if (wbvContent.CanGoBack)
+                {
+                    wbvContent.GoBack();
+                }
+                else
+                {
+                    App.Current.CloseApp();
+                }
+            }
+            else if (wbvContent.CanGoBack)
 				wbvContent.GoBack();
 			else
 				App.Current.CloseApp();
@@ -535,10 +554,29 @@ namespace TownFish.App.Pages
 			ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty;
 			ViewModel.IsDiscoveriesVisible = true;
 
+            Device.StartTimer(TimeSpan.FromSeconds(1), UpdateDiscoveryExpiry);
+
 			// now we've shown discoveries, reset count & last view time
 			ViewModel.NewDiscoveriesCount = 0;
 			App.LastDiscoveriesViewTime = DateTime.Now;
 		}
+
+        /// <summary>
+        /// Callback to refresh exiry time on discovery items
+        /// </summary>
+        bool UpdateDiscoveryExpiry()
+        {
+            if (!ViewModel.IsDiscoveriesVisible || ViewModel.DiscoveryItems == null)
+            {
+                return false;
+            }
+
+            foreach (var item in ViewModel.DiscoveryItems)
+            {
+                item.RecalculateExpiry();
+            }
+            return true;
+        }
 
 		/// <summary>
 		/// Fire-and-forget discoveries hider.
