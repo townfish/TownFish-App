@@ -602,10 +602,10 @@ namespace TownFish.App.ViewModels
 			{
 				using (var client = new HttpClient())
 				{
-                    var response = await client.GetAsync(App.BaseUrl + mLocationApiFormat.Replace ("{term}", SearchTerm));
+                    var resultJson = await client.GetStringAsync(
+                            App.BaseUrl + mLocationApiFormat.Replace("{term}", SearchTerm));
 
-                    var resultJson = await response.Content.ReadAsStringAsync();
-					if (!string.IsNullOrEmpty (resultJson))
+                    if (!string.IsNullOrEmpty (resultJson))
 					{
 						var model = JsonConvert.DeserializeObject<TownFishLocationList> (resultJson);
 						if (model?.Items != null)
