@@ -141,9 +141,28 @@ namespace TownFish.App.Pages
 		{
 			if (mIsSearchVisible || mShowingSearch)
 				HideSearchPanel();
+
+            else if (ViewModel.IsDiscoveriesInfoVisible)
+            {
+                ViewModel.IsDiscoveriesInfoVisible = false;
+                if (ViewModel.IsDiscoveriesEmpty)
+                {
+                    App_BackButtonPressed(this, new EventArgs());
+                }
+            }
 			else if (ViewModel.IsDiscoveriesVisible)
-				HideDiscoveries();
-			else if (wbvContent.CanGoBack)
+            {
+                HideDiscoveries();
+                if (wbvContent.CanGoBack)
+                {
+                    wbvContent.GoBack();
+                }
+                else
+                {
+                    App.Current.CloseApp();
+                }
+            }
+            else if (wbvContent.CanGoBack)
 				wbvContent.GoBack();
 			else
 				App.Current.CloseApp();
@@ -287,7 +306,8 @@ namespace TownFish.App.Pages
 
 		void UberWebView_NavigationFinished (object sender, string url)
 		{
-			// in case URL is changed by webview itself, save it here so we now what it is
+            // in case URL is changed by webview itself, save it here so we now what it is
+            mPreviousUrl = ViewModel.SourceUrl;
 			ViewModel.SourceUrl = url; // don't use Navigate() here!
 
 			/* TODO: Paul said the menus should be hidden at the start of each
@@ -447,15 +467,27 @@ namespace TownFish.App.Pages
 
 				return;
 			}
+            else if (info.Name == "back" && ViewModel.IsDiscoveriesInfoVisible)
+            {
+                ViewModel.IsDiscoveriesInfoVisible = false;
+                return;
+            }
 
-			// make sure this is closed so location name shows
-			ViewModel.IsDiscoveriesInfoVisible = false;
+            // make sure this is closed so location name shows
+            ViewModel.IsDiscoveriesInfoVisible = false;
 
-			HideSearchPanel();
+            HideSearchPanel();
 
-			Device.BeginInvokeOnMainThread (() =>
-				wbvContent.InvokeScript (string.Format (cCallbackFormat, info.Name)));
-		}
+            if (info.Name == "back" && !ViewModel.IsDiscoveriesVisible)
+            {
+                Navigate(mPreviousUrl);
+            }
+            else
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                   wbvContent.InvokeScript(string.Format(cCallbackFormat, info.Name)));
+            }
+        }
 
 		void ViewModel_NavigateRequested (object sender, string url)
 		{
@@ -522,10 +554,29 @@ namespace TownFish.App.Pages
 			ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty;
 			ViewModel.IsDiscoveriesVisible = true;
 
+            Device.StartTimer(TimeSpan.FromSeconds(1), UpdateDiscoveryExpiry);
+
 			// now we've shown discoveries, reset count & last view time
 			ViewModel.NewDiscoveriesCount = 0;
 			App.LastDiscoveriesViewTime = DateTime.Now;
 		}
+
+        /// <summary>
+        /// Callback to refresh exiry time on discovery items
+        /// </summary>
+        bool UpdateDiscoveryExpiry()
+        {
+            if (!ViewModel.IsDiscoveriesVisible || ViewModel.DiscoveryItems == null)
+            {
+                return false;
+            }
+
+            foreach (var item in ViewModel.DiscoveryItems)
+            {
+                item.RecalculateExpiry();
+            }
+            return true;
+        }
 
 		/// <summary>
 		/// Fire-and-forget discoveries hider.
@@ -726,9 +777,10 @@ namespace TownFish.App.Pages
 		bool mHidingDiscoveries;
 
 		string mLastSourceUrl;
+        string mPreviousUrl;
 
-		//Frame[] mBottomActionFrames;
+        //Frame[] mBottomActionFrames;
 
-		#endregion Fields
-	}
+        #endregion Fields
+    }
 }

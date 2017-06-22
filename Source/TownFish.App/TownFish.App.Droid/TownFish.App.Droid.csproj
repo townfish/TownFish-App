@@ -80,26 +80,26 @@
     <Reference Include="Mono.Android" />
     <Reference Include="Mono.Android.Export" />
     <Reference Include="mscorlib" />
-    <Reference Include="StreetHawkAnalytics">
-      <HintPath>..\..\Components\streethawkanalytics-1.8.7\lib\android\StreetHawkAnalytics.dll</HintPath>
+    <Reference Include="StreetHawkAnalytics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\StreetHawkAnalytics.1.8.8\lib\StreetHawkAnalytics.dll</HintPath>
     </Reference>
-    <Reference Include="StreetHawkBeacon">
-      <HintPath>..\..\Components\streethawkbeacon-1.8.7\lib\android\StreetHawkBeacon.dll</HintPath>
+    <Reference Include="StreetHawkBeacon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\StreetHawkBeacon.1.8.8\lib\StreetHawkBeacon.dll</HintPath>
     </Reference>
-    <Reference Include="StreetHawkFeeds">
-      <HintPath>..\..\Components\streethawkfeeds-1.8.7\lib\android\StreetHawkFeeds.dll</HintPath>
+    <Reference Include="StreetHawkFeeds, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\StreetHawkFeeds.1.8.8\lib\StreetHawkFeeds.dll</HintPath>
     </Reference>
-    <Reference Include="StreetHawkGeofence">
-      <HintPath>..\..\Components\streethawkgeofence-1.8.7\lib\android\StreetHawkGeofence.dll</HintPath>
+    <Reference Include="StreetHawkGeofence, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\StreetHawkGeofence.1.8.8\lib\StreetHawkGeofence.dll</HintPath>
     </Reference>
-    <Reference Include="StreetHawkGrowth">
-      <HintPath>..\..\Components\streethawkgrowth-1.8.7\lib\android\StreetHawkGrowth.dll</HintPath>
+    <Reference Include="StreetHawkGrowth, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\StreetHawkGrowth.1.8.8\lib\StreetHawkGrowth.dll</HintPath>
     </Reference>
-    <Reference Include="StreetHawkLocations">
-      <HintPath>..\..\Components\streethawklocations-1.8.7\lib\android\StreetHawkLocations.dll</HintPath>
+    <Reference Include="StreetHawkLocations, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\StreetHawkLocations.1.8.8\lib\StreetHawkLocations.dll</HintPath>
     </Reference>
-    <Reference Include="StreetHawkPush">
-      <HintPath>..\..\Components\streethawkpush-1.8.7\lib\android\StreetHawkPush.dll</HintPath>
+    <Reference Include="StreetHawkPush, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\StreethawkPush.1.8.8\lib\StreetHawkPush.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -203,7 +203,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
   </ItemGroup>

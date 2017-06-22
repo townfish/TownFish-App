@@ -23,7 +23,6 @@ using TownFish.App.Helpers;
 using TownFish.App.Pages;
 using TownFish.App.ViewModels;
 
-
 namespace TownFish.App
 {
 	public partial class App: Application
@@ -494,13 +493,14 @@ namespace TownFish.App
 				var url = string.Format (App.SHCuidUrl, devID, syncToken);
 
 				var result = await http.GetStringAsync (url);
-				var shcuid = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
+
+				var shcuid = JsonConvert.DeserializeObject<Dictionary<string, object>> (result);
 
 				if (!shcuid.TryGetValue (cCode, out var code) &&
 						shcuid.TryGetValue (cSHCuid, out var newID))
 				{
 					var userID = GetProp<string> (cSHCuid);
-					if (userID != newID)
+					if (userID != newID as string)
 					{
 #if false//DEBUG
 						Device.BeginInvokeOnMainThread (() =>
@@ -513,7 +513,7 @@ namespace TownFish.App
 									"StreetHawk Registration", message, "Continue");
 						});
 #endif
-						userID = newID;
+						userID = newID as string;
 
 						var shAnalytics = DependencyService.Get<IStreetHawkAnalytics>();
 						shAnalytics.TagCuid (userID);
@@ -528,11 +528,11 @@ namespace TownFish.App
 							try
 							{
 								result = await http.GetStringAsync (url);
-								var syncResult = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
+								var syncResult = JsonConvert.DeserializeObject<Dictionary<string, object>> (result);
 
 								if (!shcuid.TryGetValue (cCode, out code) &&
 										syncResult.TryGetValue (cSynced, out var sync) &&
-										sync == "true")
+										sync as string == "true")
 								{
 									SetProp (cSHCuid, userID);
 
