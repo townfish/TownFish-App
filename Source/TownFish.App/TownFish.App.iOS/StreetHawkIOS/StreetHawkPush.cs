@@ -235,6 +235,12 @@ namespace StreetHawkCrossplatform
 				_shRawJsonCallback(title, message, jsonStr.ToString());
 			}
 		}
-	}
+
+        public void Register()
+        {
+            // Empty method, put anything you like here !
+            // See Android StreetHawkPush.cs 
+        }
+    }
 }
 

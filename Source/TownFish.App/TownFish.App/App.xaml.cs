@@ -119,6 +119,8 @@ namespace TownFish.App
 			shAnalytics.Init();
 
 			shPush.RegisterForPushMessaging (GcmSenderID); // GCM push ID (Android only)
+            shPush.Register();
+
 			//shPush.SetGcmSenderId (GcmSenderID); // appears to be obsolete in latest SH Xamarin SDK
 
 			//Optional: iOS specific, set AppStore Id for upgrading or rating App.

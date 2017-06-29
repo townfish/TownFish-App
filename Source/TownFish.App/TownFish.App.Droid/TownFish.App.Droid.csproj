@@ -188,6 +188,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="JsonService.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="MainActivity.cs" />
     <Compile Include="Renderers\ImageSourceHandlerEx.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />

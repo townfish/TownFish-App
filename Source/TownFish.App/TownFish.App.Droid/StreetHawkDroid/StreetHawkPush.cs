@@ -17,7 +17,7 @@ using Android.Graphics;
 
 namespace StreetHawkCrossplatform
 {
-	public class StreetHawkPush : Java.Lang.Object, IStreetHawkPush, ISHObserver
+	public class StreetHawkPush : Java.Lang.Object, IStreetHawkPush
 	{
 		static Application mApplication => StreetHawkAnalytics.Application;
 
@@ -94,14 +94,22 @@ namespace StreetHawkCrossplatform
 		public void RegisterForPushMessaging(string projectNumber)
 		{
 			Push.GetInstance(mApplication.ApplicationContext).RegisterForPushMessaging(projectNumber);
-			Push.GetInstance(mApplication.ApplicationContext).RegisterSHObserver(this);
-		}
+        }
 
-		RegisterForShReceivedRawJSONCallback mRawJSONCB;
+        RegisterForShReceivedRawJSONCallback mRawJSONCB;
 		public void RegisterForRawJSON(RegisterForShReceivedRawJSONCallback cb)
 		{
 			mRawJSONCB = cb;
+            JsonService.Callback = cb;
 		}
+
+       // Starting our service that implements ISHObserver
+        public void Register()
+        {
+            Intent serviceToStart = new Intent(Xamarin.Forms.Forms.Context, typeof(JsonService));
+            Xamarin.Forms.Forms.Context.StartService(serviceToStart);
+        }
+
 
 		public void SendPushResult(string msgid, int result)
 		{
@@ -139,98 +147,6 @@ namespace StreetHawkCrossplatform
 			mNotifyAppPageCB = cb;
 		}
 
-		public void OnReceiveNonSHPushPayload(Bundle bundle)
-		{
-			bundle.ToString();
-		}
-
-		public void OnReceivePushData(Com.Streethawk.Library.Push.PushDataForApplication pushData)
-		{
-			StreetHawkCrossplatform.PushDataForApplication appData = new StreetHawkCrossplatform.PushDataForApplication();
-			if (null != pushData)
-			{
-				appData.title = pushData.Title;
-				appData.message = pushData.Message;
-				appData.displayWithoutDialog = (bool)pushData.DisplayWithoutConfirmation;
-				appData.data = pushData.Data;
-				appData.action = (SHAction)pushData.Action;
-				appData.isAppOnForeground = false;
-				appData.msgID = pushData.MsgId;
-				appData.portion = pushData.Portion;
-				appData.orientation = (SHSlideDirection)pushData.Orientation;
-				appData.speed = pushData.Speed;
-				appData.sound = pushData.Sound;
-				appData.badge = pushData.Badge;
-			}
-
-			mPushDataCallback?.Invoke(appData);
-		}
-
-		public void OnReceiveResult(Com.Streethawk.Library.Push.PushDataForApplication pushData, int result)
-		{
-			StreetHawkCrossplatform.PushDataForApplication appData = new StreetHawkCrossplatform.PushDataForApplication();
-			if (null != pushData)
-			{
-				appData.title = pushData.Title;
-				appData.message = pushData.Message;
-				appData.displayWithoutDialog = (bool)pushData.DisplayWithoutConfirmation;
-				appData.data = pushData.Data;
-				appData.action = (SHAction)pushData.Action;
-				appData.isAppOnForeground = false;
-				appData.msgID = pushData.MsgId;
-				appData.portion = pushData.Portion;
-				appData.orientation = (SHSlideDirection)pushData.Orientation;
-				appData.speed = pushData.Speed;
-				appData.sound = pushData.Sound;
-				appData.badge = pushData.Badge;
-			}
-
-			mPushResultCallback?.Invoke(appData,result);
-		}
-
-		public void ShNotifyAppPage(string appPage)
-		{
-			if (null != mNotifyAppPageCB)
-			{
-				mNotifyAppPageCB.Invoke(appPage);
-			}
-		}
-
-		public void ShReceivedRawJSON(string title, string message, string json)
-		{
-            if (MainActivity.IsActive)
-            {
-                if (null != mRawJSONCB)
-                {
-                    mRawJSONCB.Invoke(title, message, json);
-                }
-            }
-            else
-            {
-                SendNotification(title, message, json);
-            }
-        }
-
-        void SendNotification(string title, string body, string json)
-        {
-            var intent = new Intent(mApplication.ApplicationContext, typeof(MainActivity));
-            intent.AddFlags(ActivityFlags.NewTask | ActivityFlags.ClearTask);
-            intent.PutExtra("json", json);
-            var pendingIntent = PendingIntent.GetActivity(mApplication.ApplicationContext, 0, intent, PendingIntentFlags.UpdateCurrent);
-
-            var notificationBuilder = new NotificationCompat.Builder(mApplication.ApplicationContext)
-                .SetLargeIcon(BitmapFactory.DecodeResource(mApplication.Resources, Resource.Drawable.icon))
-                .SetSmallIcon(Resource.Drawable.icon)
-                .SetContentTitle(title)
-                .SetContentText(body)
-                .SetAutoCancel(true)
-                .SetExtras(intent.Extras)
-                .SetDefaults((int)(NotificationDefaults.Vibrate | NotificationDefaults.Sound))
-                .SetContentIntent(pendingIntent);
-
-            var notificationManager = (NotificationManager)mApplication.ApplicationContext.GetSystemService(Context.NotificationService);
-            notificationManager.Notify(0, notificationBuilder.Build());
-        }
 
     }
 }
