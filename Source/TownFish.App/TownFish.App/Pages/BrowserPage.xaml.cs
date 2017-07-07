@@ -469,7 +469,14 @@ namespace TownFish.App.Pages
 			}
             else if (info.Name == "back" && ViewModel.IsDiscoveriesInfoVisible)
             {
-                ViewModel.IsDiscoveriesInfoVisible = false;
+                if (ViewModel.IsDiscoveriesVisible)
+                {
+                    ViewModel.IsDiscoveriesInfoVisible = false;
+                }
+                else
+                {
+                    ViewModel.IsDiscoveriesVisible = true;
+                }
                 return;
             }
 
@@ -497,19 +504,19 @@ namespace TownFish.App.Pages
 		void Navigate (string url)
 		{
 			if (string.IsNullOrEmpty (url))
-				return;
+                return;
 
-			// if it's a TF URL hide the discoveries and save URL for returning to later
-			if (url.StartsWith (App.BaseUrl))
+            // if it's a TF URL hide the discoveries and save URL for returning to later
+            if (url.StartsWith (App.BaseUrl))
 			{
 				HideDiscoveries();
 
 				// save this in case we come back later from an external URL
 				mLastSourceUrl = url;
-			}
+            }
 
-			// remember where we're going...
-			ViewModel.SourceUrl = url;
+            // remember where we're going...
+            ViewModel.SourceUrl = url;
 
 			// ... and as WebView isn't bound to ViewModel.SourceUrl, tell it now
 			wbvContent.Source = url;

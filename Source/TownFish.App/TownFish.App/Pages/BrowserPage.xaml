@@ -3,6 +3,7 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			 xmlns:apptelic="clr-namespace:Apptelic.UberWebViewLib;assembly=Apptelic.UberWebView"
 			 xmlns:townfish="clr-namespace:TownFish.App;assembly=TownFish.App"
+             xmlns:controls="clr-namespace:TownFish.App.Controls;assembly=TownFish.App"
 			 Title="TownFish"
 			 x:Class="TownFish.App.Pages.BrowserPage">
 	<ContentPage.Resources>
@@ -107,14 +108,8 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-				<Frame x:Name="frmSuper0" IsVisible="{Binding HasSuperCount}" Padding="4,0"
-					   HorizontalOptions="End" VerticalOptions="Start"
-					   BackgroundColor="{Binding SuperCountBackgroundColour}"
-					   CornerRadius="-1" HasShadow="False">
-					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
-						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
-						   VerticalOptions="Center" HorizontalOptions="Center" />
-				</Frame>
+
+                <controls:Badge IsVisible="{Binding HasSuperCount}" VerticalOptions="Start" HorizontalOptions="End" Text="{Binding SuperCount}" BadgeColor="{Binding SuperCountBackgroundColour}" TextColor="{Binding SuperCountColour}" FontSize="10"/>
 			</Grid>
 
 			<Grid Grid.Column="1" BindingContext="{Binding BottomActions[1]}"
@@ -125,14 +120,8 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-                <Frame x:Name="frmSuper1" IsVisible="{Binding HasSuperCount}" Padding="4,0" HeightRequest="12" MinimumWidthRequest="12"
-					   HorizontalOptions="End" VerticalOptions="Start"
-					   BackgroundColor="{Binding SuperCountBackgroundColour}"
-					   CornerRadius="6" HasShadow="False">
-					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
-						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
-						   VerticalOptions="Center" HorizontalOptions="Center" />
-				</Frame>
+
+                <controls:Badge IsVisible="{Binding HasSuperCount}" VerticalOptions="Start" HorizontalOptions="End" Text="{Binding SuperCount}" BadgeColor="{Binding SuperCountBackgroundColour}" TextColor="{Binding SuperCountColour}" FontSize="10"/>
 			</Grid>
 
 			<Grid Grid.Column="2" BindingContext="{Binding BottomActions[2]}"
@@ -143,14 +132,7 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-                <Frame x:Name="frmSuper2" IsVisible="{Binding HasSuperCount}" Padding="4,0" HeightRequest="12" MinimumWidthRequest="12"
-					   HorizontalOptions="End" VerticalOptions="Start"
-					   BackgroundColor="{Binding SuperCountBackgroundColour}"
-					   CornerRadius="6" HasShadow="False">
-					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
-						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
-						   VerticalOptions="Center" HorizontalOptions="Center" />
-				</Frame>
+                <controls:Badge IsVisible="{Binding HasSuperCount}" VerticalOptions="Start" HorizontalOptions="End" Text="{Binding SuperCount}" BadgeColor="{Binding SuperCountBackgroundColour}" TextColor="{Binding SuperCountColour}" FontSize="10"/>
 			</Grid>
 
 			<Grid Grid.Column="3" BindingContext="{Binding BottomActions[3]}"
@@ -161,14 +143,7 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-                <Frame x:Name="frmSuper3" IsVisible="{Binding HasSuperCount}" Padding="4,0" HeightRequest="12" MinimumWidthRequest="12"
-					   HorizontalOptions="End" VerticalOptions="Start"
-					   BackgroundColor="{Binding SuperCountBackgroundColour}"
-					   CornerRadius="6" HasShadow="False">
-					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
-						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
-						   VerticalOptions="Center" HorizontalOptions="Center" />
-				</Frame>
+                <controls:Badge IsVisible="{Binding HasSuperCount}" VerticalOptions="Start" HorizontalOptions="End" Text="{Binding SuperCount}" BadgeColor="{Binding SuperCountBackgroundColour}" TextColor="{Binding SuperCountColour}" FontSize="10"/>
 			</Grid>
 
 			<Grid Grid.Column="4" BindingContext="{Binding BottomActions[4]}"
@@ -179,14 +154,7 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-                <Frame x:Name="frmSuper4" IsVisible="{Binding HasSuperCount}" Padding="4,0" HeightRequest="12" MinimumWidthRequest="12"
-					   HorizontalOptions="End" VerticalOptions="Start"
-					   BackgroundColor="{Binding SuperCountBackgroundColour}"
-					   CornerRadius="6" HasShadow="False">
-					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
-						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
-						   VerticalOptions="Center" HorizontalOptions="Center" />
-				</Frame>
+                <controls:Badge IsVisible="{Binding HasSuperCount}" VerticalOptions="Start" HorizontalOptions="End" Text="{Binding SuperCount}" BadgeColor="{Binding SuperCountBackgroundColour}" TextColor="{Binding SuperCountColour}" FontSize="10"/>
 			</Grid>
 
 			<Grid Grid.Column="5" BindingContext="{Binding BottomActions[5]}"
@@ -197,14 +165,7 @@
 				</Grid.GestureRecognizers>
 				<Image Source="{Binding Icon}" WidthRequest="24"
 					   HorizontalOptions="Center" VerticalOptions="Center" />
-				<Frame x:Name="frmSuper5" IsVisible="{Binding HasSuperCount}" Padding="4,0" HeightRequest="12" MinimumWidthRequest="12"
-					   HorizontalOptions="End" VerticalOptions="Start"
-					   BackgroundColor="{Binding SuperCountBackgroundColour}"
-					   CornerRadius="6" HasShadow="False">
-					<Label Text="{Binding SuperCount}" TextColor="{Binding SuperCountColour}"
-						   FontAttributes="Bold" FontFamily="Arial" FontSize="12"
-						   VerticalOptions="Center" HorizontalOptions="Center" />
-				</Frame>
+                <controls:Badge IsVisible="{Binding HasSuperCount}" VerticalOptions="Start" HorizontalOptions="End" Text="{Binding SuperCount}" BadgeColor="{Binding SuperCountBackgroundColour}" TextColor="{Binding SuperCountColour}" FontSize="10"/>
 			</Grid>
 		</Grid>
 
