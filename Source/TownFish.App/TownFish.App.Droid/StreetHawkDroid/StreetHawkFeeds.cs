@@ -19,43 +19,42 @@ namespace StreetHawkCrossplatform
 	{
 		static Application mApplication => StreetHawkAnalytics.Application;
 
-		private const string FEED_ID = "feed_id";
-		private const string TITLE = "title";
-		private const string MESSAGE = "message";
-		private const string CAMPAIGN = "campaign";
-		private const string CONTENT = "content";
-		private const string ACTIVATES = "activates";
-		private const string EXPIRES = "expires";
-		private const string CREATED = "created";
-		private const string MODIFIED = "modified";
-		private const string DELETED = "deleted";
+		const string FEED_ID = "feed_id";
+		const string TITLE = "title";
+		const string MESSAGE = "message";
+		const string CAMPAIGN = "campaign";
+		const string CONTENT = "content";
+		const string ACTIVATES = "activates";
+		const string EXPIRES = "expires";
+		const string CREATED = "created";
+		const string MODIFIED = "modified";
+		const string DELETED = "deleted";
 
-		public void NotifyFeedResult(int feedid, int result)
+		public void NotifyFeedResult(string feedid, int result)
 		{
-			SHFeedItem.GetInstance(mApplication.ApplicationContext).NotifyFeedResult(feedid,result);
+			SHFeedItem.GetInstance(mApplication.ApplicationContext).NotifyFeedResult(feedid ,result);
 		}
 
-		public void NotifyFeedResult(int feedid, string stepid, string feedresult, bool feedDelete, bool completed)
+		public void NotifyFeedResult(string feedid, string stepid, string feedresult, bool feedDelete, bool completed)
 		{
 			//TODO: not implement yet
 		}
 
-		private RegisterForNewFeedCallback mNewFeedCallbak;
+		RegisterForNewFeedCallback mNewFeedCallbak;
 		public void OnNewFeedAvailableCallback(RegisterForNewFeedCallback cb)
 		{
 			//TODO : implement broadcast receiver in native to receive feed notification and notifies server
 			Log.Error("StreetHawk", "OnNewFeedAvailableCallback is not available for this release");
-
 		}
 
-		private RegisterForFeedCallback mRegisterForFeedCallBack;
+		RegisterForFeedCallback mRegisterForFeedCallBack;
 		public void ReadFeedData(int offset, RegisterForFeedCallback cb)
 		{
 			mRegisterForFeedCallBack = cb;
 			SHFeedItem.GetInstance(mApplication.ApplicationContext).ReadFeedData(offset);
 		}
 
-		public void SendFeedAck(int feedid)
+		public void SendFeedAck(string feedid)
 		{
 			SHFeedItem.GetInstance(mApplication.ApplicationContext).SendFeedAck(feedid);
 		}
@@ -72,7 +71,7 @@ namespace StreetHawkCrossplatform
 						{
 							JSONObject jsonObj = feeds.GetJSONObject(i);
 							SHFeedObject obj = new SHFeedObject();
-							obj.feed_id = jsonObj.GetInt(FEED_ID);
+							obj.feed_id = jsonObj.GetString(FEED_ID);
 							obj.title = jsonObj.GetString(TITLE);
 							obj.message = jsonObj.GetString(MESSAGE);
 							obj.campaign = jsonObj.GetString(CAMPAIGN);
@@ -93,6 +92,11 @@ namespace StreetHawkCrossplatform
 					mRegisterForFeedCallBack.Invoke(arrayFeeds,null);
 				}
 			}
+		}
+
+		public void SHNotifyNewFeedItem()
+		{
+			// TODO: get implementation from StreetHawk
 		}
 	}
 }

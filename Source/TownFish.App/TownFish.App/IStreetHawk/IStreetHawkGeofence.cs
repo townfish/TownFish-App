@@ -78,9 +78,9 @@ namespace StreetHawkCrossplatform
 		public double radius;
 
 		/// <summary>
-		/// StreetHawk server unique id of this geofence.
+		/// StreetHawk server unique id of this geofence. It's like 12-100. 12 is geofence center, 100 is radius.
 		/// </summary>
-		public int serverId;
+		public string serverId;
 
 		/// <summary>
 		/// Whether this geofence is inside or outside.

@@ -1,0 +1,37 @@
+TownFish Apple dev account
+==========================
+
+Certificates:
+https://developer.apple.com/account/ios/certificate/?teamId=LK2389XQ78
+
+1. com.matt.townfish - APNS Dev iOS: sandbox push (password: TownFish)
+2. com.matt.townfish - Apple Push: live push (password: TownFish)
+
+Provisioning profiles:
+https://developer.apple.com/account/ios/profile/?teamId=LK2389XQ78
+
+1. AdHoc Dist. for TownFish Ltd. - iOS TestFlight release, includes sandbox Push
+2. Store Dist. for TownFish Ltd. - iOS store release, includes live Push
+3. TownFish Development - iOS local dev/test, includes sandbox Push & certs for Matt, Dani & Philip
+
+
+TestFlight Release Procedure
+----------------------------
+
+TestFlight in iTunes Connect:
+https://itunesconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/1190962408/testflight
+
+1. Build Store release (not Ad-Hoc) using Store Dist prov profile
+2. Upload IPA package via 'Application Loader' app on Mac
+3. Go to TestFlight page (URL above) and select build
+
+
+iTunes Release Procedure
+------------------------
+
+iTunes Connect Submission:
+https://itunesconnect.apple.com/WebObjects/iTunesConnect.woa/ra/ng/app/1190962408/ios/versioninfo
+
+1. Build Store release (not Ad-Hoc) using Store Dist prov profile
+2. Upload IPA package via 'Application Loader' app on Mac
+3. Go to Submission page (URL above) to fill in version / submission info

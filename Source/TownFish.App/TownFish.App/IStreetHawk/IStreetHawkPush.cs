@@ -144,6 +144,8 @@ namespace StreetHawkCrossplatform
 		/// <returns>The use push.</returns>
 		bool IsUsePush();
 
+        void Register();
+
 		/// <summary>
 		/// Registers for push messaging by passing project number as received from StreetHawk server.
 		/// </summary>

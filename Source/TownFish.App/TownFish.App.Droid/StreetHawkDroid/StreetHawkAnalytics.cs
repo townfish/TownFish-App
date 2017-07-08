@@ -14,13 +14,6 @@ namespace StreetHawkCrossplatform
 {
 	public class StreetHawkAnalytics : Java.Lang.Object, IStreetHawkAnalytics, ISHEventObserver
 	{
-		const string cCallInitAndroidMessage =
-				"Call StreetHawkAnalytics.Init (Activity) before any other StreetHawk APIs";
-
-		private bool mIsInitialised = false;
-
-		static Activity sMainActivity;
-
 		public static Activity MainActivity
 		{
 			get
@@ -31,13 +24,22 @@ namespace StreetHawkCrossplatform
 				return sMainActivity;
 			}
 
-			private set
+			set
 			{
 				sMainActivity = value;
 			}
 		}
 
+		const string cCallInitAndroidMessage =
+				"Call StreetHawkAnalytics.Init (Activity) before any other StreetHawk APIs";
+
 		public static Application Application => MainActivity.Application;
+
+		static Activity sMainActivity;
+
+		static Application mApplication => Application;
+
+		static bool mIsInitialised = false;
 
 		/// <summary>
 		/// Sets up 
@@ -61,8 +63,8 @@ namespace StreetHawkCrossplatform
 
 		public string GetAppKey()
 		{
-			Log.Error("StreetHawk","inside getAppKey "+Application);
-			return StreetHawk.Instance.GetAppKey(Application.ApplicationContext);
+			Log.Error("StreetHawk","inside getAppKey "+mApplication);
+			return StreetHawk.Instance.GetAppKey(mApplication.ApplicationContext);
 		}
 
 		public string GetCurrentFormattedDateTime()
@@ -84,13 +86,10 @@ namespace StreetHawkCrossplatform
 
 		public string GetInstallId()
 		{
-			return StreetHawk.Instance.GetInstallId(Application.ApplicationContext);
+			return StreetHawk.Instance.GetInstallId(mApplication.ApplicationContext);
 		}
 
-		public string GetSHLibraryVersion()
-		{
-			return StreetHawk.Instance.SHLibraryVersion;
-		}
+		public string GetSHLibraryVersion() => StreetHawk.Instance.SHLibraryVersion;
 
 		public string GetsiTunesId()
 		{
@@ -111,7 +110,7 @@ namespace StreetHawkCrossplatform
 		public void Init()
 		{
 			mIsInitialised = true;
-			StreetHawk.Instance.Init(Application);
+			StreetHawk.Instance.Init(mApplication);
 		}
 
 		public void NotifyViewEnter(string viewName)
@@ -149,7 +148,7 @@ namespace StreetHawkCrossplatform
 
 		public void SetAdvertisementId(string id)
 		{
-			StreetHawk.Instance.SetAdvertisementId(Application.ApplicationContext,id);
+			StreetHawk.Instance.SetAdvertisementId(mApplication.ApplicationContext,id);
 		}
 
 		public void SetAppKey(string appKey)
@@ -159,7 +158,7 @@ namespace StreetHawkCrossplatform
 
 		public void SetEnableLogs(bool isEnable)
 		{
-			Util.SetSHDebugFlag(Application.ApplicationContext,isEnable);
+			Util.SetSHDebugFlag(mApplication.ApplicationContext,isEnable);
 		}
 
 		public void SetsiTunesId(string iTunesId)

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.townfish.app" android:installLocation="auto" android:versionCode="161216" android:versionName="1.1.2.0">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.townfish.app" android:installLocation="auto" android:versionCode="170707" android:versionName="1.1.12.0" android:largeHeap="false">
 	<uses-sdk android:minSdkVersion="16" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -18,6 +18,9 @@
 	<uses-permission android:name="com.sec.android.provider.badge.permission.WRITE" />
 	<permission android:name="com.townfish.app.permission.C2D_MESSAGE" android:protectionLevel="signature" />
 	<uses-permission android:name="com.townfish.app.permission.C2D_MESSAGE" />
+	<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+	<uses-permission android:name="android.permission.BLUETOOTH" />
+	<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 	<!-- End StreetHawk -->
 	<application android:label="TownFish" android:icon="@drawable/icon">
 		<!-- Begin StreetHawk -->

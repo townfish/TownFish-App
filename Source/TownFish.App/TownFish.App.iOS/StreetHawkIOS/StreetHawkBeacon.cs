@@ -19,7 +19,7 @@ namespace StreetHawkCrossplatform
 				   beacon.uuid = dictBeacon["uuid"].ToString();
 				   beacon.major = int.Parse(dictBeacon["major"].ToString());
 				   beacon.minor = int.Parse(dictBeacon["minor"].ToString());
-				   beacon.serverId = int.Parse(dictBeacon["serverId"].ToString());
+				   beacon.serverId = dictBeacon["serverId"].ToString();
 				   beacon.isInside = (int.Parse(dictBeacon["isInside"].ToString()) == 1);
 				   cb(beacon);
 			   };

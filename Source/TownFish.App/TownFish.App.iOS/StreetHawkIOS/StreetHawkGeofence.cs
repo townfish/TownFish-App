@@ -16,7 +16,7 @@ namespace StreetHawkCrossplatform
 			SHGeofence.instance().notifyGeofenceEventCallback = delegate (NSDictionary dictGeofence)
 			   {
 				   SHGeofenceObj geofence = new SHGeofenceObj();
-				   geofence.serverId = int.Parse(dictGeofence["serverId"].ToString());
+				   geofence.serverId = dictGeofence["serverId"].ToString();
 				   geofence.latitude = double.Parse(dictGeofence["latitude"].ToString());
 				   geofence.longitude = double.Parse(dictGeofence["longitude"].ToString());
 				   geofence.radius = double.Parse(dictGeofence["radius"].ToString());

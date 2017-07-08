@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
-using Newtonsoft.Json;
 using Xamarin.Forms;
 
-using Xamify.UberWebViewLib;
+using Newtonsoft.Json;
 
-using StreetHawkCrossplatform;
+using Apptelic.UberWebViewLib;
 
 using TownFish.App.Models;
 using TownFish.App.ViewModels;
@@ -27,8 +25,6 @@ namespace TownFish.App.Pages
 		{
 			InitializeComponent();
 
-			App.Current.BackButtonPressed += App_BackButtonPressed;
-
 			// set my user agent string
 			wbvContent.CustomUserAgent = cCustomUserAgent;
 
@@ -41,7 +37,9 @@ namespace TownFish.App.Pages
 				{ cSchemaAction, cSchemaMethod },
 				{ cMenusVisibleAction, cMenusVisibleMethod },
 				{ cPopupMenuAction, cPopupMenuMethod },
-				{ cPushAction, cPushMethod }
+				{ cPushAction, cPushMethod },
+				{ cShowDiscoveriesAction, cShowDiscoveriesValue },
+				{ cHideDiscoveriesAction, cHideDiscoveriesValue }
 			};
 
 			wbvContent.ScriptMessageReceived += UberWebView_ScriptMessageReceived;
@@ -53,8 +51,12 @@ namespace TownFish.App.Pages
 			wbvContent.QueryParamDomain = App.SiteDomain;
 			wbvContent.QueryParam = App.QueryParam;
 
+			// get bottom action frames so we can manually set the background,
+			// as binding background colour crashes on Android (thanks, Xamarin!)
+			//mBottomActionFrames = new Frame[] { frmSuper0, frmSuper1, frmSuper2, frmSuper3, frmSuper4, frmSuper5 };
+
 			// on iOS we have to allow for the overlapping status bar at top of layout
-			if (Device.OS == TargetPlatform.iOS)
+			if (Device.RuntimePlatform == Device.iOS)
 			{
 				var pad = pnlTopMenuBar.Padding;
 				pad.Top += cTopPaddingiOS;
@@ -64,77 +66,148 @@ namespace TownFish.App.Pages
 				pad.Top += cTopPaddingiOS;
 				pnlTopForm.Padding = pad;
 			}
-
-			gstLocationImage.Tapped += LocationTapped;
-			gstLocationLabel.Tapped += LocationTapped;
-
-			// continue initialisation below once caller has set binding context
-			BindingContextChanged += BrowserPage_BindingContextChanged;
 		}
 
 		#endregion Construction
 
 		#region Methods
 
+		protected override void OnAppearing()
+		{
+			App.Current.BackButtonPressed += App_BackButtonPressed;
+			App.Current.PushUrlReceived += App_PushUrlReceived;
+			App.Current.DiscoveriesUpdated += App_DiscoveriesUpdated;
+			App.Current.BackgroundDiscoveriesReceived += App_BackgroundDiscoveriesReceived;
+			App.Current.AppResumed += App_Resumed;
+
+			base.OnAppearing();
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			App.Current.BackButtonPressed -= App_BackButtonPressed;
+			App.Current.PushUrlReceived -= App_PushUrlReceived;
+			App.Current.DiscoveriesUpdated -= App_DiscoveriesUpdated;
+			App.Current.BackgroundDiscoveriesReceived -= App_BackgroundDiscoveriesReceived;
+			App.Current.AppResumed -= App_Resumed;
+		}
+
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+
+			if (ViewModel == null)
+				return;
+
+			// manually set this as span isn't bindable
+			spnMemberAgreementLink.ForegroundColor = ViewModel.DiscoveriesLinkColour;
+
+			// Because we use DisplayActionSheet
+			ViewModel.TopActionMoreCommand = new Command (async _ =>
+				{
+					var selection = await DisplayActionSheet (cMoreActions, cCancel, null,
+							ViewModel.OverflowImages.Select (i => i.Value).ToArray<string>());
+
+					var url = ViewModel.OverflowImages.FirstOrDefault (i => i.Value == selection)?.Href;
+					if (!string.IsNullOrWhiteSpace (url))
+						Navigate (App.BaseUrl + url + App.QueryString);
+				});
+
+			ViewModel.LocationTapped += ViewModel_LocationTapped;
+			ViewModel.CallbackRequested += ViewModel_CallbackRequested;
+			ViewModel.MenusLoaded += ViewModel_MenusLoaded;
+			ViewModel.NavigateRequested += ViewModel_NavigateRequested;
+
+			// always start in loading state
+			ShowLoading();
+
+			// now start at the specified source URL, clearing it first to indicate we're not there yet
+			var source = ViewModel.SourceUrl;
+			ViewModel.SourceUrl = null;
+
+			Navigate (source);
+		}
+
+		protected override bool OnBackButtonPressed()
+		{
+			// Hello! When did this appear?!
+
+			return base.OnBackButtonPressed();
+		}
+
+		void App_BackButtonPressed (object sender, EventArgs e)
+		{
+			if (mIsSearchVisible || mShowingSearch)
+				HideSearchPanel();
+
+            else if (ViewModel.IsDiscoveriesInfoVisible)
+            {
+                ViewModel.IsDiscoveriesInfoVisible = false;
+                if (ViewModel.IsDiscoveriesEmpty)
+                {
+                    App_BackButtonPressed(this, new EventArgs());
+                }
+            }
+			else if (ViewModel.IsDiscoveriesVisible)
+            {
+                HideDiscoveries();
+                if (wbvContent.CanGoBack)
+                {
+                    wbvContent.GoBack();
+                }
+                else
+                {
+                    App.Current.CloseApp();
+                }
+            }
+            else if (wbvContent.CanGoBack)
+				wbvContent.GoBack();
+			else
+				App.Current.CloseApp();
+		}
+
+		void App_PushUrlReceived (object sender, (string url, bool wasBackgrounded) args)
+		{
+			// Basecamp Item 32: only navigate if we're not logged in; if logged
+			// in the Vanilla code takes care of its own notifications
+
+			// Basecamp Item 40: navigate anyway if we were backgrounded
+
+			if (string.IsNullOrEmpty (ViewModel.SyncToken) || args.wasBackgrounded)
+				Navigate (args.url);
+		}
+
+		void App_Resumed (object sender, EventArgs e)
+		{
+			// in case we're returning from a remote URL, remember what our last URL really was
+			if (!string.IsNullOrEmpty (mLastSourceUrl))
+				ViewModel.SourceUrl = mLastSourceUrl; // don't use Navigate() here!
+
+			// and make sure menu is correct
+			//RestoreTopMenu();
+		}
+
 		async void UberWebView_ScriptMessageReceived (object sender, string msg)
 		{
 			string action = null;
-			string result = null;
+			string data = null;
 
 			try
 			{
 				var model = JsonConvert.DeserializeObject<UberWebViewMessage>(msg);
 
 				action = model.Action;
-				result = model.Result;
-
-				Debug.WriteLine ("WebViewAction: Parsing {0}:\n{1}", action, result);
-
-				switch (action)
-				{
-					case cBeginLoadingAction:
-						ShowLoading();
-						break;
-
-					case cSchemaAction:
-						mCurrentSchema = JsonConvert.DeserializeObject<TownFishMenuMap> (result);
-						ViewModel.LoadMenuMap (mCurrentSchema);
-
-						break;
-
-					case cMenusVisibleAction:
-						if (mCurrentSchema == null)
-							break;
-
-						var visibleMenus = JsonConvert.DeserializeObject<string[]> (result);
-						mCurrentSchema.SetMenuVisibility (visibleMenus);
-
-						// now reload with new visibility settings
-						ViewModel.LoadMenuMap (mCurrentSchema);
-
-						break;
-
-					case cPopupMenuAction:
-						var menu = JsonConvert.DeserializeObject<List<TownFishMenuItem>> (result);
-
-						var selection = await DisplayActionSheet (cMoreActions, cCancel, null,
-								menu.Select (i => i.Value).ToArray());
-
-						var selectedItem = menu.FirstOrDefault (i => i.Value == selection);
-						if (selectedItem?.Type == cCallbackType)
-							OnCallback (selectedItem.Name);
-
-						break;
-
-					case cPushAction:
-						// TODO: implement push!
-						break;
-				}
+				data = model.Result;
 			}
-			catch (Exception e)
+			catch (Exception ex)
 			{
-				// TODO: parse failed, so use a default? go to offline page?
-				Debug.WriteLine ("WebViewAction: Parse of:\n{0}\nfailed with error:\n{1}", msg, e.Message);
+				// parse failed, fail gracefully
+
+				Debug.WriteLine (
+						"BrowserPage.UberWebView_ScriptMessageReceived: " +
+						$"Parse of:\n{msg}\nfailed with error:\n{ex.Message}");
 
 				// if it was the schema, just hide everything as it might contain rubbish
 				if (action == cSchemaAction)
@@ -144,8 +217,71 @@ namespace TownFish.App.Pages
 					ViewModel.IsTopFormBarVisible = false;
 					ViewModel.IsBottomBarVisible = false;
 
+					// hide loading so user can see what's going on
 					HideLoading();
+
+					return;
 				}
+			}
+
+			try
+			{
+				Debug.WriteLine (
+						"BrowserPage.UberWebView_ScriptMessageReceived: " +
+						$"Performing {action} on:\n{data}");
+
+				switch (action)
+				{
+					case cBeginLoadingAction:
+						ShowLoading();
+						break;
+
+					case cSchemaAction:
+						mCurrentMenuMap = JsonConvert.DeserializeObject<TownFishMenuMap> (data);
+						ViewModel.LoadMenuMap (mCurrentMenuMap);
+
+						break;
+
+					case cMenusVisibleAction:
+						if (mCurrentMenuMap == null)
+							break;
+
+						var visibleMenus = JsonConvert.DeserializeObject<string[]> (data);
+						mCurrentMenuMap.SetMenuVisibility (visibleMenus);
+
+						// now reload with new visibility settings
+						ViewModel.LoadMenuMap (mCurrentMenuMap);
+
+						break;
+
+					case cPopupMenuAction:
+						var menu = JsonConvert.DeserializeObject<List<TownFishMenuItem>> (data);
+						var items = menu.Select (i => i.Value).ToArray();
+						var selection = await DisplayActionSheet (cMoreActions, cCancel, null, items);
+
+						var menuItem = menu.FirstOrDefault (i => i.Value == selection);
+						if (menuItem != null)
+							ViewModel.GenerateMenuAction (menuItem)?.Execute (null);
+
+						break;
+
+					case cPushAction:
+						break;
+
+					case cShowDiscoveriesAction:
+						ShowDiscoveries();
+						break;
+
+					case cHideDiscoveriesAction:
+						// just returning to current page, so don't show loading
+						HideDiscoveries (showLoading: false);
+						break;
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine (
+						$"BrowserPage.UberWebView_ScriptMessageReceived: {ex.Message}");
 			}
 		}
 
@@ -170,6 +306,10 @@ namespace TownFish.App.Pages
 
 		void UberWebView_NavigationFinished (object sender, string url)
 		{
+            // in case URL is changed by webview itself, save it here so we now what it is
+            mPreviousUrl = ViewModel.SourceUrl;
+			ViewModel.SourceUrl = url; // don't use Navigate() here!
+
 			/* TODO: Paul said the menus should be hidden at the start of each
 			   page load, but this gives a very 'flashy' experience (and not in
 			   a good way), so I'm removing it for now
@@ -198,7 +338,7 @@ namespace TownFish.App.Pages
 		void UberWebView_NavigationFailed (object sender, UberWebView.NavigationException ex)
 		{
 			// HACK! ignore iOS -999 (nav cancelled?) error; appears harmless
-			if (Device.OS == TargetPlatform.iOS && ex.ErrorCode == -999)
+			if (Device.RuntimePlatform == Device.iOS && ex.ErrorCode == -999)
 				return;
 
 			HideLoading();
@@ -212,35 +352,7 @@ namespace TownFish.App.Pages
 					"Failed to load the page.\n\n{0}", msg), "Cancel");
 		}
 
-		void BrowserPage_BindingContextChanged (object sender, EventArgs e)
-		{
-			if (ViewModel == null)
-				return;
-
-			// start in loading state
-			ShowLoading();
-
-			// manually set this as span isn't bindable
-			spnMemberAgreementLink.ForegroundColor = ViewModel.LocationsLinkColour;
-
-			// Because we use DisplayActionSheet
-			ViewModel.TopActionMoreCommand = new Command (async _ =>
-				{
-					var selection = await DisplayActionSheet (cMoreActions, cCancel, null,
-							ViewModel.OverflowImages.Select (i => i.Value).ToArray<string>());
-
-					var url = ViewModel.OverflowImages.FirstOrDefault (i => i.Value == selection)?.Href;
-					if (!string.IsNullOrWhiteSpace (url))
-						ViewModel.SourceUrl = App.BaseUrl + url + App.QueryString;
-				});
-
-			ViewModel.CallbackRequested += (s, name) => OnCallback (name);
-			ViewModel.MenusLoaded += ViewModel_MenusLoaded;
-			ViewModel.PropertyChanged += ViewModel_PropertyChanged;
-
-			lstLocationSearchResults.ItemTapped += lstLocationSearchResults_ItemTapped;
-			lstAvailableLocations.ItemTapped += lstAvailableLocations_ItemTapped;
-		}
+#pragma warning disable IDE1006 // Naming Styles ("lst" is Hungarian Notation prefix used for XAML controls)
 
 		void lstLocationSearchResults_ItemTapped (object sender, ItemTappedEventArgs e)
 		{
@@ -256,47 +368,256 @@ namespace TownFish.App.Pages
 			ViewModel.SetLocation ((e.Item as AvailableLocation).ID);
 		}
 
-		void ViewModel_PropertyChanged (object sender, PropertyChangedEventArgs pcea)
-		{ 
-			// WebView Source binding is unreliable, so we do it manually here
-			if (pcea.PropertyName == "SourceUrl")
-				wbvContent.Source = ViewModel.SourceUrl;
+		void lstDiscoveries_ItemTapped (object sender, EventArgs e)//ItemTappedEventArgs e)
+		//async void lstDiscoveries_ItemTapped (object sender, ItemTappedEventArgs e)
+		{
+			// when using ListView:
+			//var fivm = e.Item as DiscoveryItemViewModel;
+
+			// when using StackView:
+			var discoveryItem = sender as DiscoveryItem;
+			if (discoveryItem.BindingContext is DiscoveryItemViewModel fivm)
+				Navigate (fivm.LinkUrl);
 		}
 
-		void App_BackButtonPressed (object sender, EventArgs e)
+#pragma warning restore IDE1006 // Naming Styles
+
+		void App_BackgroundDiscoveriesReceived (object sender, EventArgs e)
 		{
-			if (mIsSearchVisible || mShowingSearch)
-				HideSearchPanel();
-			else if (wbvContent.CanGoBack)
-				wbvContent.GoBack();
+			// can't just call ShowDiscoveries here as the menu won't be set;
+			// we have to ask the schema to tell us to show discoveries, then it
+			// sets the menu for us, but as we don't yet have a callback for that...
+
+			// HACK: replace with a callback to schema
+			Navigate (App.ShowFeedUrl + App.QueryString);
+		}
+
+		/// <summary>
+		/// Sets discoveries count and updates the discoveries list.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name=""></param>
+		void App_DiscoveriesUpdated (object sender, EventArgs e)
+		{
+			// if discoveries already open, just update last viewed time;
+			// otherwise update count to show new arrival(s)
+
+			if (ViewModel.IsDiscoveriesVisible)
+				App.LastDiscoveriesViewTime = DateTime.Now;
 			else
-				App.Current.CloseApp();
+				ViewModel.NewDiscoveriesCount = App.NewDiscoveriesCount;
+
+			// cache discovery items so it shows quickly when revealed
+			UpdateDiscoveryItems();
 		}
 
-		void OnMemAgreeClicked (object sender, EventArgs e)
+		async void BrowserPage_EditLikesTapped (object sender, EventArgs e)
+		{
+			await HideDiscoveriesAsync();
+
+			Navigate (App.EditLikesUrl + App.QueryString);
+		}
+
+		async void BrowserPage_EditProfileTapped (object sender, EventArgs e)
+		{
+			await HideDiscoveriesAsync();
+
+			Navigate (App.EditProfileUrl + App.QueryString);
+		}
+
+		void BrowserPage_MemberAgreementTapped (object sender, EventArgs e)
 		{
 			HideSearchPanel();
 
-			ViewModel.SourceUrl = App.TermsUrl + App.QueryString;
+			Navigate (App.TermsUrl + App.QueryString);
 		}
 
-		void LocationTapped (object sender, EventArgs e)
+		void ViewModel_MenusLoaded (object sender, EventArgs e)
 		{
-			if (ViewModel.LeftActionIsLocationPin)
+			// now update bottom action superscript frame background colours, in case they changed
+			//if (ViewModel.IsBottomBarVisible)
+			//	for (var i = 0; i < 6; i++)
+			//		mBottomActionFrames [i].BackgroundColor =
+			//				ViewModel.BottomActions [i].SuperCountBackgroundColour;
+
+			// only hide loading if already showing it but not in the process of hiding discoveries
+			if (ViewModel.IsLoading && !mHidingDiscoveries)
+				Device.BeginInvokeOnMainThread (() => HideLoading());
+
+			// tell app to check sync token in case login changed
+			// (i.e. user logged out, or new user logged in)
+			App.CheckCuid (ViewModel.SyncToken);
+		}
+
+		void ViewModel_LocationTapped (object sender, EventArgs e)
+		{
+			if (!mIsSearchVisible && !mShowingSearch)
+				ShowSearchPanel();
+			else
+				HideSearchPanel();
+		}
+
+		void ViewModel_CallbackRequested (object sender, BrowserPageViewModel.CallbackInfo info)
+		{
+			// special-case info icon within discoveries
+			if (info.IsNative && info.Name == BrowserPageViewModel.CallbackInfo.Info)
 			{
-				if (!mIsSearchVisible && !mShowingSearch)
-					ShowSearchPanel();
-				else
-					HideSearchPanel();
+				ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty ||
+						!ViewModel.IsDiscoveriesInfoVisible;
+
+				return;
 			}
+            else if (info.Name == "back" && ViewModel.IsDiscoveriesInfoVisible)
+            {
+                if (ViewModel.IsDiscoveriesVisible)
+                {
+                    ViewModel.IsDiscoveriesInfoVisible = false;
+                }
+                else
+                {
+                    ViewModel.IsDiscoveriesVisible = true;
+                }
+                return;
+            }
+
+            // make sure this is closed so location name shows
+            ViewModel.IsDiscoveriesInfoVisible = false;
+
+            HideSearchPanel();
+
+            if (info.Name == "back" && !ViewModel.IsDiscoveriesVisible)
+            {
+                Navigate(mPreviousUrl);
+            }
+            else
+            {
+                Device.BeginInvokeOnMainThread(() =>
+                   wbvContent.InvokeScript(string.Format(cCallbackFormat, info.Name)));
+            }
+        }
+
+		void ViewModel_NavigateRequested (object sender, string url)
+		{
+			Navigate (url);
 		}
 
-		void OnCallback (string name)
+		void Navigate (string url)
 		{
-			HideSearchPanel();
+			if (string.IsNullOrEmpty (url))
+                return;
 
+            // if it's a TF URL hide the discoveries and save URL for returning to later
+            if (url.StartsWith (App.BaseUrl))
+			{
+				HideDiscoveries();
+
+				// save this in case we come back later from an external URL
+				mLastSourceUrl = url;
+            }
+
+            // remember where we're going...
+            ViewModel.SourceUrl = url;
+
+			// ... and as WebView isn't bound to ViewModel.SourceUrl, tell it now
+			wbvContent.Source = url;
+		}
+
+		void UpdateDiscoveryItems()
+		{
+			var discoveryItems = App.Discoveries;
+			var count = App.DiscoveriesCount;
+
+			// if no items, kill previous list
+			if (count == 0)
+				ViewModel.DiscoveryItems = null;
+			else
+				ViewModel.DiscoveryItems = new ObservableCollection<DiscoveryItemViewModel> (discoveryItems);
+
+			// HACK: as iOS ListView isn't working, manually generate content for a StackLayout
 			Device.BeginInvokeOnMainThread (() =>
-				wbvContent.InvokeScript (string.Format (cCallbackFormat, name)));
+				{
+					var kids = lstDiscoveries.Children;
+					kids.Clear();
+
+					for (var i = 0; i < count; i++)
+					{
+						var item = new DiscoveryItem { BindingContext = discoveryItems [i] };
+						item.Tapped += lstDiscoveries_ItemTapped;
+
+						kids.Add (item);
+					}
+				});
+		}
+
+		void ShowDiscoveries()
+		{
+			if (ViewModel.IsDiscoveriesVisible)
+				return;
+
+			// make sure we have latest discovery items in our list
+			if (ViewModel.IsDiscoveriesEmpty)
+				UpdateDiscoveryItems();
+
+			ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty;
+			ViewModel.IsDiscoveriesVisible = true;
+
+            Device.StartTimer(TimeSpan.FromSeconds(1), UpdateDiscoveryExpiry);
+
+			// now we've shown discoveries, reset count & last view time
+			ViewModel.NewDiscoveriesCount = 0;
+			App.LastDiscoveriesViewTime = DateTime.Now;
+		}
+
+        /// <summary>
+        /// Callback to refresh exiry time on discovery items
+        /// </summary>
+        bool UpdateDiscoveryExpiry()
+        {
+            if (!ViewModel.IsDiscoveriesVisible || ViewModel.DiscoveryItems == null)
+            {
+                return false;
+            }
+
+            foreach (var item in ViewModel.DiscoveryItems)
+            {
+                item.RecalculateExpiry();
+            }
+            return true;
+        }
+
+		/// <summary>
+		/// Fire-and-forget discoveries hider.
+		/// </summary>
+		async void HideDiscoveries (bool showLoading = true)
+		{
+			await HideDiscoveriesAsync (showLoading);
+		}
+
+		/// <summary>
+		/// Awaitable discoveries hider.
+		/// </summary>
+		/// <returns></returns>
+		async Task HideDiscoveriesAsync (bool showLoading = true)
+		{
+			if (ViewModel.IsDiscoveriesVisible && !mHidingDiscoveries)
+			{
+				mHidingDiscoveries = true;
+
+				if (showLoading)
+					await ShowLoadingAsync(); // wait for it to show before hiding discoveries
+
+				// clear & hide discoveries
+				ViewModel.IsDiscoveriesVisible = false;
+				ViewModel.DiscoveryItems = null; // side-effect: updates visibility properties!
+
+				// bitofahack - if returning to locations page it takes a while for the menu to
+				// be reloaded due to server round-trip, during which time the location name will
+				// be visible as well as the discoveries menu, so just clear it here as it will
+				// be set again anyway on completion of page load
+				ViewModel.LocationName = "";
+
+				mHidingDiscoveries = false;
+			}
 		}
 
 		async void ShowSearchPanel()
@@ -336,7 +657,7 @@ namespace TownFish.App.Pages
 			if (!mIsSearchVisible || mHidingSearch)
 				return;
 
-			if (ViewModel.SearchLocationHasResults)
+			if (ViewModel.SearchLocationActive)
 				ViewModel.CancelLocationSearch();
 
 			// remove focus from search input
@@ -357,19 +678,33 @@ namespace TownFish.App.Pages
 			mHidingSearch = false;
 		}
 
-		void ShowLoading()
+		/// <summary>
+		/// Fire-and-forget loading revealer.
+		/// </summary>
+		async void ShowLoading()
+		{
+			await ShowLoadingAsync();
+		}
+
+		/// <summary>
+		/// Awaitable loading revealer.
+		/// </summary>
+		/// <returns></returns>
+		async Task ShowLoadingAsync()
 		{
 			if (ViewModel.IsLoading)
 				return;
+
+			// set this here in case page loads faster than loading animation completes,
+			// which could result in loading never being removed
+			ViewModel.IsLoading = true;
 
 			if (!mFirstLoading)
 			{
 				pnlLoading.Opacity = 1;
 				pnlLoading.TranslationX = pnlLoading.Width;
-				pnlLoading.TranslateTo (0, 0, cLoadingPanelAnimationTime, Easing.CubicInOut);
+				await pnlLoading.TranslateTo (0, 0, cLoadingPanelAnimationTime, Easing.CubicInOut);
 			}
-
-			ViewModel.IsLoading = true;
 		}
 
 		async void HideLoading()
@@ -388,102 +723,11 @@ namespace TownFish.App.Pages
 			}
 		}
 
-		void ViewModel_MenusLoaded (object sender, string e)
-		{
-			Device.BeginInvokeOnMainThread (() => HideLoading());
-
-			// if no sync token, nobody is logged in so don't bother getting ID
-			if (string.IsNullOrEmpty (ViewModel.SyncToken))
-			{
-				App.Current.CheckedCuid = false; // in case we switch users
-				return;
-			}
-
-			// if we haven't checked CUID and we have a sync token, do so now
-			if (!App.Current.CheckedCuid && !mCheckingCuid)
-				CheckCuid();
-		}
-
-		async void CheckCuid()
-		{
-			try
-			{
-				mCheckingCuid = true;
-
-				var cli = new HttpClient();
-				var devID = App.Current.DeviceID;
-				var url = string.Format (App.SHCuidUrl, devID, ViewModel.SyncToken);
-
-				var result = await cli.GetStringAsync (url);
-				var shcuid = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
-
-				string code, newID;
-				if (!shcuid.TryGetValue (cCode, out code) &&
-						shcuid.TryGetValue (cSHCuid, out newID))
-				{
-					var props = App.Current.Properties;
-					object obj;
-					string userID = null;
-
-					if (props.TryGetValue (cSHCuid, out obj))
-						userID = obj as string;
-
-#if DEBUG
-					Device.BeginInvokeOnMainThread (() =>
-					{
-						var message = string.Format (
-								"TownFish: userID = {0}; newID = {1}",
-								userID ?? "null", newID ?? "null");
-
-						App.Current.MainPage.DisplayAlert (
-								"StreetHawk Registration", message, "Continue");
-					});
-#endif
-					if (userID != newID)
-					{
-						userID = newID;
-
-						var shAnalytics = DependencyService.Get<IStreetHawkAnalytics>();
-						shAnalytics.TagCuid (userID);
-
-						url = string.Format (App.SHSyncUrl, devID, ViewModel.SyncToken);
-
-						for (var i = 0; i++ <= cSHSyncRetries; )
-						{
-							// give SH time to process it
-							await Task.Delay (cSHSyncDelay);
-
-							result = await cli.GetStringAsync (url);
-							var syncResult = JsonConvert.DeserializeObject<Dictionary<string, string>> (result);
-
-							string sync;
-							if (!shcuid.TryGetValue (cCode, out code) &&
-									syncResult.TryGetValue (cSynced, out sync) &&
-									sync == "true")
-							{
-								props [cSHCuid] = userID;
-
-								// got it, so stop trying
-								break;
-							}
-						}
-					}
-				}
-			}
-			catch {} // if it fails, we don't care
-			finally
-			{
-				App.Current.CheckedCuid = true;
-				mCheckingCuid = false;
-			}
-		}
-
 		#endregion Methods
 
 		#region Properties
 
-		public BrowserPageViewModel ViewModel
-				{ get { return BindingContext as BrowserPageViewModel; } }
+		public BrowserPageViewModel ViewModel => BindingContext as BrowserPageViewModel;
 
 		#endregion Properties
 
@@ -517,19 +761,19 @@ namespace TownFish.App.Pages
 		const string cPushAction = "app_schema_push_messages";
 		const string cPushMethod = "twnfsh.getPushMessages()";
 
+		const string cShowDiscoveriesAction = "app_schema_show_feed";
+		const string cShowDiscoveriesValue = "true";
+		const string cHideDiscoveriesAction = "app_schema_hide_feed";
+		const string cHideDiscoveriesValue = "true";
+
 		const string cCallbackFormat = "twnfsh.runCallback('{0}')";
-		const string cCallbackType = "callback";
 
 		const string cMoreActions = null; // e.g. "Please Select:";
 		const string cCancel = "Cancel";
 
 		const string cCustomUserAgent = "com.townfish.app";
 
-		const string cCode = "Code";
-		const string cSHCuid = "shcuid";
-		const string cSynced = "synced";
-		const int cSHSyncDelay = 3000;
-		const int cSHSyncRetries = 3;
+		TownFishMenuMap mCurrentMenuMap;
 
 		bool mFirstLoading = true;
 		bool mFirstShowing = true;
@@ -537,11 +781,13 @@ namespace TownFish.App.Pages
 		bool mIsSearchVisible;
 		bool mShowingSearch;
 		bool mHidingSearch;
+		bool mHidingDiscoveries;
 
-		bool mCheckingCuid;
+		string mLastSourceUrl;
+        string mPreviousUrl;
 
-		TownFishMenuMap mCurrentSchema;
+        //Frame[] mBottomActionFrames;
 
-		#endregion Fields
-	}
+        #endregion Fields
+    }
 }

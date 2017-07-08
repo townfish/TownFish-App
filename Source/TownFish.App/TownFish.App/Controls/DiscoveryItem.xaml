@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Grid xmlns="http://xamarin.com/schemas/2014/forms"
+		xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+		x:Class="TownFish.App.DiscoveryItem">
+	<Grid.GestureRecognizers>
+		<TapGestureRecognizer Tapped="OnTapped" />
+	</Grid.GestureRecognizers>
+
+	<StackLayout Spacing="0">
+		<Image x:Name="imgPicture" Aspect="AspectFill" Source="{Binding PictureSource}" />
+
+		<Grid x:Name="pnlText" ColumnSpacing="0" BackgroundColor="White" HorizontalOptions="FillAndExpand">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="auto" />
+				<RowDefinition Height="auto" />
+				<RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+			<Label x:Name="lblTitle" Grid.Row="1" Grid.ColumnSpan="2" Margin="12,0"
+				   FontSize="18" FontAttributes="Bold" TextColor="Black"
+				   Text="{Binding Title}" />
+			<Label x:Name="lblText" Grid.Row="2" Grid.ColumnSpan="2" Margin="12,0"
+				   TextColor="Black" FontSize="14"
+				   Text="{Binding Text}" />
+
+			<Label x:Name="lblTimeStamp" Grid.Row="3" Margin="12,0,6,12"
+				   TextColor="Gray" FontSize="12"
+				   Text="{Binding FormattedCreatedTime}" />
+
+            <Label x:Name="lblExpiresTimeStamp" Grid.Row="3" Grid.Column="1" Margin="6,0,12,12" HorizontalOptions="End"
+				   TextColor="Gray" FontSize="12"
+				   Text="{Binding FormattedExpiresTime}" />
+
+            <!-- Group not yet coming through from provider -->
+			<!--<Label x:Name="lblGroup" Grid.Row="3" Grid.Column="1" Margin="6,0,12,12"
+				   TextColor="Gray" FontSize="10" HorizontalOptions="End"
+				   Text="{Binding Group}" />-->
+		</Grid>
+
+		<BoxView Color="Transparent" HeightRequest="6"/>
+	</StackLayout>
+</Grid>

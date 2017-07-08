@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 using Xamarin.Forms;
+using Xamarin.Forms.Platform.iOS;
 
 using Foundation;
 using UIKit;
 
-using StreethawkIOS.Core;
-using StreethawkIOS.Push;
+using Apptelic.UberWebViewLib.iOS;
 
 
 namespace TownFish.App.iOS
@@ -17,7 +15,7 @@ namespace TownFish.App.iOS
 	// User Interface of the application, as well as listening (and optionally responding) to 
 	// application events from iOS.
 	[Register("AppDelegate")]
-	public partial class AppDelegate : global::Xamarin.Forms.Platform.iOS.FormsApplicationDelegate
+	public partial class AppDelegate : FormsApplicationDelegate
 	{
 		//
 		// This method is invoked when the application has loaded and is ready to run. In this 
@@ -28,31 +26,42 @@ namespace TownFish.App.iOS
 		//
 		public override bool FinishedLaunching (UIApplication app, NSDictionary options)
 		{
-			#region StreetHawk
+            #region StreetHawk
 
-			//SHApp.instance().appKey = "TownFish";
-			//SHApp.instance().enableLogs = true;
-			//SHApp.instance().iTunesId = ""; // TODO: insert iTunes ID
-			//SHApp.instance().streethawkinit();
+            //SHApp.instance().appKey = "TownFish";
+            //SHApp.instance().enableLogs = true;
+            //SHApp.instance().iTunesId = ""; // TODO: insert iTunes ID
+            //SHApp.instance().streethawkinit();
 
-			//Simply call one function of Push module to make sure linking to it.
-			//SHPush.instance().isDefaultNotificationEnabled = true;
+            //Simply call one function of Push module to make sure linking to it.
+            //SHPush.instance().isDefaultNotificationEnabled = true;
 
-			#endregion StreetHawk
+            #endregion StreetHawk
 
 			UIApplication.SharedApplication.SetStatusBarStyle (UIStatusBarStyle.LightContent, false);
 			UIApplication.SharedApplication.SetStatusBarHidden (false, false);
 
 			// reference these to make sure they're included by linker (?!)
-			var load1 = new Xamify.UberWebViewLib.iOS.UberWebViewRenderer();
+			var load1 = new UberWebViewRenderer();
 			var load2 = new Renderers.TownFishEntryRenderer();
 
 			Forms.Init();
 
-			var id = UIDevice.CurrentDevice.IdentifierForVendor.ToString();
-			LoadApplication (new App (id));
+			// NOTE: .ToString on old (iPhone 4?) device returns runtime junk text before the UUID,
+			// but .AsString seems to return just UUID text in all cases tested.
+			var deviceID = UIDevice.CurrentDevice.IdentifierForVendor.AsString();
+
+			LoadApplication (new App (deviceID));
+
+
 
 			return base.FinishedLaunching (app, options);
 		}
-	}
+
+        public override void OnActivated(UIApplication uiApplication)
+        {
+            uiApplication.ApplicationIconBadgeNumber = 0;
+            base.OnActivated(uiApplication);
+        }
+    }
 }

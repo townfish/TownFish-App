@@ -93,7 +93,7 @@ namespace StreetHawkCrossplatform
 		/// <summary>
 		/// StreetHawk server unique id of this beacon.
 		/// </summary>
-		public int serverId;
+		public string serverId;
 
 		/// <summary>
 		/// Whether this beacon is inside or outside.

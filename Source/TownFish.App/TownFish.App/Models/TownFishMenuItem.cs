@@ -31,6 +31,10 @@ namespace TownFish.App.Models
 
 		public string Super { get; set; }
 
+		public string SuperFormat { get; set; }
+
+		public string SuperColor { get; set; }
+
 		public int[] IconDimensions { get; set; }
 
 		#endregion

@@ -12,17 +12,17 @@ namespace StreetHawkCrossplatform
 {
 	public class StreetHawkFeeds : IStreetHawkFeeds
 	{
-		public void SendFeedAck(int feedid)
+		public void SendFeedAck(string feedid)
 		{
-			SHFeed.instance().sendFeedAck(feedid.ToString());
+			SHFeed.instance().sendFeedAck(feedid);
 		}
 
-		public void NotifyFeedResult(int feedid, int result)
+		public void NotifyFeedResult(string feedid, int result)
 		{
-			SHFeed.instance().sendLogForFeed(feedid.ToString(), (StreethawkIOS.Feed.SHFeedResult)result);
+			SHFeed.instance().sendLogForFeed(feedid, (StreethawkIOS.Feed.SHFeedResult)result);
 		}
 
-		public void NotifyFeedResult(int feedid, string stepid, string feedresult, bool feedDelete, bool completed)
+		public void NotifyFeedResult(string feedid, string stepid, string feedresult, bool feedDelete, bool completed)
 		{
 			StreethawkIOS.Feed.SHFeedResult result = SHFeedResult.SHResult_Accept;
 			if (feedresult.Equals("postponed"))
@@ -33,7 +33,7 @@ namespace StreetHawkCrossplatform
 			{
 				result = SHFeedResult.SHResult_Decline;
 			}
-			SHFeed.instance().notifyFeedResult(feedid.ToString(), result, stepid, feedDelete, completed);
+			SHFeed.instance().notifyFeedResult(feedid, result, stepid, feedDelete, completed);
 		}
 
 		public void ReadFeedData(int offset, RegisterForFeedCallback cb)
@@ -51,7 +51,7 @@ namespace StreetHawkCrossplatform
 							  SHFeedObject feed = new SHFeedObject();
 							  if (feedDict["feed_id"] != null)
 							  {
-								  feed.feed_id = int.Parse(feedDict["feed_id"].ToString());
+								  feed.feed_id = feedDict["feed_id"].ToString();
 							  }
 							  if (feedDict["title"] != null)
 							  {
@@ -67,7 +67,10 @@ namespace StreetHawkCrossplatform
 							  }
 							  if (feedDict["content"] != null)
 							  {
-								  feed.content = feedDict["content"].ToString();
+								  NSError contentError;
+								  NSData contentData = NSJsonSerialization.Serialize(feedDict["content"]/*NSDictionary type*/, 0, out contentError);
+								  NSString contentStr = new NSString(contentData, NSStringEncoding.UTF8);
+								  feed.content = contentStr.ToString();
 							  }
 							  if (feedDict["activates"] != null)
 							  {

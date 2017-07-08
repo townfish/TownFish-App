@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Diagnostics;
 using System.Windows.Input;
 
 using Xamarin.Forms;
@@ -16,13 +17,110 @@ using TownFish.App.Models;
 
 namespace TownFish.App.ViewModels
 {
-	public class BrowserPageViewModel : ViewModelBase
+	public class BrowserPageViewModel: ViewModelBase
 	{
+		#region Nested Types
+
+		public class MenuIconModel
+		{
+			#region Construction
+
+			public MenuIconModel (TownFishMenuItem item)
+			{
+				mItem = item ?? throw new ArgumentNullException ("item can not be null");
+			}
+
+			#endregion Construction
+
+			#region Methods
+
+			string GetSource()
+			{
+				if (!IsVisible || string.IsNullOrEmpty (mItem.IconUrl))
+					return null;
+
+				var url = mItem.IconUrl;
+
+				url = url.Replace ("{size}", "hdpi"); // HACK: force sizes for now; should be item.Size);
+				url = url.Replace ("{color}", mItem.Color);
+
+				return App.BaseUrl + url;
+			}
+
+			#endregion Methods
+
+			#region Properties
+
+			public bool IsVisible => mItem.Kind == "icon";
+
+			public string Source => GetSource();
+
+			#endregion Properties
+
+			#region Fields
+
+			TownFishMenuItem mItem;
+
+			#endregion Fields
+		}
+
+		public class MenuLabelModel
+		{
+			#region Construction
+
+			public MenuLabelModel (TownFishMenuItem item)
+			{
+				mItem = item ?? throw new ArgumentNullException ("item can not be null");
+			}
+
+			#endregion Construction
+
+			#region Methods
+			#endregion Methods
+
+			#region Properties
+
+			public bool IsVisible => mItem.Kind == "text";
+
+			public string Text => mItem.Value;
+
+			#endregion Properties
+
+			#region Fields
+
+			TownFishMenuItem mItem;
+
+			#endregion Fields
+		}
+
+		public class CallbackInfo
+		{
+			#region Properties
+
+			public string Name { get; set; }
+
+			public bool IsNative { get; set; }
+
+			#endregion Properties
+
+			#region Fields
+
+			public const string Info = "info";
+
+			#endregion Fields
+		}
+
+		#endregion Nested Types
+
 		#region Properties and Events
 
-		public event EventHandler<string> CallbackRequested;
+		public event EventHandler MenusLoaded;
 
-		public event EventHandler<string> MenusLoaded;
+		public event EventHandler LocationTapped;
+
+		public event EventHandler<CallbackInfo> CallbackRequested;
+
+		public event EventHandler<string> NavigateRequested;
 
 		public string SourceUrl
 		{
@@ -55,8 +153,8 @@ namespace TownFish.App.ViewModels
 
 				using (var stm = App.Assembly.GetManifestResourceStream (
 						"TownFish.App.Resources.LoadingAnimation.html"))
-					using (var reader = new StreamReader (stm))
-						return reader.ReadToEnd();
+				using (var reader = new StreamReader (stm))
+					return reader.ReadToEnd();
 			}
 		}
 
@@ -66,73 +164,79 @@ namespace TownFish.App.ViewModels
 
 		public Color MenuBarBackgroundColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#484848")); }
+			get { return Get (() => Color.FromHex ("#484848")); }
 			private set { Set (value); }
 		}
 
 		public Color MenuBarTextColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#ffffff")); }
+			get { return Get (() => Color.FromHex ("#ffffff")); }
 			private set { Set (value); }
 		}
 
 		public Color SubMenuBackgroundColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#e8e8e8")); }
+			get { return Get (() => Color.FromHex ("#e8e8e8")); }
 			private set { Set (value); }
 		}
 
 		public Color BottomMenuBackgroundColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#f2f2f2")); }
+			get { return Get (() => Color.FromHex ("#f2f2f2")); }
 			private set { Set (value); }
 		}
 
 		public Color BottomMenuCounterColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#d62327")); }
+			get { return Get (() => Color.FromHex ("#d62327")); }
 			private set { Set (value); }
 		}
 
 		public Color LocationsBackgroundColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#444444")); }
+			get { return Get (() => Color.FromHex ("#444444")); }
 			private set { Set (value); }
 		}
 
 		public Color LocationsContrastBackgroundColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#333333")); }
+			get { return Get (() => Color.FromHex ("#333333")); }
 			private set { Set (value); }
 		}
 
 		public Color MyLocationsTextColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#c8c8c8")); }
+			get { return Get (() => Color.FromHex ("#c8c8c8")); }
 			private set { Set (value); }
 		}
 
 		public Color LocationsTextColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#ececec")); }
+			get { return Get (() => Color.FromHex ("#ececec")); }
 			private set { Set (value); }
 		}
 
-		public Color LocationsLinkColour
+		public Color LocationLinkColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#4f92eb")); }
+			get { return Get (() => Color.FromHex ("#4f92eb")); }
 			private set { Set (value); }
 		}
 
 		public Color LocationsSearchInputTextColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#b9b9b9")); }
+			get { return Get (() => Color.FromHex ("#b9b9b9")); }
 			private set { Set (value); }
 		}
 
 		public Color LocationsSearchResultsTextColour
 		{
-			get { return Get<Color> (() => Color.FromHex ("#989898")); }
+			get { return Get (() => Color.FromHex ("#989898")); }
+			private set { Set (value); }
+		}
+
+		public Color DiscoveriesLinkColour
+		{
+			get { return Get (() => Color.FromHex ("#5099f7")); }
 			private set { Set (value); }
 		}
 
@@ -140,113 +244,17 @@ namespace TownFish.App.ViewModels
 
 		#region Bottom Bar
 
-		#region Bottom Action 1
-
-		public string BottomAction1Label
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		public ICommand BottomAction1Command
-		{
-			get { return Get<ICommand>(); }
-			private set { Set (value); }
-		}
-
-		#endregion Bottom Action 1
-
-		#region Bottom Action 2
-
-		public string BottomAction2Label
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		public ICommand BottomAction2Command
-		{
-			get { return Get<ICommand>(); }
-			private set { Set (value); }
-		}
-
-		public bool BottomAction2HasNumber
-		{
-			get { return Get<bool>(); }
-			private set { Set (value); }
-		}
-
-		public string BottomAction2Number
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		#endregion Bottom Action 2
-
-		#region Bottom Action 3
-
-		public string BottomAction3Label
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		public ICommand BottomAction3Command
-		{
-			get { return Get<ICommand>(); }
-			private set { Set (value); }
-		}
-
-		public bool BottomAction3HasNumber
-		{
-			get { return Get<bool>(); }
-			private set { Set (value); }
-		}
-
-		public string BottomAction3Number
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		#endregion Bottom Action 3
-
-		#region Bottom Action 4
-
-		public string BottomAction4Label
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		public ICommand BottomAction4Command
-		{
-			get { return Get<ICommand>(); }
-			private set { Set (value); }
-		}
-
-		#endregion Bottom Action 4
-
-		#region Bottom Action 5
-
-		public string BottomAction5Label
-		{
-			get { return Get<string>(); }
-			private set { Set (value); }
-		}
-
-		public ICommand BottomAction5Command
-		{
-			get { return Get<ICommand>(); }
-			private set { Set (value); }
-		}
-
-		#endregion Bottom Action 5
-
 		public bool IsBottomBarVisible
 		{
 			get { return Get<bool>(); }
+			set { Set (value); }
+		}
+
+		// I have to comment here about the very funny name this property has ended up with.
+		// Fnaar fnaar.
+		public ObservableCollection<BottomActionViewModel> BottomActions
+		{
+			get { return Get<ObservableCollection<BottomActionViewModel>>(); }
 			set { Set (value); }
 		}
 
@@ -266,9 +274,15 @@ namespace TownFish.App.ViewModels
 			private set { Set (value); }
 		}
 
-		public string TopBarRightLabel
+		public MenuLabelModel TopBarRightLabel
 		{
-			get { return Get<string>(); }
+			get { return Get<MenuLabelModel>(); }
+			private set { Set (value); }
+		}
+
+		public MenuIconModel TopBarRightIcon
+		{
+			get { return Get<MenuIconModel>(); }
 			private set { Set (value); }
 		}
 
@@ -278,9 +292,15 @@ namespace TownFish.App.ViewModels
 			private set { Set (value); }
 		}
 
-		public string TopBarRight1Label
+		public MenuLabelModel TopBarRight1Label
 		{
-			get { return Get<string>(); }
+			get { return Get<MenuLabelModel>(); }
+			private set { Set (value); }
+		}
+
+		public MenuIconModel TopBarRight1Icon
+		{
+			get { return Get<MenuIconModel>(); }
 			private set { Set (value); }
 		}
 
@@ -296,12 +316,10 @@ namespace TownFish.App.ViewModels
 			private set { Set (value); }
 		}
 
-		public bool LeftActionIsLocationPin { get; private set; }
-
 		public string LocationName
 		{
 			get { return Get<string>(); }
-			private set { Set (value); }
+			set { Set (value); } // public, as sometimes needs to be set from the view (yuck!)
 		}
 
 		public bool IsTopBarVisible
@@ -309,6 +327,9 @@ namespace TownFish.App.ViewModels
 			get { return Get<bool>(); }
 			set { Set (value); }
 		}
+
+		// NOTE: notify this changed when those it depends on change
+		public bool IsLocationNameVisible => !IsDiscoveriesVisible && !IsDiscoveriesInfoVisible;
 
 		#endregion Top Bar
 
@@ -366,7 +387,7 @@ namespace TownFish.App.ViewModels
 		{
 			get { return Get<FontAttributes>(); }
 			private set { Set (value); }
-		} 
+		}
 
 		public string TopAction4Label
 		{
@@ -416,7 +437,7 @@ namespace TownFish.App.ViewModels
 			private set { Set (value); }
 		}
 
-		public ICommand TopFormLeftAction
+		public ICommand TopFormLeftActionCommand
 		{
 			get { return Get<ICommand>(); }
 			private set { Set (value); }
@@ -428,7 +449,7 @@ namespace TownFish.App.ViewModels
 			private set { Set (value); }
 		}
 
-		public ICommand TopFormRightAction
+		public ICommand TopFormRightActionCommand
 		{
 			get { return Get<ICommand>(); }
 			private set { Set (value); }
@@ -453,22 +474,19 @@ namespace TownFish.App.ViewModels
 				// if collection changes, we may or may not have any items in the new one
 				if (Set (value))
 				{
-					OnPropertyChanged (() => SearchLocationHasResults);
-					OnPropertyChanged (() => SearchLocationHasNoItems);
+					OnPropertyChanged (() => SearchLocationActive);
+					OnPropertyChanged (() => SearchLocationListEmpty);
 				}
 			}
 		}
 
-		public bool SearchHasContent =>
-				!string.IsNullOrWhiteSpace (SearchTerm) && SearchTerm.Length > 0;
+		public bool SearchHasContent => (SearchTerm?.Length ?? 0) > 0;
 
-		public bool SearchLocationHasResults =>
-				LocationSearchItems != null && LocationSearchItems?.Count > 0;
+		public bool SearchLocationActive => !SearchLocationListEmpty || SearchHasContent;
 
-		public bool SearchLocationHasNoItems => !SearchLocationHasResults;
+		public bool SearchLocationListEmpty => (LocationSearchItems?.Count ?? 0) == 0;
 
-		public ICommand CancelSearchCommand =>
-				new Command (_ => CancelLocationSearch());
+		public ICommand CancelSearchCommand => new Command (_ => CancelLocationSearch());
 
 		public string SearchTerm
 		{
@@ -514,6 +532,66 @@ namespace TownFish.App.ViewModels
 
 		#endregion Locations
 
+		#region Discoveries
+
+		public bool IsDiscoveriesVisible
+		{
+			get { return Get<bool>(); }
+
+			set
+			{
+				// NOTE: side-effect - if this changes, location name might change too
+				if (Set (value))
+					OnPropertyChanged (() => IsLocationNameVisible);
+			}
+		}
+
+		public bool IsDiscoveriesListVisible => !IsDiscoveriesEmpty;
+
+		public bool IsDiscoveriesInfoVisible
+		{
+			get { return Get<bool>(); }
+
+			set
+			{
+				// NOTE: side-effect - if this changes, location name might change too
+				if (Set (value))
+					OnPropertyChanged (() => IsLocationNameVisible);
+			}
+		}
+
+		public int DiscoveryItemsCount => DiscoveryItems?.Count ?? 0;
+
+		public bool IsDiscoveriesEmpty => DiscoveryItemsCount == 0;
+
+		public ObservableCollection<DiscoveryItemViewModel> DiscoveryItems
+		{
+			get { return Get<ObservableCollection<DiscoveryItemViewModel>>(); }
+
+			set
+			{
+				if (Set (value))
+				{
+					OnPropertyChanged (() => IsDiscoveriesListVisible);
+					OnPropertyChanged (() => IsDiscoveriesEmpty);
+				}
+			}
+		}
+
+		public int NewDiscoveriesCount
+		{
+			get { return Get<int>(); }
+
+			set
+			{
+				// if discoveries count changes and we have a discoveries menu item in play, update its count
+				if (Set (value) && mDiscoveriesMenuItemViewModel != null)
+					mDiscoveriesMenuItemViewModel.SuperCount = value;
+			}
+		}
+
+		#endregion Discoveries
+
 		#endregion Properties and Events
 
 		#region Methods
@@ -524,10 +602,10 @@ namespace TownFish.App.ViewModels
 			{
 				using (var client = new HttpClient())
 				{
-					var resultJson = await client.GetStringAsync (
-							App.BaseUrl + mLocationApiFormat.Replace ("{term}", SearchTerm));
+                    var resultJson = await client.GetStringAsync(
+                            App.BaseUrl + mLocationApiFormat.Replace("{term}", SearchTerm));
 
-					if (!string.IsNullOrEmpty (resultJson))
+                    if (!string.IsNullOrEmpty (resultJson))
 					{
 						var model = JsonConvert.DeserializeObject<TownFishLocationList> (resultJson);
 						if (model?.Items != null)
@@ -535,31 +613,26 @@ namespace TownFish.App.ViewModels
 					}
 				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				// TODO Alert the user of this crap up the wall
+				Debug.WriteLine ($"BrowserPageViewModel.UpdateLocationList: {ex.Message}");
+
 				CancelLocationSearch();
 			}
 		}
 
 		public void SetLocation (string cityID)
 		{
-			SourceUrl = App.BaseUrl + mLocationSetFormat.Replace ("{id}", cityID) + App.QueryString;
+			OnNavigateRequested (App.BaseUrl + mLocationSetFormat.Replace ("{id}", cityID) + App.QueryString);
 		}
 
 		public void LoadMenuMap (TownFishMenuMap map)
 		{
+			// clear everything so we only need to populate what's present
+			ClearMenus();
+
 			mLocationApiFormat = map.LocationsAPI;
 			mLocationSetFormat = map.LocationSetUrl;
-
-			IsTopBarVisible = false;
-			IsTopSubBarVisible = false;
-			IsTopFormBarVisible = false;
-			IsBottomBarVisible = false;
-
-			LeftActionIsLocationPin = false;
-
-			LocationName = "";
 
 			SyncToken = map.SyncToken;
 
@@ -568,14 +641,18 @@ namespace TownFish.App.ViewModels
 				MenuBarBackgroundColour = Color.FromHex ("#" + map.StatusBarBackgroundColor);
 				MenuBarTextColour = Color.FromHex ("#" + map.StatusBarTextColor);
 			}
-			catch {} // don't care if/why it fails as we'll just use default property values
+			catch { } // don't care if/why it fails as we'll just use default property values
 
 			LoadMenus (map.Menus);
 
 			// now we've parsed the menu map we can set location properties, if needed
 			if (IsTopBarVisible)
 			{
-				var locationMenuItem = map.Menus.Top.items.FirstOrDefault (i => i.Type == "locationpin");
+				var locationMenuItem = (from m in map.Menus.Values
+										where m.Position == "top"
+										select m.Items.FirstOrDefault (i => i.Type == "locationpin"))
+										.FirstOrDefault();
+
 				if (locationMenuItem != null)
 				{
 					var size = "mdpi"; // HACK: force sizes for now; should be locationMenuItem.Size;
@@ -627,14 +704,95 @@ namespace TownFish.App.ViewModels
 			SearchTerm = "";
 		}
 
-		void OnMenusLoaded()
+		public ICommand GenerateMenuAction (TownFishMenuItem item)
 		{
-			MenusLoaded?.Invoke (this, "");
+			switch (item.Type)
+			{
+				case "locationpin":
+					return new Command (_ =>
+						OnLocationTapped());
+
+				case "callback":
+				case "nativeCallback":
+                    return new Command(_ =>
+                        OnCallbackRequested(item.Name, item.Type == "nativeCallback"));
+				// # date stamp no longer needed, so link is now same as back
+				//case "link":
+				//	return new Command (_ =>
+				//		{ OnNavigateRequested ( App.BaseUrl + item.Href + App.QueryString + "#" + DateTime.Now.Ticks;) }); // TODO: remove nav hash!
+
+				case "link":
+				case "back":
+					return new Command (_ =>
+						{ OnNavigateRequested (App.BaseUrl + item.Href + App.QueryString); });
+
+				case "noop":
+					return sNoOpCommand;
+
+				default:
+					return null;
+			}
 		}
 
-		void OnCallbackRequested (string callbackName)
+		void OnMenusLoaded()
 		{
-			CallbackRequested?.Invoke (this, callbackName);
+			MenusLoaded?.Invoke (this, EventArgs.Empty);
+		}
+
+		void OnLocationTapped()
+		{
+			CancelLocationSearch();
+
+			LocationTapped?.Invoke (this, EventArgs.Empty);
+		}
+
+		void OnCallbackRequested (string callbackName, bool isNative)
+		{
+			CallbackRequested?.Invoke (this, new CallbackInfo
+					{ Name = callbackName, IsNative = isNative });
+		}
+
+		/// <summary>
+		/// Informs listeners that a navigation is requested.
+		/// </summary>
+		/// <remarks>
+		/// Listeners MUST set SourceUrl to the given URL in order for navigation to happen.
+		/// </remarks>
+		/// <param name="url">The URL.</param>
+		void OnNavigateRequested (string url)
+		{
+			NavigateRequested?.Invoke (this, url);
+		}
+
+		void ClearMenus()
+		{
+			LocationName = "";
+			PageTitle = "";
+
+			TopBarLeftLabel = "";
+			TopBarLeftCommand = null;
+			TopBarRightLabel = null;
+			TopBarRightCommand = null;
+			TopBarRightIcon = null;
+			TopBarRight1Label = null;
+			TopBarRight1Command = null;
+			TopBarRight1Icon = null;
+
+			TopAction1Label = "";
+			TopAction1Command = null;
+			TopAction2Label = "";
+			TopAction2Command = null;
+			TopAction3Label = "";
+			TopAction3Command = null;
+			TopAction4Label = "";
+			TopAction4Command = null;
+			TopActionMoreLabel = "";
+			OverflowImages = null;
+
+			TopFormLeftActionLabel = "";
+			TopFormLeftActionCommand = null;
+			TopFormRightActionLabel = "";
+			TopFormRightActionCommand = null;
 		}
 
 		void LoadMenus (TownFishMenuList menus)
@@ -643,257 +801,165 @@ namespace TownFish.App.ViewModels
 				return;
 
 			var top = menus.Top;
-			IsTopBarVisible = top != null && top.display;
+			IsTopBarVisible = top?.IsVisible ?? false;
 
 			if (IsTopBarVisible)
 			{
-				var topLeftItem = top.items.FirstOrDefault (i => i.Align == "left");
+				var topLeftItem = top.Items.FirstOrDefault (i => i.Align == "left");
 				if (topLeftItem != null)
 				{
-					TopBarLeftLabel = GenerateMenuItem (top.items [0]);
-					TopBarLeftCommand = GenerateMenuAction (top.items [0]);
-				}
-				else
-				{
-					TopBarLeftLabel = "";
-					TopBarLeftCommand = null;
+					TopBarLeftLabel = GenerateMenuItem (top.Items [0]);
+					TopBarLeftCommand = GenerateMenuAction (top.Items [0]);
 				}
 
-				var isHeadingItem = top.items.FirstOrDefault (i => i.Type == "heading");
+				var isHeadingItem = top.Items.FirstOrDefault (i => i.Type == "heading");
 				if (isHeadingItem != null)
-					PageTitle = GenerateMenuItem (top.items [1]);
-				else
-					PageTitle = "";
+					PageTitle = GenerateMenuItem (top.Items [1]);
 
-				var rightItems = top.items.Where (i => i.Align == "right").ToList();
-				if (rightItems.Count == 1)
+				var rightItems = top.Items.Where (i => i.Align == "right").ToList();
+				if (rightItems.Count > 0)
 				{
-					TopBarRightLabel = "";
-					TopBarRightCommand = null;
-					TopBarRight1Label = GenerateMenuItem (rightItems [0]);
+					TopBarRight1Label = new MenuLabelModel (rightItems [0]);
 					TopBarRight1Command = GenerateMenuAction (rightItems [0]);
+					TopBarRight1Icon = new MenuIconModel (rightItems [0]);
 				}
-				else if (rightItems.Count == 2)
+
+				if (rightItems.Count > 1)
 				{
-					TopBarRightLabel = GenerateMenuItem (rightItems [0]);
-					TopBarRightCommand = GenerateMenuAction (rightItems [0]);
-					TopBarRight1Label = GenerateMenuItem (rightItems [1]);
+					TopBarRightLabel = TopBarRight1Label;
+					TopBarRightCommand = TopBarRight1Command;
+					TopBarRightIcon = TopBarRight1Icon;
+
+					TopBarRight1Label = new MenuLabelModel (rightItems [1]);
 					TopBarRight1Command = GenerateMenuAction (rightItems [1]);
+					TopBarRight1Icon = new MenuIconModel (rightItems [1]);
 				}
-				else
-				{
-					TopBarRightLabel = "";
-					TopBarRightCommand = null;
-					TopBarRight1Label = "";
-					TopBarRight1Command = null;
-				}
-			}
-			else
-			{
-				TopBarLeftLabel = "";
-				TopBarLeftCommand = null;
-				TopBarRight1Label = "";
-				TopBarRightCommand = null;
-				TopBarRight1Label = "";
-				TopBarRight1Command = null;
 			}
 
 			var topSub = menus.TopSub;
-			IsTopSubBarVisible = topSub != null && topSub.display;
+			IsTopSubBarVisible = topSub?.IsVisible ?? false;
 
 			if (IsTopSubBarVisible)
 			{
 				// Top Menu
-				if (topSub.items.Count > 0 && topSub.items [0] != null)
+				if (topSub.Items.Count > 0 && topSub.Items [0] != null)
 				{
-					TopAction1Label = GenerateMenuItem (topSub.items [0]);
-					TopAction1Command = GenerateMenuAction (topSub.items [0]);
+					TopAction1Label = GenerateMenuItem (topSub.Items [0]);
+					TopAction1Command = GenerateMenuAction (topSub.Items [0]);
 
-					if (topSub.items [0].Highlight)
+					if (topSub.Items [0].Highlight)
 						TopAction1Bold = FontAttributes.Bold;
 					else
 						TopAction1Bold = FontAttributes.None;
 				}
-				else
-				{
-					TopAction1Label = "";
-					TopAction1Command = null;
-				}
 
-				if (topSub.items.Count > 1 && topSub.items [1] != null)
+				if (topSub.Items.Count > 1 && topSub.Items [1] != null)
 				{
-					TopAction2Label = GenerateMenuItem (topSub.items [1]);
-					TopAction2Command = GenerateMenuAction (topSub.items [1]);
+					TopAction2Label = GenerateMenuItem (topSub.Items [1]);
+					TopAction2Command = GenerateMenuAction (topSub.Items [1]);
 
-					if (topSub.items [1].Highlight)
+					if (topSub.Items [1].Highlight)
 						TopAction2Bold = FontAttributes.Bold;
 					else
 						TopAction2Bold = FontAttributes.None;
 				}
-				else
-				{
-					TopAction2Label = "";
-					TopAction2Command = null;
-				}
 
-				if (topSub.items.Count > 2 && topSub.items [2] != null)
+				if (topSub.Items.Count > 2 && topSub.Items [2] != null)
 				{
-					TopAction3Label = GenerateMenuItem (topSub.items [2]);
-					TopAction3Command = GenerateMenuAction (topSub.items [2]);
+					TopAction3Label = GenerateMenuItem (topSub.Items [2]);
+					TopAction3Command = GenerateMenuAction (topSub.Items [2]);
 
-					if (topSub.items [2].Highlight)
+					if (topSub.Items [2].Highlight)
 						TopAction3Bold = FontAttributes.Bold;
 					else
 						TopAction3Bold = FontAttributes.None;
 				}
-				else
-				{
-					TopAction3Label = "";
-					TopAction3Command = null;
-				}
 
-				if (topSub.items.Count > 3 && topSub.items [3] != null)
+				if (topSub.Items.Count > 3 && topSub.Items [3] != null)
 				{
-					TopAction4Label = GenerateMenuItem (topSub.items [3]);
-					TopAction4Command = GenerateMenuAction (topSub.items [3]);
+					TopAction4Label = GenerateMenuItem (topSub.Items [3]);
+					TopAction4Command = GenerateMenuAction (topSub.Items [3]);
 
-					if (topSub.items [3].Highlight)
+					if (topSub.Items [3].Highlight)
 						TopAction4Bold = FontAttributes.Bold;
 					else
 						TopAction4Bold = FontAttributes.None;
 				}
-				else
-				{
-					TopAction4Label = "";
-					TopAction4Command = null;
-				}
 
-				if (topSub.items.Count > 4)
+				if (topSub.Items.Count > 4)
 				{
-					var moreIcon = topSub.items.FirstOrDefault (i => i.Type == "limitby");
+					var moreIcon = topSub.Items.FirstOrDefault (i => i.Type == "limitby");
 					if (moreIcon != null)
 					{
 						TopActionMoreLabel = GenerateMenuItem (moreIcon);
-						OverflowImages = topSub.items.Skip (3).Where (i => i.Type != "limitby").ToList();
+						OverflowImages = topSub.Items.Skip (3).Where (i => i.Type != "limitby").ToList();
 					}
-				}
-				else
-				{
-					TopActionMoreLabel = "";
-					OverflowImages = null;
 				}
 			}
 
 			var topForm = menus.TopForm;
-			IsTopFormBarVisible = topForm != null && topForm.display && topForm.items.Count > 0;
+			IsTopFormBarVisible = topForm?.IsVisible ?? false;
 
 			if (IsTopFormBarVisible)
 			{
-				TopFormLeftActionLabel = GenerateMenuItem (topForm.items [0]);
-				TopFormLeftAction = GenerateMenuAction (topForm.items [0]);
+				TopFormLeftActionLabel = GenerateMenuItem (topForm.Items [0]);
+				TopFormLeftActionCommand = GenerateMenuAction (topForm.Items [0]);
 
-				var topFormRightItem = topForm.items.FirstOrDefault (i => i.Align == "right");
+				var topFormRightItem = topForm.Items.FirstOrDefault (i => i.Align == "right");
 				if (topFormRightItem != null)
 				{
 					TopFormRightActionLabel = GenerateMenuItem (topFormRightItem);
-					TopFormRightAction = GenerateMenuAction (topFormRightItem);
+					TopFormRightActionCommand = GenerateMenuAction (topFormRightItem);
 				}
 
 				// if 3 items, item 1 is title (we hope!)
-				if (topForm.items.Count > 2 && topForm.items [1] != null)
-					PageTitle = GenerateMenuItem (topForm.items [1]);
+				if (topForm.Items.Count > 2 && topForm.Items [1] != null)
+					PageTitle = GenerateMenuItem (topForm.Items [1]);
 			}
 
 			var bottom = menus.Bottom;
-			IsBottomBarVisible = bottom != null && bottom.display;
+			IsBottomBarVisible = bottom?.IsVisible ?? false;
 
 			if (IsBottomBarVisible)
 			{
-				// Bottom Menu
-				if (bottom.items.Count > 0 && bottom.items [0] != null)
-				{
-					BottomAction1Label = GenerateMenuItem (bottom.items [0]);
-					BottomAction1Command = GenerateMenuAction (bottom.items [0]);
-				}
-				else
-				{
-					BottomAction1Label = "";
-					BottomAction1Command = null;
-				}
+				var actions = new ObservableCollection<BottomActionViewModel>();
 
-				if (bottom.items.Count > 0 && bottom.items [1] != null)
+				foreach (var item in bottom.Items)
 				{
-					BottomAction2Label = GenerateMenuItem (bottom.items [1]);
-					BottomAction2Command = GenerateMenuAction (bottom.items [1]);
-
-					if (!string.IsNullOrEmpty (bottom.items [1].Super))
+					var action = new BottomActionViewModel
 					{
-						BottomAction2HasNumber = true;
-						BottomAction2Number = bottom.items [1].Super;
-					}
-				}
-				else
-				{
-					BottomAction2Label = "";
-					BottomAction2Command = null;
-					BottomAction2HasNumber = false;
+						MainViewModel = this,
+						Icon = GenerateMenuItem (item),
+						Command = GenerateMenuAction (item),
+						SuperCount = GetSuperNumber (item),
+						SuperColour = item.SuperColor,
+					};
+
+					// remember this in case we need to update its number
+					if (item.SuperFormat == cDiscoveriesCountFormat)
+						mDiscoveriesMenuItemViewModel = action;
+
+					actions.Add (action);
 				}
 
-				if (bottom.items.Count > 0 && bottom.items [2] != null)
-				{
-					BottomAction3Label = GenerateMenuItem (bottom.items [2]);
-					BottomAction3Command = GenerateMenuAction (bottom.items [2]); ;
+				// HACK: view expects 6 items (hard-coded in a grid!!), so pad as necessary
+				for (var i = bottom.Items.Count; i++ < 6; )
+					actions.Add (new BottomActionViewModel());
 
-					if (!string.IsNullOrEmpty (bottom.items [2].Super))
-					{
-						BottomAction3HasNumber = true;
-						BottomAction3Number = bottom.items [2].Super;
-					}
-				}
-				else
-				{
-					BottomAction3Label = "";
-					BottomAction3Command = null;
-					BottomAction3HasNumber = false;
-				}
-
-				if (bottom.items.Count > 0 && bottom.items [3] != null)
-				{
-					BottomAction4Label = GenerateMenuItem (bottom.items [3]);
-					BottomAction4Command = GenerateMenuAction (bottom.items [3]);
-				}
-				else
-				{
-					BottomAction4Label = "";
-					BottomAction4Command = null;
-				}
-
-				if (bottom.items.Count > 0 && bottom.items [4] != null)
-				{
-					BottomAction5Label = GenerateMenuItem (bottom.items [4]);
-					BottomAction5Command = GenerateMenuAction (bottom.items [4]);
-				}
-				else
-				{
-					BottomAction5Label = "";
-					BottomAction5Command = null;
-				}
+				BottomActions = actions;
 			}
+		}
+
+		int GetSuperNumber (TownFishMenuItem item)
+		{
+			var number = 0;
+
+			if (item.SuperFormat == cDiscoveriesCountFormat)
+				number = NewDiscoveriesCount;
 			else
-			{
-				BottomAction1Label = "";
-				BottomAction1Command = null;
-				BottomAction2Label = "";
-				BottomAction2Command = null;
-				BottomAction2HasNumber = false;
-				BottomAction3Label = "";
-				BottomAction3HasNumber = false;
-				BottomAction3Command = null;
-				BottomAction4Label = "";
-				BottomAction4Command = null;
-				BottomAction5Label = "";
-				BottomAction5Command = null;
-			}
+				int.TryParse (item.Super, out number);
+
+			return number;
 		}
 
 		string GenerateMenuItem (TownFishMenuItem item)
@@ -917,40 +983,20 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		ICommand GenerateMenuAction (TownFishMenuItem item)
-		{
-			switch (item.Type)
-			{
-				case "locationpin":
-					LeftActionIsLocationPin = true;
-					return new Command (_ =>
-						CancelLocationSearch());
-
-				case "callback":
-					return new Command (_ =>
-						OnCallbackRequested (item.Name));
-
-				case "link":
-					return new Command (_ =>
-						{ SourceUrl = App.BaseUrl + item.Href + App.QueryString + "#" + DateTime.Now.Ticks; }); // TODO: remove nav hash!
-
-				case "back":
-					return new Command (_ =>
-						{ SourceUrl = App.BaseUrl + item.Href + App.QueryString; });
-
-				default:
-					return null;
-			}
-		}
-
 		#endregion Methods
 
 		#region Fields
+
+		const string cDiscoveriesCountFormat = "{DiscoveriesCount}";
+
+		static Command sNoOpCommand = new Command (_ => {});
 
 		public static string CurrentSearchTerm = "";
 
 		string mLocationApiFormat = "";
 		string mLocationSetFormat = "";
+
+		BottomActionViewModel mDiscoveriesMenuItemViewModel;
 
 		#endregion Fields
 	}

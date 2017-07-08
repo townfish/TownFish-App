@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -25,7 +26,7 @@ namespace TownFish.App.ViewModels
 		/// </summary>
 		public ViewModelBase()
 		{
-			System.Diagnostics.Debug.WriteLine ("ViewModelBase.ctor: {0}", (object) GetType().Name);
+			Debug.WriteLine ("ViewModelBase.ctor: {0}", (object) GetType().Name);
 		}
 #endif
 
@@ -52,7 +53,7 @@ namespace TownFish.App.ViewModels
 		{
 			Dispose (false);
 
-			System.Diagnostics.Debug.WriteLine ("ViewModelBase.dtor: {0}", (object) GetType().Name);
+			Debug.WriteLine ("ViewModelBase.dtor: {0}", (object) GetType().Name);
 		}
 
 		#region IDisposable Members
@@ -114,7 +115,12 @@ namespace TownFish.App.ViewModels
 
 			bag [name] = value;
 
-			System.Diagnostics.Debug.WriteLine ("ViewModelBase.Set: Property {0} changed to {1}", name, value);
+#if DEBUG
+			var v = value?.ToString() ?? "<null>";
+			if (string.IsNullOrEmpty (v)) v = "\"\"";
+
+			Debug.WriteLine ($"ViewModelBase.Set: Property {name} changed to {v}");
+#endif
 
 			OnPropertyChanged (name);
 
@@ -132,7 +138,7 @@ namespace TownFish.App.ViewModels
 		/// <returns>True if a new value was set or false if value is unchanged</returns>
 		public bool Set<T> (ref T field, T value, [CallerMemberName] string name = null)
 		{
-			if (object.Equals (field, value))
+			if (Equals (field, value))
 				return false;
 
 			field = value;
@@ -148,8 +154,7 @@ namespace TownFish.App.ViewModels
 		/// <param name="name"></param>
 		public void OnPropertyChanged ([CallerMemberName] string name = null)
 		{
-			PropertyChangedEventArgs pcea;
-			if (!mPcea.TryGetValue (name, out pcea))
+			if (!mPcea.TryGetValue (name, out PropertyChangedEventArgs pcea))
 				mPcea [name] = pcea = new PropertyChangedEventArgs (name);
 
 			PropertyChanged?.Invoke (this, pcea);
@@ -321,11 +326,10 @@ namespace TownFish.App.ViewModels
 		/// <returns></returns>
 		Dictionary<string, T> GetBag<T>()
 		{
-			// first, get bag of T values
+			// get bag of T values from value bags collection
 			var t = typeof (T);
-			object obj;
 
-			if (!mValueBags.TryGetValue (t, out obj))
+			if (!mValueBags.TryGetValue (t, out object obj))
 				mValueBags [t] = obj = new Dictionary<string, T>();
 
 			return obj as Dictionary<string, T>;
@@ -342,9 +346,7 @@ namespace TownFish.App.ViewModels
 		/// <returns></returns>
 		T Get<T> (string name, Dictionary<string, T> bag, Func<T> makeDefault = null)
 		{
-			T value;
-
-			if (!bag.TryGetValue (name, out value) && makeDefault != null)
+			if (!bag.TryGetValue (name, out T value) && makeDefault != null)
 				bag [name] = value = makeDefault();
 
 			return value;

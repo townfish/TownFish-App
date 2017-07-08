@@ -225,13 +225,22 @@ namespace StreetHawkCrossplatform
 			}
 		}
 
-		public override void shRawJsonCallbackWithTitle(string title, string message, string json)
+		public override void shRawJsonCallbackWithTitle(string title, string message, NSDictionary json)
 		{
 			if (_shRawJsonCallback != null)
 			{
-				_shRawJsonCallback(title, message, json);
+				NSError error;
+				NSData data = NSJsonSerialization.Serialize(json, 0, out error);
+				NSString jsonStr = new NSString(data, NSStringEncoding.UTF8);
+				_shRawJsonCallback(title, message, jsonStr.ToString());
 			}
 		}
-	}
+
+        public void Register()
+        {
+            // Empty method, put anything you like here !
+            // See Android StreetHawkPush.cs 
+        }
+    }
 }
 

@@ -23,7 +23,7 @@ namespace StreetHawkCrossplatform
 			Growth.GetInstance(mActivity).OriginateShareWithCampaign(utm_campaign,share_url,null);
 		}
 
-		private static RegisterForShareURLCallback mGrowthCallback;
+		static RegisterForShareURLCallback mGrowthCallback;
 		public void GetShareUrlForAppDownload(string utm_campaign, string share_url, string utm_source, string utm_medium, string utm_term, string campaign_content, string default_url, RegisterForShareURLCallback cb)
 		{
 			if (null == cb)
@@ -37,11 +37,12 @@ namespace StreetHawkCrossplatform
 			}
 		}
 
-		private static RegisterForDeepLinkCallback mDeepLinkCb;
+		static RegisterForDeepLinkCallback mDeepLinkCb;
 		public void RegisterForDeepLinkURLCallback(RegisterForDeepLinkCallback cb)
 		{
 			mDeepLinkCb = cb;
 		}
+
 		public void OnReceiveDeepLinkUrl(string shareUrl)
 		{
 			if (null != mDeepLinkCb)
@@ -67,4 +68,3 @@ namespace StreetHawkCrossplatform
 		}
 	}
 }
-

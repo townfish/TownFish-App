@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define SH_NO_FEED
+
+using System;
 
 using Android.App;
 using Android.Content.PM;
@@ -11,17 +13,23 @@ using Android.Webkit;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
 
-using StreetHawkCrossplatform;
-using Com.Streethawk.Library.Core;
-using Com.Streethawk.Library.Push;
+#if !SH_NO_FEED
+using Com.Streethawk.Library.Feeds;
+#endif
 
+using StreetHawkCrossplatform;
 
 namespace TownFish.App.Droid
 {
 	[Activity (Label = "TownFish.App", Icon = "@drawable/icon",
 		Theme = "@style/townfishTheme", MainLauncher = false,
 		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation,
-		ScreenOrientation = ScreenOrientation.Portrait | ScreenOrientation.ReversePortrait)]
+		ScreenOrientation = //ScreenOrientation.Portrait |
+							//ScreenOrientation.ReversePortrait |
+							ScreenOrientation.UserPortrait,
+		// in case this helps - looks like needs to be set programmatically in XF
+		// due to https://bugzilla.xamarin.com/show_bug.cgi?id=39765
+		WindowSoftInputMode = SoftInput.AdjustResize)]
 	public class MainActivity : FormsApplicationActivity
 	{
 		#region Nested Types
@@ -45,24 +53,42 @@ namespace TownFish.App.Droid
 			}
 		}
 
-		#endregion WebChromeClient
+        #endregion WebChromeClient
 #endif
-		#endregion Nested Types
+        #endregion Nested Types
 
-		#region Methods
+        #region Methods
 
-		protected override void OnCreate (Bundle bundle)
+        protected override void OnPause()
+        {
+            IsActive = false;
+            base.OnPause();
+        }
+
+        protected override void OnResume()
+        {
+            IsActive = true;
+            base.OnResume();
+        }
+
+        protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
 
-#if DEBUG	
+#if DEBUG
 			if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
 				Android.Webkit.WebView.SetWebContentsDebuggingEnabled (true);
 #endif
 
+			Forms.Init (this, bundle);
+
 			StreetHawkAnalytics.Init (this);
 
-			Forms.Init (this, bundle);
+#if !SH_NO_FEED
+			// separately initialise SH feeds
+			var shFeeds = DependencyService.Get<ISHFeedItemObserver>();
+			SHFeedItem.GetInstance (this).RegisterFeedItemObserver (shFeeds);
+#endif // !SH_NO_FEED
 
 			var deviceID = Secure.GetString (ApplicationContext.ContentResolver,
 					Secure.AndroidId);
@@ -102,6 +128,8 @@ namespace TownFish.App.Droid
 		#region Fields
 
 		App mApp;
+
+        public static bool IsActive { get; set; } = true;
 
 		#endregion Fields
 	}

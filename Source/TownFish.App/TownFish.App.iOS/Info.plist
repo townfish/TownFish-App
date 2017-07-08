@@ -5,7 +5,6 @@
 	<key>UIDeviceFamily</key>
 	<array>
 		<integer>1</integer>
-		<integer>2</integer>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
@@ -24,17 +23,16 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.matt.townfish</string>
 	<key>CFBundleVersion</key>
-	<string>161216</string>
+	<string>170707</string>
 	<key>CFBundleIconFiles</key>
 	<array>
 		<string>Icon-60@2x.png</string>
-		<string>splash.png</string>
-		<string>Icon-Small-40@2x.png</string>
-		<string>Icon-Small.png</string>
 		<string>Icon-Small@2x.png</string>
+		<string>Icon-Small.png</string>
+		<string>Icon-Small-40@2x.png</string>
 	</array>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.2</string>
+	<string>1.1.12</string>
 	<key>UIStatusBarTintParameters</key>
 	<dict>
 		<key>UINavigationBar</key>
@@ -59,14 +57,23 @@
 	<key>UIStatusBarHidden~ipad</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>
-	<string>Launch.Storyboard</string>
+	<string>Launch</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
+		<string>bluetooth-central</string>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>TownFish is now using your location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>TownFish recommends new things of interest to you and needs to use your location to notify you about freebies and special offers at venues near you</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>TownFish uses Bluetooth to detect nearby iBeacons</string>
+	<key>NSCameraUsageDescription</key>
+	<string>TownFish allows you to post photos</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>TownFish allows you to post photos</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Launch</string>
 </dict>
 </plist>

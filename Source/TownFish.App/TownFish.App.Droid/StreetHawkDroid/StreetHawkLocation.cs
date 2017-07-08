@@ -12,7 +12,7 @@ using StreetHawkCrossplatform;
 
 namespace StreetHawkCrossplatform
 {
-	public class StreetHawkLocation:IStreetHawkLocations
+	public class StreetHawkLocation: Java.Lang.Object, IStreetHawkLocations
 	{
 		static Application mApplication => StreetHawkAnalytics.Application;
 
@@ -61,16 +61,6 @@ namespace StreetHawkCrossplatform
 		public void UpdateLocationMonitoringParams(int UPDATE_INTERVAL_FG, int UPDATE_DISTANCE_FG, int UPDATE_INTERVAL_BG, int UPDATE_DISTANCE_BG)
 		{
 			SHLocation.GetInstance(mApplication.ApplicationContext).UpdateLocationMonitoringParams(UPDATE_INTERVAL_FG, UPDATE_DISTANCE_FG,UPDATE_INTERVAL_BG,UPDATE_DISTANCE_BG);
-		}
-		public IntPtr Handle
-		{
-			get;
-			set;
-		}
-
-		public void Dispose()
-		{
-
 		}
 	}
 }

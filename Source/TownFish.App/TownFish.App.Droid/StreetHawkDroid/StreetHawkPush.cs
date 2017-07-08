@@ -7,14 +7,17 @@ using Android.OS;
 
 using Com.Streethawk.Library.Push;
 using StreetHawkCrossplatform;
-
+using Android.Content;
+using TownFish.App.Droid;
+using Android.Support.V7.App;
+using Android.Graphics;
 
 [assembly: Xamarin.Forms.Dependency(typeof(StreetHawkPush))]
 
 
 namespace StreetHawkCrossplatform
 {
-	public class StreetHawkPush : Java.Lang.Object, IStreetHawkPush, ISHObserver
+	public class StreetHawkPush : Java.Lang.Object, IStreetHawkPush
 	{
 		static Application mApplication => StreetHawkAnalytics.Application;
 
@@ -31,7 +34,7 @@ namespace StreetHawkCrossplatform
 		public string GetAppPage()
 		{
 			//TODO
-			Log.Error("StreetHawk","Function GetAppPage is not implemented in this release ");
+			Log.Error("StreetHawk", "Function GetAppPage is not implemented in this release ");
 			return null;
 		}
 
@@ -70,19 +73,19 @@ namespace StreetHawkCrossplatform
 			return true;
 		}
 
-		private RegisterForOnReceiveNonSHPushPayloadCallback mNonSHPushPayloadCB;
+		RegisterForOnReceiveNonSHPushPayloadCallback mNonSHPushPayloadCB;
 		public void OnReceiveNonSHPushPayload(RegisterForOnReceiveNonSHPushPayloadCallback cb)
 		{
 			mNonSHPushPayloadCB = cb;
 		}
 
-		private RegisterForOnReceivePushDataCallback mPushDataCallback;
+		RegisterForOnReceivePushDataCallback mPushDataCallback;
 		public void OnReceivePushData(RegisterForOnReceivePushDataCallback cb)
 		{
 			mPushDataCallback = cb;
 		}
 
-		private RegisterForOnReceiveResultCallback mPushResultCallback;
+		RegisterForOnReceiveResultCallback mPushResultCallback;
 		public void OnReceiveResult(RegisterForOnReceiveResultCallback cb)
 		{
 			mPushResultCallback = cb;
@@ -91,14 +94,22 @@ namespace StreetHawkCrossplatform
 		public void RegisterForPushMessaging(string projectNumber)
 		{
 			Push.GetInstance(mApplication.ApplicationContext).RegisterForPushMessaging(projectNumber);
-			Push.GetInstance(mApplication.ApplicationContext).RegisterSHObserver(this);
-		}
+        }
 
-		private RegisterForShReceivedRawJSONCallback mRawJSONCB;
+        RegisterForShReceivedRawJSONCallback mRawJSONCB;
 		public void RegisterForRawJSON(RegisterForShReceivedRawJSONCallback cb)
 		{
 			mRawJSONCB = cb;
+            JsonService.Callback = cb;
 		}
+
+       // Starting our service that implements ISHObserver
+        public void Register()
+        {
+            Intent serviceToStart = new Intent(Xamarin.Forms.Forms.Context, typeof(JsonService));
+            Xamarin.Forms.Forms.Context.StartService(serviceToStart);
+        }
+
 
 		public void SendPushResult(string msgid, int result)
 		{
@@ -117,7 +128,7 @@ namespace StreetHawkCrossplatform
 
 		public void SetIsDefaultNotificationServiceEnabled(bool enabled)
 		{
-			Log.Error("StreetHawk","Function SetIsDefaultNotificationServiceEnabled is not available for Android ");
+			Log.Error("StreetHawk", "Function SetIsDefaultNotificationServiceEnabled is not available for Android ");
 		}
 
 		public void SetIsNotificationServiceEnabled(bool enabled)
@@ -130,75 +141,12 @@ namespace StreetHawkCrossplatform
 			Push.GetInstance(mApplication.ApplicationContext).SetUseCustomDialog(isUse);
 		}
 
-		private RegisterForShNotifyAppPageCallback mNotifyAppPageCB;
+		RegisterForShNotifyAppPageCallback mNotifyAppPageCB;
 		public void ShNotifyAppPage(RegisterForShNotifyAppPageCallback cb)
 		{
 			mNotifyAppPageCB = cb;
 		}
 
-		public void OnReceiveNonSHPushPayload(Bundle bundle)
-		{
-			bundle.ToString();
-		}
 
-		public void OnReceivePushData(Com.Streethawk.Library.Push.PushDataForApplication pushData)
-		{
-			StreetHawkCrossplatform.PushDataForApplication appData = new StreetHawkCrossplatform.PushDataForApplication();
-			if (null != pushData)
-			{
-				appData.title = pushData.Title;
-				appData.message = pushData.Message;
-				appData.displayWithoutDialog = (bool)pushData.DisplayWithoutConfirmation;
-				appData.data = pushData.Data;
-				appData.action = (SHAction)pushData.Action;
-				appData.isAppOnForeground = false;
-				appData.msgID = pushData.MsgId;
-				appData.portion = pushData.Portion;
-				appData.orientation = (SHSlideDirection)pushData.Orientation;
-				appData.speed = pushData.Speed;
-				appData.sound = pushData.Sound;
-				appData.badge = pushData.Badge;
-			}
-			mPushDataCallback.Invoke(appData);
-		}
-
-		public void OnReceiveResult(Com.Streethawk.Library.Push.PushDataForApplication pushData, int result)
-		{
-			StreetHawkCrossplatform.PushDataForApplication appData = new StreetHawkCrossplatform.PushDataForApplication();
-			if (null != pushData)
-			{
-				appData.title = pushData.Title;
-				appData.message = pushData.Message;
-				appData.displayWithoutDialog = (bool)pushData.DisplayWithoutConfirmation;
-				appData.data = pushData.Data;
-				appData.action = (SHAction)pushData.Action;
-				appData.isAppOnForeground = false;
-				appData.msgID = pushData.MsgId;
-				appData.portion = pushData.Portion;
-				appData.orientation = (SHSlideDirection)pushData.Orientation;
-				appData.speed = pushData.Speed;
-				appData.sound = pushData.Sound;
-				appData.badge = pushData.Badge;
-
-			}
-			mPushResultCallback.Invoke(appData,result);
-		}
-
-		public void ShNotifyAppPage(string appPage)
-		{
-			if (null != mNotifyAppPageCB)
-			{
-				mNotifyAppPageCB.Invoke(appPage);
-			}
-		}
-
-		public void ShReceivedRawJSON(string title, string message, string json)
-		{
-			if (null != mRawJSONCB)
-			{
-				mRawJSONCB.Invoke(title, message, json);
-			}
-		}
-	}
+    }
 }
-
