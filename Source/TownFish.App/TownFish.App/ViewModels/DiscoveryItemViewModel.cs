@@ -43,7 +43,7 @@ namespace TownFish.App.ViewModels
                     {
                         expiresString = expiresString.Substring(3);
                     }
-                    return "Expires in " + expiresString;
+                    return "Ends in " + expiresString;
                 }
             }
             catch (Exception ex)
@@ -52,7 +52,6 @@ namespace TownFish.App.ViewModels
             }
             return "";
         }
-
 
         static string FormatCreatedTimeStamp(DateTime created)
         {
