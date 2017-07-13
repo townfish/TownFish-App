@@ -11,59 +11,42 @@ namespace TownFish.App.ViewModels
 
         static string FormatExpiresTimeStamp(DateTime? expires)
         {
-            if (!expires.HasValue)
-            {
+            if (expires == null || !expires.HasValue)
                 return "";
-            }
 
-            try
+            var expiresIn = expires.Value.Subtract(DateTime.Now);
+
+            string DaysAgo(int ago) => ago == 0 ? "Today" :
+                    ago == 1 ? "Yesterday" : $"{ago} days ago";
+
+            string Ago(DateTime date, int days) => days < 0 || days >= 7 ?
+                    date.ToString("d MMM") :
+                    $"{DaysAgo(days)} at {date.ToString("HH.mm")}";
+
+            var daysToGo = (int)((expires.Value.Date - DateTime.Now.Date).TotalDays);
+
+            if (expiresIn.TotalSeconds < 0)
             {
-                var expiresIn = expires.Value.Subtract(DateTime.Now);
-
-                string DaysAgo(int ago) => ago == 0 ? "Today" :
-                        ago == 1 ? "Yesterday" : $"{ago} days ago";
-
-                string Ago(DateTime date, int days) => days < 0 || days >= 7 ?
-                        date.ToString("d MMM") :
-                        $"{DaysAgo(days)} at {date.ToString("HH.mm")}";
-
-                var daysToGo = (int)((expires.Value.Date - DateTime.Now.Date).TotalDays);
-
-                if (expiresIn.TotalSeconds < 0)
-                {
-                    return $"Expired {Ago(expires.Value, -daysToGo)}";
-                }
-                else
-                {
-                    var expiresString = expiresIn.ToString("d'd 'h'h 'm'm 's's'");
-                    if (expiresString.StartsWith("0d "))
-                    {
-                        expiresString = expiresString.Substring(3);
-                    }
-                    if (expiresString.StartsWith("0h "))
-                    {
-                        expiresString = expiresString.Substring(3);
-                    }
-                    if (expiresString.StartsWith("0m "))
-                    {
-                        expiresString = expiresString.Substring(3);
-                    }
-                    return "Ends in " + expiresString;
-                }
+                return $"Expired {Ago(expires.Value, -daysToGo)}";
             }
-            catch (Exception ex)
+            else
             {
-                System.Diagnostics.Debug.WriteLine(ex);
+                var expiresString = expiresIn.ToString("d'd 'h'h 'm'm 's's'");
+                if (expiresString.StartsWith("0d "))
+                    expiresString = expiresString.Substring(3);
+                if (expiresString.StartsWith("0h "))
+                    expiresString = expiresString.Substring(3);
+                if (expiresString.StartsWith("0m "))
+                    expiresString = expiresString.Substring(3);
+
+                return "Ends in " + expiresString;
             }
-            return "";
         }
 
         static string FormatCreatedTimeStamp(DateTime? created)
         {
-            if (!created.HasValue)
-            {
+            if (created == null || !created.HasValue)
                 return "";
-            }
 
             string DaysAgo(int ago) => ago == 0 ? "Today" :
                     ago == 1 ? "Yesterday" : $"{ago} days ago";

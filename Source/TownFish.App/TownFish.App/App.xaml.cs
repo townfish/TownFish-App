@@ -566,6 +566,12 @@ namespace TownFish.App
 			}
 		}
 
+		public void UpdateAppBadgeCount (int count)
+		{
+            var shAnalytics = DependencyService.Get<IStreetHawkAnalytics>();
+            shAnalytics?.TagNumeric ("sh_badge_number", count);
+		}
+
 		#endregion StreetHawk
 
 		#region App Property Helpers
