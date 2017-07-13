@@ -9,11 +9,16 @@ namespace TownFish.App.ViewModels
 	{
 		#region Methods
 
-        static string FormatExpiresTimeStamp(DateTime expires)
+        static string FormatExpiresTimeStamp(DateTime? expires)
         {
+            if (!expires.HasValue)
+            {
+                return "";
+            }
+
             try
             {
-                var expiresIn = expires.Subtract(DateTime.Now);
+                var expiresIn = expires.Value.Subtract(DateTime.Now);
 
                 string DaysAgo(int ago) => ago == 0 ? "Today" :
                         ago == 1 ? "Yesterday" : $"{ago} days ago";
@@ -22,11 +27,11 @@ namespace TownFish.App.ViewModels
                         date.ToString("d MMM") :
                         $"{DaysAgo(days)} at {date.ToString("HH.mm")}";
 
-                var daysToGo = (int)((expires.Date - DateTime.Now.Date).TotalDays);
+                var daysToGo = (int)((expires.Value.Date - DateTime.Now.Date).TotalDays);
 
                 if (expiresIn.TotalSeconds < 0)
                 {
-                    return $"Expired {Ago(expires, -daysToGo)}";
+                    return $"Expired {Ago(expires.Value, -daysToGo)}";
                 }
                 else
                 {
@@ -53,8 +58,13 @@ namespace TownFish.App.ViewModels
             return "";
         }
 
-        static string FormatCreatedTimeStamp(DateTime created)
+        static string FormatCreatedTimeStamp(DateTime? created)
         {
+            if (!created.HasValue)
+            {
+                return "";
+            }
+
             string DaysAgo(int ago) => ago == 0 ? "Today" :
                     ago == 1 ? "Yesterday" : $"{ago} days ago";
 
@@ -63,9 +73,9 @@ namespace TownFish.App.ViewModels
                     $"{DaysAgo(days)} at {date.ToString("HH.mm")}";
 
             var now = DateTime.Now;
-            var daysAgo = (int)((now.Date - created.Date).TotalDays);
+            var daysAgo = (int)((now.Date - created.Value.Date).TotalDays);
 
-            var createdString = Ago(created, daysAgo);
+            var createdString = Ago(created.Value, daysAgo);
             return $"{createdString}";
         }
 
@@ -92,11 +102,11 @@ namespace TownFish.App.ViewModels
 
 		public string Text { get; set; }
 
-		public DateTime Created { get; set; }
+		public DateTime? Created { get; set; }
 
-		public DateTime Modified { get; set; }
+		public DateTime? Modified { get; set; }
 
-		public DateTime Expires { get; set; }
+		public DateTime? Expires { get; set; }
 
 		public string Group { get; set; }
 

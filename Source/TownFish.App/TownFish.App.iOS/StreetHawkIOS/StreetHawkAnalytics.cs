@@ -4,6 +4,7 @@ using Xamarin.Forms;
 
 using StreetHawkCrossplatform;
 using StreethawkIOS.Core;
+using UIKit;
 
 [assembly: Dependency(typeof(StreetHawkAnalytics))]
 
@@ -48,7 +49,12 @@ namespace StreetHawkCrossplatform
 
 		public void TagNumeric(string key, double value)
 		{
-			SHApp.instance().tagNumeric(key, value);
+            if (key == "sh_badge_number")
+            {
+                UIApplication.SharedApplication.ApplicationIconBadgeNumber = (int)value;
+            }
+
+            SHApp.instance().tagNumeric(key, value);
 		}
 
 		public void TagString(string key, string value)

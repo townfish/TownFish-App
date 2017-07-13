@@ -138,34 +138,15 @@ namespace TownFish.App.Pages
 		}
 
 		void App_BackButtonPressed (object sender, EventArgs e)
-		{
-			if (mIsSearchVisible || mShowingSearch)
-				HideSearchPanel();
-
-            else if (ViewModel.IsDiscoveriesInfoVisible)
+        {
+            if (wbvContent.CanGoBack)
             {
-                ViewModel.IsDiscoveriesInfoVisible = false;
-                if (ViewModel.IsDiscoveriesEmpty)
-                {
-                    App_BackButtonPressed(this, new EventArgs());
-                }
+                ViewModel_CallbackRequested(this, new BrowserPageViewModel.CallbackInfo() { IsNative = false, Name = "back"});
             }
-			else if (ViewModel.IsDiscoveriesVisible)
+            else
             {
-                HideDiscoveries();
-                if (wbvContent.CanGoBack)
-                {
-                    wbvContent.GoBack();
-                }
-                else
-                {
-                    App.Current.CloseApp();
-                }
+                App.Current.CloseApp();
             }
-            else if (wbvContent.CanGoBack)
-				wbvContent.GoBack();
-			else
-				App.Current.CloseApp();
 		}
 
 		void App_PushUrlReceived (object sender, (string url, bool wasBackgrounded) args)
@@ -316,8 +297,8 @@ namespace TownFish.App.Pages
 
 			// if we're showing menus, hide them all and then kill the schema
 			if (mCurrentSchema != null)
-			{
-				mCurrentSchema.SetMenuVisibility (null);
+							{
+mCurrentSchema.SetMenuVisibility (null);
 				ViewModel.LoadMenuMap (mCurrentSchema);
 
 				mCurrentSchema = null;
@@ -469,15 +450,22 @@ namespace TownFish.App.Pages
 			}
             else if (info.Name == "back" && ViewModel.IsDiscoveriesInfoVisible)
             {
-                if (ViewModel.IsDiscoveriesVisible)
+                if (!ViewModel.IsDiscoveriesEmpty)
                 {
-                    ViewModel.IsDiscoveriesInfoVisible = false;
+                    if (ViewModel.IsDiscoveriesVisible)
+                    {
+                        ViewModel.IsDiscoveriesInfoVisible = false;
+                    }
+                    else
+                    {
+                        ViewModel.IsDiscoveriesVisible = true;
+                    }
+                    return;
                 }
                 else
                 {
-                    ViewModel.IsDiscoveriesVisible = true;
+                    ViewModel.IsDiscoveriesVisible = false;
                 }
-                return;
             }
 
             // make sure this is closed so location name shows
@@ -485,15 +473,8 @@ namespace TownFish.App.Pages
 
             HideSearchPanel();
 
-            if (info.Name == "back" && !ViewModel.IsDiscoveriesVisible)
-            {
-                Navigate(mPreviousUrl);
-            }
-            else
-            {
-                Device.BeginInvokeOnMainThread(() =>
-                   wbvContent.InvokeScript(string.Format(cCallbackFormat, info.Name)));
-            }
+            Device.BeginInvokeOnMainThread(() =>
+                wbvContent.InvokeScript(string.Format(cCallbackFormat, info.Name)));
         }
 
 		void ViewModel_NavigateRequested (object sender, string url)
