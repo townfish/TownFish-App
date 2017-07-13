@@ -91,7 +91,8 @@
     <MtouchFloat32>False</MtouchFloat32>
     <DeviceSpecificBuild>True</DeviceSpecificBuild>
     <MtouchNoSymbolStrip>False</MtouchNoSymbolStrip>
-    <CodesignKey>iPhone Developer</CodesignKey>
+    <CodesignKey>iPhone Developer: Philip Hopkins (CEC6QJ762N)</CodesignKey>
+    <CodesignProvision>7812f0cf-4743-4ce6-adbd-420872cb1bc0</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
@@ -126,7 +127,7 @@
     <OptimizePNGs>True</OptimizePNGs>
     <MtouchFloat32>False</MtouchFloat32>
     <CodesignKey>iPhone Distribution: TownFish Limited (LK2389XQ78)</CodesignKey>
-    <CodesignProvision>760f366e-ddcb-43c9-ac08-58e740ba8dcf</CodesignProvision>
+    <CodesignProvision>afe5e7c1-ebd8-4691-85c0-fe9250827b1e</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
     <DebugType>none</DebugType>
@@ -136,11 +137,11 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
     <MtouchArch>ARMv7, ARM64</MtouchArch>
-    <CodesignKey>iPhone Distribution</CodesignKey>
+    <CodesignKey>iPhone Distribution: TownFish Limited (LK2389XQ78)</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <BuildIpa>True</BuildIpa>
     <IpaIncludeArtwork>False</IpaIncludeArtwork>
-    <CodesignProvision>760f366e-ddcb-43c9-ac08-58e740ba8dcf</CodesignProvision>
+    <CodesignProvision>a8dbb0d9-6d58-40b1-b5d8-772253d820c4</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhoneSimulator'">
     <BuildIpa>True</BuildIpa>
