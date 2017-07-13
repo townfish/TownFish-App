@@ -340,21 +340,26 @@ namespace TownFish.App
 							linkUrl = val;
 					}
 
-					items.Add (new DiscoveryItemViewModel
+                    var created = string.IsNullOrEmpty(item.created) ? null : (DateTime?)DateTime.Parse(item.created, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+                    var modified = string.IsNullOrEmpty(item.modified) ? null : (DateTime?)DateTime.Parse(item.modified, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+                    var expires = string.IsNullOrEmpty(item.expires) ? null : (DateTime?)DateTime.Parse(item.expires, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+
+
+                    items.Add (new DiscoveryItemViewModel
 					{
 						PictureUrl = imgUrl,
 						LinkUrl = linkUrl,
-						Title = item.title.Trim(),
-						Text = item.message.Trim(),
-						Created = DateTime.Parse (item.created, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal),
-						Modified = DateTime.Parse (item.modified, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal),
-						Expires = DateTime.Parse (item.expires, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal),
+						Title = item.title?.Trim(),
+						Text = item.message?.Trim(),
+						Created = created,
+						Modified = modified,
+						Expires = expires,
 						Group = item.campaign
 					});
 				}
 
 				// return in descending creation order (i.e. reverse date)
-				items.Sort ((a, b) => b.Created.CompareTo (a.Created));
+				items.Sort ((a, b) => b.Created.GetValueOrDefault().CompareTo (a.Created.GetValueOrDefault()));
 
 				return items;
 			}

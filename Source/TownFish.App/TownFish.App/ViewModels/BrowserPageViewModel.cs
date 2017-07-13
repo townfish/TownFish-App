@@ -13,7 +13,7 @@ using Xamarin.Forms;
 using Newtonsoft.Json;
 
 using TownFish.App.Models;
-
+using StreetHawkCrossplatform;
 
 namespace TownFish.App.ViewModels
 {
@@ -924,14 +924,18 @@ namespace TownFish.App.ViewModels
 			{
 				var actions = new ObservableCollection<BottomActionViewModel>();
 
+                int totalSuperCount = 0;
+
 				foreach (var item in bottom.Items)
 				{
+                    int superCount = GetSuperNumber(item);
+                    totalSuperCount += superCount;
 					var action = new BottomActionViewModel
 					{
 						MainViewModel = this,
 						Icon = GenerateMenuItem (item),
 						Command = GenerateMenuAction (item),
-						SuperCount = GetSuperNumber (item),
+						SuperCount = superCount,
 						SuperColour = item.SuperColor,
 					};
 
@@ -946,7 +950,11 @@ namespace TownFish.App.ViewModels
 				for (var i = bottom.Items.Count; i++ < 6; )
 					actions.Add (new BottomActionViewModel());
 
-				BottomActions = actions;
+                var shAnalytics = DependencyService.Get<IStreetHawkAnalytics>();
+
+                shAnalytics.TagNumeric("sh_badge_number", totalSuperCount);
+
+                BottomActions = actions;
 			}
 		}
 

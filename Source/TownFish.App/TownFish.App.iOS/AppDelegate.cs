@@ -57,11 +57,5 @@ namespace TownFish.App.iOS
 
 			return base.FinishedLaunching (app, options);
 		}
-
-        public override void OnActivated(UIApplication uiApplication)
-        {
-            uiApplication.ApplicationIconBadgeNumber = 0;
-            base.OnActivated(uiApplication);
-        }
     }
 }
