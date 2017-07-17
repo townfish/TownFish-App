@@ -1,7 +1,4 @@
 ﻿//#define SH_OPTIONAL
-#define SH_RAWJSON_OPTIONAL
-//#define SH_NO_FEED
-//#define SH_DUMMY_FEED
 
 using System;
 using System.Collections.Generic;
@@ -77,10 +74,14 @@ namespace TownFish.App
 			AppSuspended?.Invoke (this, EventArgs.Empty);
 		}
 
-		protected override void OnResume()
+		protected override async void OnResume()
 		{
             mResumedTime = DateTime.UtcNow;
 			AppResumed?.Invoke (this, EventArgs.Empty);
+
+			// SH doesn't call feed callback when backgrounded, so check for
+			// new items here in case any came in whilst we were away
+			Discoveries = await GetDiscoveries();
 		}
 
 		public void OnBackButtonPressed()
@@ -140,10 +141,11 @@ namespace TownFish.App
 			shBeacon.StartBeaconMonitoring();
 			shGeofence.StartGeofenceMonitoring();
 
+#if SH_OPTIONAL
+
 			//----------------------------------------------------------------
 			// Apparently, hooking these stops them from working. Apparently.
 			//
-#if SH_OPTIONAL
 
 			//Optional: callback when install register successfully.
 			shAnalytics.RegisterForInstallEvent (installId =>
@@ -246,11 +248,11 @@ namespace TownFish.App
 #endif
 			});
 
-#endif // SH_OPTIONAL
 			//
 			//----------------------------------------------------------------
 
-#if SH_RAWJSON_OPTIONAL
+#endif // SH_OPTIONAL
+
 			//Optional: Callback when receive json push.
 			shPush.RegisterForRawJSON (async (title, message, json) =>
 				{
@@ -273,14 +275,18 @@ namespace TownFish.App
 								content.TryGetValue ("route", out var route) &&
 								dataType == "vanilla_notification" &&
 								route.ToLower().Contains ("townfish.com"))
+						{
 							OnPushUrlReceived (route, wasBackgrounded);
+						}
+						else
+						{
+							Discoveries = await GetDiscoveries();
 
-						Discoveries = await GetDiscoveries();
-
-                        if ((dataType == "messageFeed" ||
-								content.TryGetValue("img", out var img)) &&
-								wasBackgrounded)
-							OnBackgroundDiscoveriesReceived();
+							if ((dataType == "messageFeed" ||
+									content.TryGetValue("img", out var img)) &&
+									wasBackgrounded)
+								OnBackgroundDiscoveriesReceived();
+						}
 					}
 					catch (Exception ex)
 					{
@@ -288,11 +294,12 @@ namespace TownFish.App
 									$"App.InitStreetHawk/RegisterForRawJSON: {ex.Message}");
 					}
 				});
-#endif // SH_RAWJSON_OPTIONAL
+
+#if SH_OPTIONAL
 
 			//----------------------------------------------------------------
+			// SH supposedly forwards non-SH push payloads via this
 			//
-#if SH_OPTIONAL
 
 			//Optional: Callback when none 
 			shPush.OnReceiveNonSHPushPayload (payload =>
@@ -303,9 +310,10 @@ namespace TownFish.App
 #endif
 			});
 
-#endif // SH_OPTIONAL
 			//
 			//----------------------------------------------------------------
+
+#endif // SH_OPTIONAL
 
 			// on app load, we need to get feed to show count and cache items
 			try
@@ -375,61 +383,6 @@ namespace TownFish.App
 			var tcs = new TaskCompletionSource<IList<DiscoveryItemViewModel>>();
 			var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
 
-#if SH_NO_FEED
-
-#if SH_DUMMY_FEED
-
-			// create dummy feed model
-			var items = new List<DiscoveryItemViewModel>
-			{
-				new DiscoveryItemViewModel
-				{
-					PictureUrl = "TownFish.App.Images.Dummy.muffin.png",
-					LinkUrl = "http://google.com/",
-					Title = "Free Sausage & Egg Muffin",
-					Text = "Bill's Brekkie Bar, Camden. Valid for Today Only!",
-					TimeStamp = DateTime.Now,
-					Group = "Restaurants & Dining"
-				},
-				new DiscoveryItemViewModel
-				{
-					PictureUrl = "TownFish.App.Images.Dummy.meat.png",
-					LinkUrl = "http://google.com/",
-					Title = "Côte de Boeuf for two people with sides for only £20!",
-					Text = "Hawksmoor Steak house in Covent Garden",
-					TimeStamp = DateTime.Now,
-					Group = "Restaurants & Dining"
-				},
-				new DiscoveryItemViewModel
-				{
-					PictureUrl = "TownFish.App.Images.Dummy.muffin.png",
-					LinkUrl = "http://google.com/",
-					Title = "Free Sausage & Egg Muffin",
-					Text = "Bill's Brekkie Bar, Camden. Valid for Today Only!",
-					TimeStamp = DateTime.Now,
-					Group = "Restaurants & Dining"
-				},
-				new DiscoveryItemViewModel
-				{
-					PictureUrl = "TownFish.App.Images.Dummy.meat.png",
-					LinkUrl = "http://google.com/",
-					Title = "Côte de Boeuf for two people with sides for only £20!",
-					Text = "Hawksmoor Steak house in Covent Garden",
-					TimeStamp = DateTime.Now,
-					Group = "Restaurants & Dining"
-				}
-			};
-
-#else // !SH_DUMMY_FEED (i.e. empty dummy feed)
-
-			var items = new List<DiscoveryItemViewModel>();
-
-#endif // !SH_DUMMY_FEED
-
-			Task.Run (() => tcs.TrySetResult (items));
-
-#else // !SH_NO_FEED
-
 			// if it takes too long to return (call my callback below), give up to prevent leaks
 			var cts = new CancellationTokenSource (10000);
 			cts.Token.Register (() => tcs.TrySetException (new TimeoutException()));
@@ -470,8 +423,6 @@ namespace TownFish.App
 			{
 				tcs.TrySetException (ex);
 			}
-
-#endif // !SH_NO_FEED
 
 			--sGettingDiscoveries;
 
@@ -682,7 +633,7 @@ namespace TownFish.App
 		/// Gets the number of new discovery items received since last being viewed.
 		/// </summary>
 		public static int NewDiscoveriesCount => Discoveries?.Count (d =>
-				d.Modified > LastDiscoveriesViewTime) ?? 0;
+				d.Created > LastDiscoveriesViewTime) ?? 0;
 
 		#endregion Properties and Events
 

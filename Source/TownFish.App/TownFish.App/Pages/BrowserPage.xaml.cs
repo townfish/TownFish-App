@@ -141,7 +141,15 @@ namespace TownFish.App.Pages
         {
             if (wbvContent.CanGoBack)
             {
-                ViewModel_CallbackRequested(this, new BrowserPageViewModel.CallbackInfo() { IsNative = false, Name = "back"});
+				// hackish - fake a back callback, to handle back with discoveries/info showing
+				// or to let JS code handle actually going back in webview if necessary
+
+                ViewModel_CallbackRequested (this,
+						new BrowserPageViewModel.CallbackInfo
+						{
+							IsNative = false,
+							Name = BrowserPageViewModel.CallbackInfo.Back
+						});
             }
             else
             {
@@ -288,7 +296,6 @@ namespace TownFish.App.Pages
 		void UberWebView_NavigationFinished (object sender, string url)
 		{
             // in case URL is changed by webview itself, save it here so we now what it is
-            mPreviousUrl = ViewModel.SourceUrl;
 			ViewModel.SourceUrl = url; // don't use Navigate() here!
 
 			/* TODO: Paul said the menus should be hidden at the start of each
@@ -297,8 +304,8 @@ namespace TownFish.App.Pages
 
 			// if we're showing menus, hide them all and then kill the schema
 			if (mCurrentSchema != null)
-							{
-mCurrentSchema.SetMenuVisibility (null);
+			{
+				mCurrentSchema.SetMenuVisibility (null);
 				ViewModel.LoadMenuMap (mCurrentSchema);
 
 				mCurrentSchema = null;
@@ -365,6 +372,10 @@ mCurrentSchema.SetMenuVisibility (null);
 
 		void App_BackgroundDiscoveriesReceived (object sender, EventArgs e)
 		{
+			// if already showing discoveries we can ignore this
+			if (ViewModel.IsDiscoveriesVisible)
+				return;
+
 			// can't just call ShowDiscoveries here as the menu won't be set;
 			// we have to ask the schema to tell us to show discoveries, then it
 			// sets the menu for us, but as we don't yet have a callback for that...
@@ -380,16 +391,23 @@ mCurrentSchema.SetMenuVisibility (null);
 		/// <param name=""></param>
 		void App_DiscoveriesUpdated (object sender, EventArgs e)
 		{
+			// cache discovery items so it shows quickly when revealed
+			UpdateDiscoveryItems();
+
 			// if discoveries already open, just update last viewed time;
 			// otherwise update count to show new arrival(s)
 
 			if (ViewModel.IsDiscoveriesVisible)
+			{
 				App.LastDiscoveriesViewTime = DateTime.Now;
-			else
-				ViewModel.NewDiscoveriesCount = App.NewDiscoveriesCount;
 
-			// cache discovery items so it shows quickly when revealed
-			UpdateDiscoveryItems();
+				// show or hide this based on whether we have any now
+				ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty;
+			}
+			else
+			{
+				ViewModel.NewDiscoveriesCount = App.NewDiscoveriesCount;
+			}
 		}
 
 		async void BrowserPage_EditLikesTapped (object sender, EventArgs e)
@@ -440,7 +458,7 @@ mCurrentSchema.SetMenuVisibility (null);
 
 		void ViewModel_CallbackRequested (object sender, BrowserPageViewModel.CallbackInfo info)
 		{
-			// special-case info icon within discoveries
+			// special-case user pressing discoveries info button
 			if (info.IsNative && info.Name == BrowserPageViewModel.CallbackInfo.Info)
 			{
 				ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty ||
@@ -448,30 +466,23 @@ mCurrentSchema.SetMenuVisibility (null);
 
 				return;
 			}
-            else if (info.Name == "back" && ViewModel.IsDiscoveriesInfoVisible)
-            {
-                if (!ViewModel.IsDiscoveriesEmpty)
-                {
-                    if (ViewModel.IsDiscoveriesVisible)
-                    {
-                        ViewModel.IsDiscoveriesInfoVisible = false;
-                    }
-                    else
-                    {
-                        ViewModel.IsDiscoveriesVisible = true;
-                    }
-                    return;
-                }
-                else
-                {
-                    ViewModel.IsDiscoveriesVisible = false;
-                }
-            }
-
-            // make sure this is closed so location name shows
-            ViewModel.IsDiscoveriesInfoVisible = false;
 
             HideSearchPanel();
+
+			// make sure this is closed so location name shows
+			var infoWasVisible = ViewModel.IsDiscoveriesInfoVisible;
+            ViewModel.IsDiscoveriesInfoVisible = false;
+
+			if (info.Name == BrowserPageViewModel.CallbackInfo.Back && infoWasVisible)
+            {
+				// if going back from info, show discoveries if we have any, or
+				// if none close discoveries altogether and go back to main page
+
+				if (ViewModel.IsDiscoveriesEmpty)
+					HideDiscoveries();
+
+				return;
+            }
 
             Device.BeginInvokeOnMainThread(() =>
                 wbvContent.InvokeScript(string.Format(cCallbackFormat, info.Name)));
@@ -542,7 +553,7 @@ mCurrentSchema.SetMenuVisibility (null);
 			ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty;
 			ViewModel.IsDiscoveriesVisible = true;
 
-            Device.StartTimer(TimeSpan.FromSeconds(1), UpdateDiscoveryExpiry);
+            Device.StartTimer (TimeSpan.FromSeconds (1), UpdateDiscoveryExpiry);
 
 			// now we've shown discoveries, reset count & last view time
 			ViewModel.NewDiscoveriesCount = 0;
@@ -555,15 +566,12 @@ mCurrentSchema.SetMenuVisibility (null);
         bool UpdateDiscoveryExpiry()
         {
             if (!ViewModel.IsDiscoveriesVisible || ViewModel.DiscoveryItems == null)
-            {
                 return false;
-            }
 
             foreach (var item in ViewModel.DiscoveryItems)
-            {
                 item.RecalculateExpiry();
-            }
-            return true;
+
+			return true;
         }
 
 		/// <summary>
@@ -765,7 +773,6 @@ mCurrentSchema.SetMenuVisibility (null);
 		bool mHidingDiscoveries;
 
 		string mLastSourceUrl;
-        string mPreviousUrl;
 
         //Frame[] mBottomActionFrames;
 
