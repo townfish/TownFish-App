@@ -461,7 +461,6 @@
 			<!-- ListView BORKED on iOS!!!! -->
 			<!--<ListView x:Name="lstDiscoveries"
 					  HasUnevenRows="True" SeparatorVisibility="None"
-					  IsVisible="{Binding IsDiscoveriesListVisible}"
 					  ItemsSource="{Binding DiscoveriesItems}"
 					  ItemTapped="lstDiscoveries_ItemTapped">
 				<ListView.ItemTemplate>

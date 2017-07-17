@@ -105,6 +105,7 @@ namespace TownFish.App.ViewModels
 
 			#region Fields
 
+			public const string Back = "back";
 			public const string Info = "info";
 
 			#endregion Fields
@@ -546,8 +547,6 @@ namespace TownFish.App.ViewModels
 			}
 		}
 
-		public bool IsDiscoveriesListVisible => !IsDiscoveriesEmpty;
-
 		public bool IsDiscoveriesInfoVisible
 		{
 			get { return Get<bool>(); }
@@ -572,8 +571,8 @@ namespace TownFish.App.ViewModels
 			{
 				if (Set (value))
 				{
-					OnPropertyChanged (() => IsDiscoveriesListVisible);
 					OnPropertyChanged (() => IsDiscoveriesEmpty);
+					OnPropertyChanged (() => DiscoveryItemsCount);
 				}
 			}
 		}
@@ -586,7 +585,12 @@ namespace TownFish.App.ViewModels
 			{
 				// if discoveries count changes and we have a discoveries menu item in play, update its count
 				if (Set (value) && mDiscoveriesMenuItemViewModel != null)
+				{
 					mDiscoveriesMenuItemViewModel.SuperCount = value;
+
+					// changing this also changes the total app badge count
+					UpdateAppBadgeCount();
+				}
 			}
 		}
 
@@ -793,10 +797,14 @@ namespace TownFish.App.ViewModels
 			TopFormLeftActionCommand = null;
 			TopFormRightActionLabel = "";
 			TopFormRightActionCommand = null;
+
+			mMenus = null;
 		}
 
 		void LoadMenus (TownFishMenuList menus)
 		{
+			mMenus = menus;
+
 			if (menus == null)
 				return;
 
@@ -923,12 +931,10 @@ namespace TownFish.App.ViewModels
 			if (IsBottomBarVisible)
 			{
 				var actions = new ObservableCollection<BottomActionViewModel>();
-                var totalSuperCount = 0;
 
 				foreach (var item in bottom.Items)
 				{
                     var superCount = GetSuperNumber(item);
-                    totalSuperCount += superCount;
 
 					var action = new BottomActionViewModel
 					{
@@ -951,9 +957,22 @@ namespace TownFish.App.ViewModels
 					actions.Add (new BottomActionViewModel());
 
                 BottomActions = actions;
-
-				App.Current.UpdateAppBadgeCount (totalSuperCount);
 			}
+
+			UpdateAppBadgeCount();
+		}
+
+		void UpdateAppBadgeCount()
+		{
+			var items = mMenus?.Bottom?.Items;
+			if ((items?.Count ?? 0) == 0)
+				return;
+
+			var count = 0;
+			foreach (var item in items)
+				count += GetSuperNumber (item);
+
+			App.Current.UpdateAppBadgeCount (count);
 		}
 
 		int GetSuperNumber (TownFishMenuItem item)
@@ -1003,6 +1022,8 @@ namespace TownFish.App.ViewModels
 		string mLocationSetFormat = "";
 
 		BottomActionViewModel mDiscoveriesMenuItemViewModel;
+
+		TownFishMenuList mMenus;
 
 		#endregion Fields
 	}
