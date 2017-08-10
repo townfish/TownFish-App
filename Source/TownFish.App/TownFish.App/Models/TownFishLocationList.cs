@@ -25,13 +25,15 @@ namespace TownFish.App.Models
 
 		public string PostCode { get; set; }
 
+		public string CountyName { get; set; }
+
 		public string CountryID { get; set; }
 
 		public string CountryName { get; set; }
 
-		public string LocationText
-		{
-			get { return Name + ", " + PostCode;  }
-		}
+		public string LocationText =>
+				(string.IsNullOrEmpty (Name) ? $"Unknown (Slug {Slug})" : Name) +
+				(string.IsNullOrEmpty (CountyName) ? "" : ", " + CountyName) +
+				(string.IsNullOrEmpty (PostCode) ? "" : ", " + PostCode);
 	}
 }

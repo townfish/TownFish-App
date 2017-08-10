@@ -100,73 +100,12 @@
 				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
 
-			<Grid Grid.Column="0" BindingContext="{Binding BottomActions[0]}"
-				  BackgroundColor="{Binding BackgroundColour}"
-				  HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
-				<Grid.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding Command}"/>
-				</Grid.GestureRecognizers>
-				<Image Source="{Binding Icon}" WidthRequest="24"
-					   HorizontalOptions="Center" VerticalOptions="Center" />
-
-                <controls:Badge IsVisible="{Binding HasSuperCount}" VerticalOptions="Start" HorizontalOptions="End" Text="{Binding SuperCount}" BadgeColor="{Binding SuperCountBackgroundColour}" TextColor="{Binding SuperCountColour}" FontSize="10"/>
-			</Grid>
-
-			<Grid Grid.Column="1" BindingContext="{Binding BottomActions[1]}"
-				  BackgroundColor="{Binding BackgroundColour}"
-				  HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
-				<Grid.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding Command}"/>
-				</Grid.GestureRecognizers>
-				<Image Source="{Binding Icon}" WidthRequest="24"
-					   HorizontalOptions="Center" VerticalOptions="Center" />
-
-                <controls:Badge IsVisible="{Binding HasSuperCount}" VerticalOptions="Start" HorizontalOptions="End" Text="{Binding SuperCount}" BadgeColor="{Binding SuperCountBackgroundColour}" TextColor="{Binding SuperCountColour}" FontSize="10"/>
-			</Grid>
-
-			<Grid Grid.Column="2" BindingContext="{Binding BottomActions[2]}"
-				  BackgroundColor="{Binding BackgroundColour}"
-				  HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
-				<Grid.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding Command}"/>
-				</Grid.GestureRecognizers>
-				<Image Source="{Binding Icon}" WidthRequest="24"
-					   HorizontalOptions="Center" VerticalOptions="Center" />
-                <controls:Badge IsVisible="{Binding HasSuperCount}" VerticalOptions="Start" HorizontalOptions="End" Text="{Binding SuperCount}" BadgeColor="{Binding SuperCountBackgroundColour}" TextColor="{Binding SuperCountColour}" FontSize="10"/>
-			</Grid>
-
-			<Grid Grid.Column="3" BindingContext="{Binding BottomActions[3]}"
-				  BackgroundColor="{Binding BackgroundColour}"
-				  HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
-				<Grid.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding Command}"/>
-				</Grid.GestureRecognizers>
-				<Image Source="{Binding Icon}" WidthRequest="24"
-					   HorizontalOptions="Center" VerticalOptions="Center" />
-                <controls:Badge IsVisible="{Binding HasSuperCount}" VerticalOptions="Start" HorizontalOptions="End" Text="{Binding SuperCount}" BadgeColor="{Binding SuperCountBackgroundColour}" TextColor="{Binding SuperCountColour}" FontSize="10"/>
-			</Grid>
-
-			<Grid Grid.Column="4" BindingContext="{Binding BottomActions[4]}"
-				  BackgroundColor="{Binding BackgroundColour}"
-				  HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
-				<Grid.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding Command}"/>
-				</Grid.GestureRecognizers>
-				<Image Source="{Binding Icon}" WidthRequest="24"
-					   HorizontalOptions="Center" VerticalOptions="Center" />
-                <controls:Badge IsVisible="{Binding HasSuperCount}" VerticalOptions="Start" HorizontalOptions="End" Text="{Binding SuperCount}" BadgeColor="{Binding SuperCountBackgroundColour}" TextColor="{Binding SuperCountColour}" FontSize="10"/>
-			</Grid>
-
-			<Grid Grid.Column="5" BindingContext="{Binding BottomActions[5]}"
-				  BackgroundColor="{Binding BackgroundColour}"
-				  HorizontalOptions="Center" WidthRequest="32" HeightRequest="32">
-				<Grid.GestureRecognizers>
-					<TapGestureRecognizer Command="{Binding Command}"/>
-				</Grid.GestureRecognizers>
-				<Image Source="{Binding Icon}" WidthRequest="24"
-					   HorizontalOptions="Center" VerticalOptions="Center" />
-                <controls:Badge IsVisible="{Binding HasSuperCount}" VerticalOptions="Start" HorizontalOptions="End" Text="{Binding SuperCount}" BadgeColor="{Binding SuperCountBackgroundColour}" TextColor="{Binding SuperCountColour}" FontSize="10"/>
-			</Grid>
+			<controls:Icon BindingContext="{Binding BottomActions[0]}" />
+			<controls:Icon Grid.Column="1" BindingContext="{Binding BottomActions[1]}" />
+			<controls:Icon Grid.Column="2" BindingContext="{Binding BottomActions[2]}" />
+			<controls:Icon Grid.Column="3" BindingContext="{Binding BottomActions[3]}" />
+			<controls:Icon Grid.Column="4" BindingContext="{Binding BottomActions[4]}" />
+			<controls:Icon Grid.Column="5" BindingContext="{Binding BottomActions[5]}" />
 		</Grid>
 
 		<!-- Locations Panel

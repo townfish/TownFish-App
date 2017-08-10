@@ -1,42 +1,101 @@
-﻿using Xamarin.Forms.Platform.Android;
-using Xamarin.Forms;
-using TownFish.App.Droid.Renderers;
-using TownFish.App.Controls;
-using Android.Graphics.Drawables;
+﻿using System;
 using System.ComponentModel;
 
-[assembly: ExportRenderer(typeof(Badge), typeof(BadgeRenderer))]
+using Xamarin.Forms.Platform.Android;
+using Xamarin.Forms;
+
+using Android.Graphics;
+using Android.Graphics.Drawables;
+using AColor = Android.Graphics.Color;
+
+using TownFish.App.Droid.Renderers;
+using TownFish.App.Controls;
+
+
+[assembly: ExportRenderer (typeof (Badge), typeof (BadgeRenderer))]
+
 
 namespace TownFish.App.Droid.Renderers
 {
-    public class BadgeRenderer : LabelRenderer
-    {
-        // Override the OnElementChanged method so we can tweak this renderer post-initial setup
-        protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
-        {
-            base.OnElementChanged(e);
+	public class BadgeRenderer: VisualElementRenderer<Badge>
+	{
+		#region Construction
 
-            if (Control != null)
-            {
-                Control.SetPadding(12,2,12,2);
-                Control.SetIncludeFontPadding(false);
-            }
-        }
+		public BadgeRenderer()
+		{
+			SetWillNotDraw (false);
+		}
 
-        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            base.OnElementPropertyChanged(sender, e);
+		#endregion Construction
 
-            if (e.PropertyName == "BadgeColor")
-            {
-                GradientDrawable shape = new GradientDrawable();
-                shape.SetCornerRadius(16);
-                var q = (Element as Badge);
-                shape.SetColor(q.BadgeColor.ToAndroid());
+		#region Methods
 
-                Control.Background = shape;
-            }
+		protected override void OnElementChanged (ElementChangedEventArgs<Badge> ecea)
+		{
+			base.OnElementChanged (ecea);
 
-        }
-    }
+			if (ecea.NewElement != null && ecea.OldElement == null)
+			{
+				// whenever a relevant property changes, force a redraw
+				ecea.NewElement.PropertyChanged += (s, pcea) =>
+					{
+						var name = pcea.PropertyName;
+
+						if (name == nameof (Badge.Colour) ||
+								name == nameof (Badge.CornerRadius) ||
+								name == nameof (Badge.Width) ||
+								name == nameof (Badge.Height))
+							Invalidate();
+					};
+
+				// and start off with one for good measure
+				Invalidate();
+			}
+		}
+
+		protected override void OnDraw (Canvas canvas)
+		{
+			var el = Element;
+
+			var bounds = new Rect();
+			GetDrawingRect (bounds);
+
+			var w = bounds.Width();
+			var h = bounds.Height();
+
+			if (w <= 0 || h <= 0)
+				return;
+
+			var cornerRadius = el.CornerRadius;
+			if (cornerRadius == -1f)
+				cornerRadius = cDefaultCornerRadius;
+
+			var r = Forms.Context.ToPixels (cornerRadius);
+			var c = el.Colour.ToAndroid();
+
+			using (var paint = new Paint { AntiAlias = true })
+				using (var path = new Path())
+					using (Path.Direction direction = Path.Direction.Cw)
+						using (Paint.Style style = Paint.Style.Fill)
+							using (var rect = new RectF (0, 0, w, h))
+							{
+								path.AddRoundRect (rect, r, r, direction);
+
+								paint.SetStyle (style);
+								paint.Color = c;
+
+								canvas.DrawPath (path, paint);
+							}
+		}
+
+		#endregion Methods
+
+		#region Fields
+
+		const float cDefaultCornerRadius = 5;
+
+		bool mDisposed;
+
+		#endregion Fields
+	}
 }

@@ -5,7 +5,7 @@ using Xamarin.Forms;
 //using TownFish.App.Helpers;
 
 
-namespace TownFish.App
+namespace TownFish.App.Controls
 {
 	public partial class DiscoveryItem: Grid //StackLayout
 	{

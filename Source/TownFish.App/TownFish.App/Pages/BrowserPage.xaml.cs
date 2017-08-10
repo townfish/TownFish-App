@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 
 using Apptelic.UberWebViewLib;
 
+using TownFish.App.Controls;
 using TownFish.App.Models;
 using TownFish.App.ViewModels;
 

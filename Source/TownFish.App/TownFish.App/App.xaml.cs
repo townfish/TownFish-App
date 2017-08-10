@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
 using Newtonsoft.Json;
 
@@ -20,6 +21,10 @@ using TownFish.App.Helpers;
 using TownFish.App.Pages;
 using TownFish.App.ViewModels;
 
+
+[assembly: XamlCompilation (XamlCompilationOptions.Compile)]
+
+
 namespace TownFish.App
 {
 	public partial class App: Application
@@ -28,15 +33,9 @@ namespace TownFish.App
 
 		public App (string deviceID)
 		{
-			DeviceID = deviceID;
+			InitializeComponent();
 
-			MainPage = new BrowserPage
-			{
-				BindingContext = new BrowserPageViewModel
-				{
-					SourceUrl = BaseUrl + StartPath + QueryString
-				}
-			};
+			DeviceID = deviceID;
 		}
 
         #endregion Construction
@@ -65,6 +64,14 @@ namespace TownFish.App
             mResumedTime = null;
 
 			InitStreetHawk();
+
+			MainPage = new BrowserPage
+			{
+				BindingContext = new BrowserPageViewModel
+				{
+					SourceUrl = BaseUrl + StartPath + QueryString
+				}
+			};
 		}
 
 		protected override void OnSleep()

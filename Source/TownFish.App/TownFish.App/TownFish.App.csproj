@@ -40,10 +40,15 @@
     </Compile>
     <Compile Include="Command.cs" />
     <Compile Include="Controls\Badge.cs" />
+    <Compile Include="Controls\Icon.xaml.cs">
+      <DependentUpon>Icon.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\DiscoveryItem.xaml.cs">
       <DependentUpon>DiscoveryItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ConvertAny.cs" />
+    <Compile Include="Helpers\Util.cs" />
+    <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Helpers\ImageSourceWatcher.cs" />
     <Compile Include="IStreetHawk\IStreetHawkAnalytics.cs" />
     <Compile Include="IStreetHawk\IStreetHawkBeacon.cs" />
@@ -116,6 +121,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Images\Dummy\meat.png" />
     <EmbeddedResource Include="Images\Dummy\muffin.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\Icon.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\..\packages\Xamarin.Forms.2.3.5.256-pre6\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets" Condition="Exists('..\..\packages\Xamarin.Forms.2.3.5.256-pre6\build\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10+xamarinmac20\Xamarin.Forms.targets')" />

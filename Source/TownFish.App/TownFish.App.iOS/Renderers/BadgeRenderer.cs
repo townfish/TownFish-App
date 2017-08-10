@@ -1,37 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
-using TownFish.App.Controls;
-using TownFish.App.iOS.Renderers;
+
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.iOS;
 
-[assembly: ExportRenderer(typeof(Badge), typeof(BadgeRenderer))]
+using TownFish.App.Controls;
+using TownFish.App.iOS.Renderers;
+
+
+[assembly: ExportRenderer (typeof (Badge), typeof (BadgeRenderer))]
+
 
 namespace TownFish.App.iOS.Renderers
 {
-    public class BadgeRenderer : LabelRenderer
-    {
-        protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
+    public class BadgeRenderer : VisualElementRenderer<Badge>
+	{
+        protected override void OnElementChanged (ElementChangedEventArgs<Badge> e)
         {
             base.OnElementChanged(e);
 
             if (Element != null)
             {
                 Layer.MasksToBounds = true;
-                Layer.CornerRadius = 8;
+				Layer.CornerRadius = (nfloat) Element.CornerRadius;
+				Layer.ShadowOpacity = 0;
             }
         }
 
-        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void OnElementPropertyChanged (object sender,
+				PropertyChangedEventArgs pcea)
         {
-            base.OnElementPropertyChanged(sender, e);
+            base.OnElementPropertyChanged (sender, pcea);
 
-            if (e.PropertyName == "BadgeColor")
-            {
-                Layer.BackgroundColor = (Element as Badge).BadgeColor.ToUIColor().CGColor;
-            }
+			if (Element is Badge badge)
+			{
+				var name = pcea.PropertyName;
+
+				if (name == nameof (Badge.Colour))
+					Layer.BackgroundColor = badge.Colour.ToUIColor().CGColor;
+				else if (name == nameof (Badge.CornerRadius))
+					Layer.CornerRadius = (nfloat) badge.CornerRadius;
+			}
         }
-    }
+	}
 }
