@@ -20,7 +20,7 @@ namespace TownFish.App.ViewModels
 
 		public int SuperCount
 		{
-			get { return Get<int>(); }
+			get => Get<int>();
 
 			set
 			{
@@ -31,7 +31,7 @@ namespace TownFish.App.ViewModels
 
 		public string SuperColour
 		{
-			get { return Get<string>(); }
+			get => Get<string>();
 
 			set
 			{
@@ -50,7 +50,8 @@ namespace TownFish.App.ViewModels
 
 		public Color SuperCountColour => BackgroundColour;
 
-		public Color SuperCountBackgroundColour => Color.FromHex ("#" + (SuperColour ?? "ED1C24"));
+		public Color SuperCountBackgroundColour =>
+				Color.FromHex ("#" + (SuperColour ?? "ED1C24"));
 
 		public bool HasSuperCount => SuperCount > 0;
 
