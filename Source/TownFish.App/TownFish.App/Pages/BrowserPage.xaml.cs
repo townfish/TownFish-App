@@ -69,11 +69,11 @@ namespace TownFish.App.Pages
 			}
 		}
 
-		#endregion Construction
+        #endregion Construction
 
-		#region Methods
+        #region Methods
 
-		protected override void OnAppearing()
+        protected override void OnAppearing()
 		{
 			App.Current.BackButtonPressed += App_BackButtonPressed;
 			App.Current.PushUrlReceived += App_PushUrlReceived;
@@ -467,23 +467,36 @@ namespace TownFish.App.Pages
 
 				return;
 			}
+            else if (info.Name == BrowserPageViewModel.CallbackInfo.Back && ViewModel.IsDiscoveriesInfoVisible)
+            {
+                try
+                {
+                    ShowLoading();
 
-            HideSearchPanel();
+                    //This mess is in order to make is possible to use the back button through the discovery hierarchy from profile or interests web pages
+                    if (!ViewModel.IsDiscoveriesEmpty)
+                    {
+                        //Clicking back from discoveries info page when there are discoveries (Note return statement)
+                        if (ViewModel.IsDiscoveriesVisible)
+                            ViewModel.IsDiscoveriesInfoVisible = false;
+                        else
+                            ViewModel.IsDiscoveriesVisible = true;
+                        return;
+                    }
+                    else
+                        //Clicking back from discoveries info or from profile or interests page
+                        ViewModel.IsDiscoveriesVisible = false;
+                }
+                finally
+                {
+                    HideLoading();
+                }
+            }
 
-			// make sure this is closed so location name shows
-			var infoWasVisible = ViewModel.IsDiscoveriesInfoVisible;
+            // make sure this is closed so location name shows
             ViewModel.IsDiscoveriesInfoVisible = false;
 
-			if (info.Name == BrowserPageViewModel.CallbackInfo.Back && infoWasVisible)
-            {
-				// if going back from info, show discoveries if we have any, or
-				// if none close discoveries altogether and go back to main page
-
-				if (ViewModel.IsDiscoveriesEmpty)
-					HideDiscoveries();
-
-				return;
-            }
+            HideSearchPanel();
 
             Device.BeginInvokeOnMainThread(() =>
                 wbvContent.InvokeScript(string.Format(cCallbackFormat, info.Name)));

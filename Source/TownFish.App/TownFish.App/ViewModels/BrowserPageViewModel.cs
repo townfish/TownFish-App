@@ -607,7 +607,7 @@ namespace TownFish.App.ViewModels
 				using (var client = new HttpClient())
 				{
                     var resultJson = await client.GetStringAsync(
-                            App.BaseUrl + mLocationApiFormat.Replace("{term}", SearchTerm));
+                            App.BaseUrl + mLocationApiFormat.Replace("{term}", SearchTerm.Trim()));
 
                     if (!string.IsNullOrEmpty (resultJson))
 					{

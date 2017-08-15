@@ -88,8 +88,17 @@ namespace TownFish.App
 
 			// SH doesn't call feed callback when backgrounded, so check for
 			// new items here in case any came in whilst we were away
-			Discoveries = await GetDiscoveries();
-		}
+
+            try
+            {
+                Discoveries = await GetDiscoveries();
+            }
+            catch (TimeoutException ex)
+            {
+                Debug.WriteLine(ex);
+            }
+
+        }
 
 		public void OnBackButtonPressed()
 		{
