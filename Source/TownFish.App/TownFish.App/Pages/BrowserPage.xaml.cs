@@ -69,11 +69,11 @@ namespace TownFish.App.Pages
 			}
 		}
 
-		#endregion Construction
+        #endregion Construction
 
-		#region Methods
+        #region Methods
 
-		protected override void OnAppearing()
+        protected override void OnAppearing()
 		{
 			App.Current.BackButtonPressed += App_BackButtonPressed;
 			App.Current.PushUrlReceived += App_PushUrlReceived;
@@ -263,8 +263,8 @@ namespace TownFish.App.Pages
 						break;
 
 					case cHideDiscoveriesAction:
-						// just returning to current page, so don't show loading
-						HideDiscoveries (showLoading: false);
+                        mIsInfoActivated = false;
+                        HideDiscoveries();
 						break;
 				}
 			}
@@ -457,33 +457,36 @@ namespace TownFish.App.Pages
 				HideSearchPanel();
 		}
 
-		void ViewModel_CallbackRequested (object sender, BrowserPageViewModel.CallbackInfo info)
+		async void ViewModel_CallbackRequested (object sender, BrowserPageViewModel.CallbackInfo info)
 		{
 			// special-case user pressing discoveries info button
 			if (info.IsNative && info.Name == BrowserPageViewModel.CallbackInfo.Info)
 			{
+                mIsInfoActivated = !ViewModel.IsDiscoveriesInfoVisible;
+
+                ShowLoading();
+                await Task.Delay(cLoadingAnimationDelayTime);
 				ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty ||
 						!ViewModel.IsDiscoveriesInfoVisible;
+                HideLoading();
 
 				return;
 			}
+            //Back button on info page should show discoveries if there are any, otherwise do default back handling
+            if (info.Name == BrowserPageViewModel.CallbackInfo.Back && ViewModel.IsDiscoveriesInfoVisible && ViewModel.IsDiscoveriesVisible && !ViewModel.IsDiscoveriesEmpty)
+            {
+                ShowLoading();
+                await Task.Delay(cLoadingAnimationDelayTime);
+                mIsInfoActivated = false;
+                ViewModel.IsDiscoveriesInfoVisible = false;
+                HideLoading();
+                return;
+            }
 
-            HideSearchPanel();
-
-			// make sure this is closed so location name shows
-			var infoWasVisible = ViewModel.IsDiscoveriesInfoVisible;
+            // make sure this is closed so location name shows
             ViewModel.IsDiscoveriesInfoVisible = false;
 
-			if (info.Name == BrowserPageViewModel.CallbackInfo.Back && infoWasVisible)
-            {
-				// if going back from info, show discoveries if we have any, or
-				// if none close discoveries altogether and go back to main page
-
-				if (ViewModel.IsDiscoveriesEmpty)
-					HideDiscoveries();
-
-				return;
-            }
+            HideSearchPanel();
 
             Device.BeginInvokeOnMainThread(() =>
                 wbvContent.InvokeScript(string.Format(cCallbackFormat, info.Name)));
@@ -551,7 +554,7 @@ namespace TownFish.App.Pages
 			if (ViewModel.IsDiscoveriesEmpty)
 				UpdateDiscoveryItems();
 
-			ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty;
+			ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty || mIsInfoActivated;
 			ViewModel.IsDiscoveriesVisible = true;
 
             Device.StartTimer (TimeSpan.FromSeconds (1), UpdateDiscoveryExpiry);
@@ -731,6 +734,8 @@ namespace TownFish.App.Pages
 		const uint cLoadingPanelAnimationTime = 250;
 #endif
 
+        const int cLoadingAnimationDelayTime = 1000;
+
 		// apparently iOS status bar height is always 20 in XF (apparently, I said)
 		const double cTopPaddingiOS = 20;
 
@@ -774,6 +779,8 @@ namespace TownFish.App.Pages
 		bool mHidingDiscoveries;
 
 		string mLastSourceUrl;
+
+        private bool mIsInfoActivated = false;
 
         //Frame[] mBottomActionFrames;
 
