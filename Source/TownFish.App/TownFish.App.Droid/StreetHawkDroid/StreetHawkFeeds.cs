@@ -20,7 +20,11 @@ namespace StreetHawkCrossplatform
 		static Application mApplication => StreetHawkAnalytics.Application;
 
 		const string FEED_ID = "feed_id";
-		const string TITLE = "title";
+        const string ID = "id";
+        const string APS = "aps";
+        const string D = "d";
+        const string ALERT = "alert";
+        const string TITLE = "title";
 		const string MESSAGE = "message";
 		const string CAMPAIGN = "campaign";
 		const string CONTENT = "content";
@@ -30,9 +34,19 @@ namespace StreetHawkCrossplatform
 		const string MODIFIED = "modified";
 		const string DELETED = "deleted";
 
-		public void NotifyFeedResult(string feedid, int result)
+        const char ALERT_SEPARATOR = ',';
+
+        public void NotifyFeedResult(string feedid, int result)
 		{
-			SHFeedItem.GetInstance(mApplication.ApplicationContext).NotifyFeedResult(feedid ,result);
+            try
+            {
+                var item = SHFeedItem.GetInstance(mApplication.ApplicationContext);
+                item.NotifyFeedResult(feedid, result);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
 		}
 
 		public void NotifyFeedResult(string feedid, string stepid, string feedresult, bool feedDelete, bool completed)
@@ -47,7 +61,7 @@ namespace StreetHawkCrossplatform
 			Log.Error("StreetHawk", "OnNewFeedAvailableCallback is not available for this release");
 		}
 
-		RegisterForFeedCallback mRegisterForFeedCallBack;
+		static RegisterForFeedCallback mRegisterForFeedCallBack;
 		public void ReadFeedData(int offset, RegisterForFeedCallback cb)
 		{
 			mRegisterForFeedCallBack = cb;
@@ -56,8 +70,16 @@ namespace StreetHawkCrossplatform
 
 		public void SendFeedAck(string feedid)
 		{
-			SHFeedItem.GetInstance(mApplication.ApplicationContext).SendFeedAck(feedid);
-		}
+            try
+            {
+                var item = SHFeedItem.GetInstance(mApplication.ApplicationContext);
+                item.SendFeedAck(feedid);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+        }
 
 		public void ShFeedReceived(JSONArray feeds)
 		{
@@ -67,20 +89,56 @@ namespace StreetHawkCrossplatform
 					List<SHFeedObject> arrayFeeds = new List<SHFeedObject>();
 					for (int i = 0; i < feeds.Length(); i++)
 					{
-						try
-						{
-							JSONObject jsonObj = feeds.GetJSONObject(i);
-							SHFeedObject obj = new SHFeedObject();
-							obj.feed_id = jsonObj.GetString(FEED_ID);
-							obj.title = jsonObj.GetString(TITLE);
-							obj.message = jsonObj.GetString(MESSAGE);
-							obj.campaign = jsonObj.GetString(CAMPAIGN);
-							obj.content = jsonObj.GetString(CONTENT);
-							obj.activates = jsonObj.GetString(ACTIVATES);
-							obj.expires = jsonObj.GetString(EXPIRES);
-							obj.created = jsonObj.GetString(CREATED);
-							obj.modified = jsonObj.GetString(MODIFIED);
-							obj.deleted = jsonObj.GetString(DELETED);
+                        try
+                        {
+                            JSONObject jsonObj = feeds.GetJSONObject(i);
+                            SHFeedObject obj = new SHFeedObject();
+                            if (jsonObj.Has(FEED_ID))
+                                obj.feed_id = jsonObj.GetString(FEED_ID);
+                            if (jsonObj.Has(ID))
+                                obj.feed_id = jsonObj.GetString(ID);
+                            if (jsonObj.Has(TITLE))
+                                obj.title = jsonObj.GetString(TITLE);
+                            if (jsonObj.Has(MESSAGE))
+                                obj.message = jsonObj.GetString(MESSAGE);
+                            if (jsonObj.Has(CAMPAIGN))
+                                obj.campaign = jsonObj.GetString(CAMPAIGN);
+                            if (jsonObj.Has(CONTENT))
+                                obj.content = jsonObj.GetString(CONTENT);
+                            if (jsonObj.Has(ACTIVATES))
+                                obj.activates = jsonObj.GetString(ACTIVATES);
+                            if (jsonObj.Has(EXPIRES))
+                                obj.expires = jsonObj.GetString(EXPIRES);
+                            if (jsonObj.Has(CREATED))
+                                obj.created = jsonObj.GetString(CREATED);
+                            if (jsonObj.Has(MODIFIED))
+                                obj.modified = jsonObj.GetString(MODIFIED);
+                            if (jsonObj.Has(DELETED))
+                                obj.deleted = jsonObj.GetString(DELETED);
+
+                            var content = jsonObj.GetJSONObject(CONTENT);
+
+                            if (obj.title == null && obj.message == null && content.Has(APS))
+                            {
+                                obj.content = content.GetString(D);
+
+                                var alert = content.GetJSONObject(APS).GetString(ALERT);
+
+                                if (alert != null)
+                                {
+                                    var alertParts = alert.Split(ALERT_SEPARATOR);
+                                    obj.title = alertParts[0].Trim();
+                                    if (alertParts.Length == 2)
+                                    {
+                                        obj.message = alertParts[1].Trim();
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                obj.content = jsonObj.GetString(CONTENT);
+                            }
+
 							arrayFeeds.Add(obj);
 
 						}
