@@ -61,6 +61,11 @@ namespace TownFish.App.Droid
             intent.PutExtra("json", json);
             var pendingIntent = PendingIntent.GetActivity(ApplicationContext, 0, intent, PendingIntentFlags.UpdateCurrent);
 
+            if (title.EndsWith(","))
+            {
+                title = title.Substring(0, title.Length - 1);
+            }
+
             var notificationBuilder = new NotificationCompat.Builder(ApplicationContext)
                 .SetSmallIcon(Resource.Drawable.icon)
                 .SetContentTitle(title)
