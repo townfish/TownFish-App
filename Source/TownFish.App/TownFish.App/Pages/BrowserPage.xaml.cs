@@ -263,8 +263,8 @@ namespace TownFish.App.Pages
 						break;
 
 					case cHideDiscoveriesAction:
-						// just returning to current page, so don't show loading
-						HideDiscoveries (showLoading: false);
+                        mIsInfoActivated = false;
+                        HideDiscoveries();
 						break;
 				}
 			}
@@ -457,40 +457,30 @@ namespace TownFish.App.Pages
 				HideSearchPanel();
 		}
 
-		void ViewModel_CallbackRequested (object sender, BrowserPageViewModel.CallbackInfo info)
+		async void ViewModel_CallbackRequested (object sender, BrowserPageViewModel.CallbackInfo info)
 		{
 			// special-case user pressing discoveries info button
 			if (info.IsNative && info.Name == BrowserPageViewModel.CallbackInfo.Info)
 			{
+                mIsInfoActivated = !ViewModel.IsDiscoveriesInfoVisible;
+
+                ShowLoading();
+                await Task.Delay(cLoadingAnimationDelayTime);
 				ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty ||
 						!ViewModel.IsDiscoveriesInfoVisible;
+                HideLoading();
 
 				return;
 			}
-            else if (info.Name == BrowserPageViewModel.CallbackInfo.Back && ViewModel.IsDiscoveriesInfoVisible)
+            //Back button on info page should show discoveries if there are any, otherwise do default back handling
+            if (info.Name == BrowserPageViewModel.CallbackInfo.Back && ViewModel.IsDiscoveriesInfoVisible && ViewModel.IsDiscoveriesVisible && !ViewModel.IsDiscoveriesEmpty)
             {
-                try
-                {
-                    ShowLoading();
-
-                    //This mess is in order to make is possible to use the back button through the discovery hierarchy from profile or interests web pages
-                    if (!ViewModel.IsDiscoveriesEmpty)
-                    {
-                        //Clicking back from discoveries info page when there are discoveries (Note return statement)
-                        if (ViewModel.IsDiscoveriesVisible)
-                            ViewModel.IsDiscoveriesInfoVisible = false;
-                        else
-                            ViewModel.IsDiscoveriesVisible = true;
-                        return;
-                    }
-                    else
-                        //Clicking back from discoveries info or from profile or interests page
-                        ViewModel.IsDiscoveriesVisible = false;
-                }
-                finally
-                {
-                    HideLoading();
-                }
+                ShowLoading();
+                await Task.Delay(cLoadingAnimationDelayTime);
+                mIsInfoActivated = false;
+                ViewModel.IsDiscoveriesInfoVisible = false;
+                HideLoading();
+                return;
             }
 
             // make sure this is closed so location name shows
@@ -564,7 +554,7 @@ namespace TownFish.App.Pages
 			if (ViewModel.IsDiscoveriesEmpty)
 				UpdateDiscoveryItems();
 
-			ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty;
+			ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty || mIsInfoActivated;
 			ViewModel.IsDiscoveriesVisible = true;
 
             Device.StartTimer (TimeSpan.FromSeconds (1), UpdateDiscoveryExpiry);
@@ -744,6 +734,8 @@ namespace TownFish.App.Pages
 		const uint cLoadingPanelAnimationTime = 250;
 #endif
 
+        const int cLoadingAnimationDelayTime = 1000;
+
 		// apparently iOS status bar height is always 20 in XF (apparently, I said)
 		const double cTopPaddingiOS = 20;
 
@@ -787,6 +779,8 @@ namespace TownFish.App.Pages
 		bool mHidingDiscoveries;
 
 		string mLastSourceUrl;
+
+        private bool mIsInfoActivated = false;
 
         //Frame[] mBottomActionFrames;
 
