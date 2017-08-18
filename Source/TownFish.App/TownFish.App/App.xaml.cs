@@ -81,6 +81,14 @@ namespace TownFish.App
 			AppSuspended?.Invoke (this, EventArgs.Empty);
 		}
 
+        public void LaunchedFromNotification(string json)
+        {
+            if (json.Contains("img") || json.Contains("url"))
+            {
+                OnBackgroundDiscoveriesReceived();
+            }
+        }
+
 		protected override async void OnResume()
 		{
             mResumedTime = DateTime.UtcNow;
@@ -118,18 +126,16 @@ namespace TownFish.App
 			// https://github.com/StreetHawkSDK/XamHawkDemoApp/blob/master/XamHawkDemo/XamHawkDemo/App.xaml.cs
 
 			var shAnalytics = DependencyService.Get<IStreetHawkAnalytics>();
-			var shBeacon = DependencyService.Get<IStreetHawkBeacon>();
-			var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
-			var shGeofence = DependencyService.Get<IStreetHawkGeofence>();
-			var shLocations = DependencyService.Get<IStreetHawkLocations>();
-			var shPush = DependencyService.Get<IStreetHawkPush>();
+            var shBeacon = DependencyService.Get<IStreetHawkBeacon>();
+            var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
+            var shGeofence = DependencyService.Get<IStreetHawkGeofence>();
+            var shLocations = DependencyService.Get<IStreetHawkLocations>();
+            var shPush = DependencyService.Get<IStreetHawkPush>();
 
-#if DEBUG
-			//Optional: enable XCode console logs.
-			shAnalytics.SetEnableLogs (true);
-#endif
+            //Optional: enable XCode console logs.
+            shAnalytics.SetEnableLogs (true);
 
-			shAnalytics.SetAppKey (StreetHawkAppKey);
+            shAnalytics.SetAppKey (StreetHawkAppKey);
 
 			// Initialize StreetHawk when App starts.
 			//Mandatory: set app key and call init.

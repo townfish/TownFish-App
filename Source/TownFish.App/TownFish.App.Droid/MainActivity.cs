@@ -12,6 +12,8 @@ using Android.Webkit;
 
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
+using Android.Content;
+using Android.Util;
 
 #if !SH_NO_FEED
 using Com.Streethawk.Library.Feeds;
@@ -22,11 +24,9 @@ using StreetHawkCrossplatform;
 namespace TownFish.App.Droid
 {
 	[Activity (Label = "TownFish.App", Icon = "@drawable/icon",
-		Theme = "@style/townfishTheme", MainLauncher = false,
-		ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation,
-		ScreenOrientation = //ScreenOrientation.Portrait |
-							//ScreenOrientation.ReversePortrait |
-							ScreenOrientation.UserPortrait,
+        Theme = "@style/townfishTheme", MainLauncher = false, 
+        ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation,
+		ScreenOrientation = ScreenOrientation.UserPortrait,
 		// in case this helps - looks like needs to be set programmatically in XF
 		// due to https://bugzilla.xamarin.com/show_bug.cgi?id=39765
 		WindowSoftInputMode = SoftInput.AdjustResize)]
@@ -61,18 +61,37 @@ namespace TownFish.App.Droid
 
         protected override void OnPause()
         {
+            Log.Info("MainActivity", "OnPause");
             IsActive = false;
             base.OnPause();
         }
 
         protected override void OnResume()
         {
+            Log.Info("MainActivity", "OnResume");
             IsActive = true;
             base.OnResume();
         }
 
+        protected override void OnNewIntent(Intent intent)
+        {
+            try
+            {
+                if (intent != null)
+                {
+                    var json = intent.GetStringExtra("json");
+                    if (json != null)
+                    {
+                        App.Current.LaunchedFromNotification(json);
+                    }
+                }
+            }
+            catch { }
+        }
+
         protected override void OnCreate (Bundle bundle)
 		{
+            IsActive = true;
 			base.OnCreate (bundle);
 
 #if DEBUG
@@ -97,9 +116,10 @@ namespace TownFish.App.Droid
 			mApp.AppCloseRequested += App_AppCloseRequested;
 
 			LoadApplication (mApp);
-		}
+            OnNewIntent(Intent);
+        }
 
-		void App_AppCloseRequested (object sender, EventArgs e)
+        void App_AppCloseRequested (object sender, EventArgs e)
 		{
 			Finish();
 		}
@@ -129,7 +149,7 @@ namespace TownFish.App.Droid
 
 		App mApp;
 
-        public static bool IsActive { get; set; } = true;
+        public static bool IsActive { get; set; } = false;
 
 		#endregion Fields
 	}

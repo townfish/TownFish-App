@@ -7,76 +7,90 @@ using Com.Streethawk.Library.Push;
 using Android.Support.V4.App;
 using Android.Graphics;
 using StreetHawkCrossplatform;
+using Android.Widget;
+using Java.Util;
 
 namespace TownFish.App.Droid
 {
-    [Service]
+    [Service(Name = "com.townfish.app.JsonService")]
     class JsonService : Service, ISHObserver
     {
-        static readonly string TAG = "streethawk Service";
+        static readonly string TAG = "JSONService";
         bool isStarted;
 
         public static RegisterForShReceivedRawJSONCallback Callback { get; internal set; }
 
         public void OnReceiveNonSHPushPayload(Bundle p0)
         {
-
+            Log.Info(TAG, "OnReceiveNonSHPushPayLoad");
         }
 
         public void OnReceivePushData(Com.Streethawk.Library.Push.PushDataForApplication p0)
         {
-
+            Log.Info(TAG, "OnReceivePushData");
         }
 
         public void OnReceiveResult(Com.Streethawk.Library.Push.PushDataForApplication p0, int p1)
         {
-
+            Log.Info(TAG, "OnReceiveResult");
         }
 
         public void ShNotifyAppPage(string p0)
         {
-
+            Log.Info(TAG, "ShNotifyAppPage");
         }
 
         public void ShReceivedRawJSON(string title, string body, string json)
         {
-            if (MainActivity.IsActive)
+            Log.Info(TAG, "ShReceivedRawJSON");
+            try
             {
-                if (null != Callback)
+                if (MainActivity.IsActive && Callback != null)
                 {
-                    Callback.Invoke(title, body, json);
+                    Log.Info(TAG, "MainActivity.IsActive is true");
+                    Callback?.Invoke(title, body, json);
+                    return;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                SendNotification(title, body, json);
+                Log.Error(TAG, "Main Activity not available " + ex);
             }
+            SendNotification(title, body, json);
         }
 
 
         void SendNotification(string title, string body, string json)
         {
-            var intent = new Intent(this.ApplicationContext, typeof(MainActivity));
-            intent.AddFlags(ActivityFlags.NewTask | ActivityFlags.ClearTask);
-            intent.PutExtra("json", json);
-            var pendingIntent = PendingIntent.GetActivity(ApplicationContext, 0, intent, PendingIntentFlags.UpdateCurrent);
-
-            if (title.EndsWith(","))
+            Log.Info(TAG, "Notification Received");
+            try
             {
-                title = title.Substring(0, title.Length - 1);
+                var intent = new Intent(this.ApplicationContext, typeof(MainActivity));
+                intent.AddFlags(ActivityFlags.ClearTask | ActivityFlags.ClearTop);
+                intent.PutExtra("json", json);
+                var pendingIntent = PendingIntent.GetActivity(ApplicationContext, 0, intent, PendingIntentFlags.OneShot);
+
+                if (title.EndsWith(","))
+                {
+                    title = title.Substring(0, title.Length - 1);
+                }
+
+                var notificationBuilder = new NotificationCompat.Builder(ApplicationContext)
+                    .SetSmallIcon(Resource.Drawable.icon)
+                    .SetContentTitle(title)
+                    .SetContentText(body)
+                    .SetAutoCancel(true)
+                    .SetExtras(intent.Extras)
+                    .SetDefaults((int)(NotificationDefaults.Vibrate | NotificationDefaults.Sound))
+                    .SetContentIntent(pendingIntent);
+
+                var notificationManager = (NotificationManager)ApplicationContext.GetSystemService(NotificationService);
+                notificationManager.Notify(0, notificationBuilder.Build());
             }
-
-            var notificationBuilder = new NotificationCompat.Builder(ApplicationContext)
-                .SetSmallIcon(Resource.Drawable.icon)
-                .SetContentTitle(title)
-                .SetContentText(body)
-                .SetAutoCancel(true)
-                .SetExtras(intent.Extras)
-                .SetDefaults((int)(NotificationDefaults.Vibrate | NotificationDefaults.Sound))
-                .SetContentIntent(pendingIntent);
-
-            var notificationManager = (NotificationManager)ApplicationContext.GetSystemService(NotificationService);
-            notificationManager.Notify(0, notificationBuilder.Build());
+            catch (Exception ex)
+            {
+                Log.Error(TAG, "Error handling notification " + ex);
+            }
         }
 
 
@@ -90,6 +104,7 @@ namespace TownFish.App.Droid
             {
                 Log.Info(TAG, "OnStartCommand: The service is starting.");
                 isStarted = true;
+                StartTimer();
             }
 
             // This tells Android to restart the service if it is killed to reclaim resources.
@@ -101,7 +116,67 @@ namespace TownFish.App.Droid
             base.OnCreate();
             Log.Info(TAG, "OnCreate: the service is initializing.");
 
-            Push.GetInstance(this).RegisterSHObserver(this);
+            try
+            {
+                var pushInstance = Push.GetInstance(this);
+                if (pushInstance != null)
+                {
+                    pushInstance.RegisterSHObserver(this);
+                    Log.Info(TAG, "StreetHawk Observer registered.");
+                }
+                else
+                {
+                    Log.Error(TAG, "StreetHawk Observer failed to register.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(TAG, "Error registering push callback with Streethawk\n" + ex);
+            }
+        }
+
+        private Timer mTimer;
+        private TimerTask mTimerTask;
+
+        private void StopTimer()
+        {
+            //stop the timer, if it's not already null
+            if (mTimer != null)
+            {
+                mTimer.Cancel();
+                mTimer = null;
+            }
+        }
+
+        private class MyTimerTask : TimerTask
+        {
+            int counter = 0;
+            public override void Run()
+            {
+                Log.Info(TAG, "in timer ++++  " + (counter++));
+            }
+        }
+
+        private void StartTimer()
+        {
+            //set a new Timer
+            mTimer = new Timer();
+
+            mTimerTask = new MyTimerTask();
+
+            //schedule the timer, to wake up every 1 second
+            mTimer.Schedule(mTimerTask, 1000, 1000);
+        }
+
+        public override void OnDestroy()
+        {
+            base.OnDestroy();
+            StopTimer();
+            Log.Info("JsonService", "OnDestroy");
+
+            Log.Info("JsonService", "Sending broadcast intent");
+            Intent broadcastIntent = new Intent("com.townfish.app.RestartSensor");
+            SendBroadcast(broadcastIntent);
         }
 
 
