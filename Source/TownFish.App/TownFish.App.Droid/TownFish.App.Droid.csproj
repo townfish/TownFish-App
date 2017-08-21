@@ -188,6 +188,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers\PlatformHelper.cs" />
     <Compile Include="JsonService.cs">
       <SubType>Code</SubType>
     </Compile>

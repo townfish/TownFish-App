@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Apptelic.UberWebViewLib;
 
 using TownFish.App.Controls;
+using TownFish.App.Helpers;
 using TownFish.App.Models;
 using TownFish.App.ViewModels;
 
@@ -285,7 +286,7 @@ namespace TownFish.App.Pages
 			{
 				e.Cancel = true;
 
-				Device.OpenUri (uri);
+				PlatformHelper.OpenUri (uri);
 
 				return;
 			}
@@ -736,7 +737,7 @@ namespace TownFish.App.Pages
 				return;
 
 			// if called too quickly, wait around a bit so it doesn't flash
-			var t = Math.Max (0, cLoadingLoadingDelayTime -
+			var t = Math.Max (0, cLoadingDelayTime -
 					(int) (DateTime.Now - mOpenedLoadingTime).TotalMilliseconds);
 
 			// do it in a bit, in case we're on UI thread, so UI can get back to work first
@@ -763,7 +764,7 @@ namespace TownFish.App.Pages
 #endif
 
 		// minimum time to show loading for
-        const int cLoadingLoadingDelayTime = 2000;
+        const int cLoadingDelayTime = 1000;
 
 		// apparently iOS status bar height is always 20 in XF (apparently, I said)
 		const double cTopPaddingiOS = 20;
