@@ -141,7 +141,7 @@
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <BuildIpa>True</BuildIpa>
     <IpaIncludeArtwork>False</IpaIncludeArtwork>
-    <CodesignProvision>a8dbb0d9-6d58-40b1-b5d8-772253d820c4</CodesignProvision>
+    <CodesignProvision>Store Dist. for TownFish Ltd. (com.matt.townfish)</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhoneSimulator'">
     <BuildIpa>True</BuildIpa>
