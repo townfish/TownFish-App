@@ -609,6 +609,10 @@ namespace TownFish.App.ViewModels
                     var resultJson = await client.GetStringAsync(
                             App.BaseUrl + mLocationApiFormat.Replace("{term}", SearchTerm.Trim()));
 
+					// if a selection has already been made, ignore these results
+					if (string.IsNullOrEmpty (SearchTerm))
+						return;
+
                     if (!string.IsNullOrEmpty (resultJson))
 					{
 						var model = JsonConvert.DeserializeObject<TownFishLocationList> (resultJson);

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.townfish.app" android:installLocation="auto" android:versionCode="170817" android:versionName="1.1.16.0" android:largeHeap="true">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.townfish.app" android:installLocation="auto" android:versionCode="170821" android:versionName="1.1.16.0" android:largeHeap="false">
 	<uses-sdk android:minSdkVersion="16" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
@@ -62,20 +62,5 @@
 			</intent-filter>
 		</service>
 		<!-- End StreetHawk -->
-    <service
-           android:name="com.townfish.app.JsonService"
-           android:enabled="true" >
-    </service>
-
-    <receiver
-        android:name="com.townfish.app.JsonServiceRestarter"
-        android:enabled="true"
-        android:exported="true"
-        android:label="RestartServiceWhenStopped">
-      <intent-filter>
-        <action android:name="com.townfish.app.RestartSensor"/>
-      </intent-filter>
-    </receiver>    
-    
 	</application>
 </manifest>

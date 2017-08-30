@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using Apptelic.UberWebViewLib;
 
 using TownFish.App.Controls;
+using TownFish.App.Helpers;
 using TownFish.App.Models;
 using TownFish.App.ViewModels;
 
@@ -263,8 +264,10 @@ namespace TownFish.App.Pages
 						break;
 
 					case cHideDiscoveriesAction:
-                        mIsInfoActivated = false;
-                        HideDiscoveries();
+						// when being told to hide discoveries, that includes info too
+                        mDiscoveriesInfoActive = false;
+
+						HideDiscoveries();
 						break;
 				}
 			}
@@ -283,7 +286,7 @@ namespace TownFish.App.Pages
 			{
 				e.Cancel = true;
 
-				Device.OpenUri (uri);
+				PlatformHelper.OpenUri (uri);
 
 				return;
 			}
@@ -442,7 +445,7 @@ namespace TownFish.App.Pages
 
 			// only hide loading if already showing it but not in the process of hiding discoveries
 			if (ViewModel.IsLoading && !mHidingDiscoveries)
-				Device.BeginInvokeOnMainThread (() => HideLoading());
+				HideLoading();
 
 			// tell app to check sync token in case login changed
 			// (i.e. user logged out, or new user logged in)
@@ -459,27 +462,39 @@ namespace TownFish.App.Pages
 
 		async void ViewModel_CallbackRequested (object sender, BrowserPageViewModel.CallbackInfo info)
 		{
-			// special-case user pressing discoveries info button
+			// special-case user pressing discoveries info button, as web code knows
+			// nothing about it
+
 			if (info.IsNative && info.Name == BrowserPageViewModel.CallbackInfo.Info)
 			{
-                mIsInfoActivated = !ViewModel.IsDiscoveriesInfoVisible;
+				// if already open, don't open again!
+				if (ViewModel.IsDiscoveriesInfoVisible)
+					return;
 
-                ShowLoading();
-                await Task.Delay(cLoadingAnimationDelayTime);
-				ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty ||
-						!ViewModel.IsDiscoveriesInfoVisible;
+                await ShowLoadingAsync();
+
+				mDiscoveriesInfoActive = true;
+				ViewModel.IsDiscoveriesInfoVisible = true;
+
                 HideLoading();
 
 				return;
 			}
-            //Back button on info page should show discoveries if there are any, otherwise do default back handling
-            if (info.Name == BrowserPageViewModel.CallbackInfo.Back && ViewModel.IsDiscoveriesInfoVisible && ViewModel.IsDiscoveriesVisible && !ViewModel.IsDiscoveriesEmpty)
+
+			// special-case back button on info page too, to show discoveries if there are
+			// any, otherwise do default back handling
+
+            if (info.Name == BrowserPageViewModel.CallbackInfo.Back &&
+					ViewModel.IsDiscoveriesVisible && ViewModel.IsDiscoveriesInfoVisible &&
+					!ViewModel.IsDiscoveriesEmpty)
             {
-                ShowLoading();
-                await Task.Delay(cLoadingAnimationDelayTime);
-                mIsInfoActivated = false;
+                await ShowLoadingAsync();
+
+                mDiscoveriesInfoActive = false;
                 ViewModel.IsDiscoveriesInfoVisible = false;
+
                 HideLoading();
+
                 return;
             }
 
@@ -547,6 +562,17 @@ namespace TownFish.App.Pages
 
 		void ShowDiscoveries()
 		{
+			bool UpdateDiscoveryExpiry()
+			{
+				if (!ViewModel.IsDiscoveriesVisible || ViewModel.DiscoveryItems == null)
+					return false;
+
+				foreach (var item in ViewModel.DiscoveryItems)
+					item.RecalculateExpiry();
+
+				return true;
+			}
+
 			if (ViewModel.IsDiscoveriesVisible)
 				return;
 
@@ -554,8 +580,11 @@ namespace TownFish.App.Pages
 			if (ViewModel.IsDiscoveriesEmpty)
 				UpdateDiscoveryItems();
 
-			ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty || mIsInfoActivated;
 			ViewModel.IsDiscoveriesVisible = true;
+			ViewModel.IsDiscoveriesInfoVisible = ViewModel.IsDiscoveriesEmpty || mDiscoveriesInfoActive;
+
+			if (ViewModel.IsDiscoveriesEmpty)
+				return;
 
             Device.StartTimer (TimeSpan.FromSeconds (1), UpdateDiscoveryExpiry);
 
@@ -563,20 +592,6 @@ namespace TownFish.App.Pages
 			ViewModel.NewDiscoveriesCount = 0;
 			App.LastDiscoveriesViewTime = DateTime.Now;
 		}
-
-        /// <summary>
-        /// Callback to refresh exiry time on discovery items
-        /// </summary>
-        bool UpdateDiscoveryExpiry()
-        {
-            if (!ViewModel.IsDiscoveriesVisible || ViewModel.DiscoveryItems == null)
-                return false;
-
-            foreach (var item in ViewModel.DiscoveryItems)
-                item.RecalculateExpiry();
-
-			return true;
-        }
 
 		/// <summary>
 		/// Fire-and-forget discoveries hider.
@@ -690,30 +705,44 @@ namespace TownFish.App.Pages
 
 			// set this here in case page loads faster than loading animation completes,
 			// which could result in loading never being removed
+
 			ViewModel.IsLoading = true;
 
 			if (!mFirstLoading)
 			{
+				mOpenedLoadingTime = DateTime.Now;
+
 				pnlLoading.Opacity = 1;
 				pnlLoading.TranslationX = pnlLoading.Width;
 				await pnlLoading.TranslateTo (0, 0, cLoadingPanelAnimationTime, Easing.CubicInOut);
 			}
 		}
 
-		async void HideLoading()
+		void HideLoading()
 		{
+			async void Fade()
+			{
+				await pnlLoading.FadeTo (0, cLoadingPanelAnimationTime, Easing.CubicIn);
+				ViewModel.IsLoading = false;
+
+				// make sure we only show splash loading once
+				if (mFirstLoading)
+				{
+					mFirstLoading = false;
+					imgSplash.IsVisible = false;
+				}
+			}
+
 			if (!ViewModel.IsLoading)
 				return;
 
-			await pnlLoading.FadeTo (0, cLoadingPanelAnimationTime, Easing.CubicIn);
-			ViewModel.IsLoading = false;
+			// if called too quickly, wait around a bit so it doesn't flash
+			var t = Math.Max (0, cLoadingDelayTime -
+					(int) (DateTime.Now - mOpenedLoadingTime).TotalMilliseconds);
 
-			// make sure we only show splash loading once
-			if (mFirstLoading)
-			{
-				mFirstLoading = false;
-				imgSplash.IsVisible = false;
-			}
+			// do it in a bit, in case we're on UI thread, so UI can get back to work first
+			Device.StartTimer (TimeSpan.FromMilliseconds (cLoadingPanelAnimationTime + t),
+					() => { Device.BeginInvokeOnMainThread (Fade); return false; });
 		}
 
 		#endregion Methods
@@ -734,7 +763,8 @@ namespace TownFish.App.Pages
 		const uint cLoadingPanelAnimationTime = 250;
 #endif
 
-        const int cLoadingAnimationDelayTime = 1000;
+		// minimum time to show loading for
+        const int cLoadingDelayTime = 1000;
 
 		// apparently iOS status bar height is always 20 in XF (apparently, I said)
 		const double cTopPaddingiOS = 20;
@@ -772,6 +802,7 @@ namespace TownFish.App.Pages
 
 		bool mFirstLoading = true;
 		bool mFirstShowing = true;
+		DateTime mOpenedLoadingTime;
 
 		bool mIsSearchVisible;
 		bool mShowingSearch;
@@ -780,9 +811,7 @@ namespace TownFish.App.Pages
 
 		string mLastSourceUrl;
 
-        private bool mIsInfoActivated = false;
-
-        //Frame[] mBottomActionFrames;
+        private bool mDiscoveriesInfoActive = false;
 
         #endregion Fields
     }

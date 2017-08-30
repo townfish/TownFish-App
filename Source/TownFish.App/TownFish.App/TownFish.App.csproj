@@ -47,6 +47,8 @@
       <DependentUpon>DiscoveryItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="Helpers\ConvertAny.cs" />
+    <Compile Include="Helpers\IPlatformHelper.cs" />
+    <Compile Include="Helpers\PlatformHelper.cs" />
     <Compile Include="Helpers\Util.cs" />
     <Compile Include="Helpers\Extensions.cs" />
     <Compile Include="Helpers\ImageSourceWatcher.cs" />
