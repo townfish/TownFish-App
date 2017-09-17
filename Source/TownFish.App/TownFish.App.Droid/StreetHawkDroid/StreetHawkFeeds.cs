@@ -15,17 +15,21 @@ using StreetHawkCrossplatform;
 
 namespace StreetHawkCrossplatform
 {
+	#region Helper Types
+
+	public class FeedException: Exception
+	{
+		public FeedException (string message) : base (message) {}
+	}
+
+	#endregion Helper Types
+
 	public class StreetHawkFeeds : Java.Lang.Object, IStreetHawkFeeds, ISHFeedItemObserver
 	{
 		static Application mApplication => StreetHawkAnalytics.Application;
 
 		const string FEED_ID = "feed_id";
         const string ID = "id";
-        const string APS = "aps";
-        const string D = "d";
-        const string ALERT = "alert";
-        const string TITLE = "title";
-		const string MESSAGE = "message";
 		const string CAMPAIGN = "campaign";
 		const string CONTENT = "content";
 		const string ACTIVATES = "activates";
@@ -34,7 +38,11 @@ namespace StreetHawkCrossplatform
 		const string MODIFIED = "modified";
 		const string DELETED = "deleted";
 
-        const char ALERT_SEPARATOR = ',';
+		// added 1.8.19
+		const string ERROR = "error";
+		const string RESULTS = "results";
+        const string TITLE = "titleMsg";
+		const string MESSAGE = "messageMsg";
 
         public void NotifyFeedResult(string feedid, int result)
 		{
@@ -81,74 +89,56 @@ namespace StreetHawkCrossplatform
             }
         }
 
-		public void ShFeedReceived(JSONArray feeds)
+		public void ShFeedReceived (JSONObject feedResults)
 		{
-			if(null!=mRegisterForFeedCallBack){
-				if (null != feeds)
+			if (mRegisterForFeedCallBack != null && feedResults != null)
+			{
+				var arrayFeeds = new List<SHFeedObject>();
+
+				if (feedResults.Length() > 0)
 				{
-					List<SHFeedObject> arrayFeeds = new List<SHFeedObject>();
+					if (feedResults.Has (ERROR))
+						throw new FeedException (feedResults.GetString (ERROR));
+
+					var feeds = feedResults.GetJSONArray (RESULTS);
 					for (int i = 0; i < feeds.Length(); i++)
 					{
-                        try
-                        {
-                            JSONObject jsonObj = feeds.GetJSONObject(i);
-                            SHFeedObject obj = new SHFeedObject();
+						try
+						{
+							JSONObject jsonObj = feeds.GetJSONObject(i);
+							SHFeedObject obj = new SHFeedObject();
+
+							// we apparently don't know if the ID will be FEED_ID or ID, so check both
                             if (jsonObj.Has(FEED_ID))
                                 obj.feed_id = jsonObj.GetString(FEED_ID);
-                            if (jsonObj.Has(ID))
+                            else if (jsonObj.Has(ID))
                                 obj.feed_id = jsonObj.GetString(ID);
-                            if (jsonObj.Has(TITLE))
-                                obj.title = jsonObj.GetString(TITLE);
-                            if (jsonObj.Has(MESSAGE))
-                                obj.message = jsonObj.GetString(MESSAGE);
-                            if (jsonObj.Has(CAMPAIGN))
-                                obj.campaign = jsonObj.GetString(CAMPAIGN);
-                            if (jsonObj.Has(CONTENT))
-                                obj.content = jsonObj.GetString(CONTENT);
-                            if (jsonObj.Has(ACTIVATES))
-                                obj.activates = jsonObj.GetString(ACTIVATES);
-                            if (jsonObj.Has(EXPIRES))
-                                obj.expires = jsonObj.GetString(EXPIRES);
-                            if (jsonObj.Has(CREATED))
-                                obj.created = jsonObj.GetString(CREATED);
-                            if (jsonObj.Has(MODIFIED))
-                                obj.modified = jsonObj.GetString(MODIFIED);
-                            if (jsonObj.Has(DELETED))
-                                obj.deleted = jsonObj.GetString(DELETED);
 
-                            var content = jsonObj.GetJSONObject(CONTENT);
+							obj.campaign = jsonObj.GetString(CAMPAIGN);
+							obj.content = jsonObj.GetString(CONTENT);
+							obj.activates = jsonObj.GetString(ACTIVATES);
+							obj.expires = jsonObj.GetString(EXPIRES);
+							obj.created = jsonObj.GetString(CREATED);
+							obj.modified = jsonObj.GetString(MODIFIED);
+							obj.deleted = jsonObj.GetString(DELETED);
 
-                            if (obj.title == null && obj.message == null && content.Has(APS))
-                            {
-                                obj.content = content.GetString(D);
-
-                                var alert = content.GetJSONObject(APS).GetString(ALERT);
-
-                                if (alert != null)
-                                {
-                                    var alertParts = alert.Split(ALERT_SEPARATOR);
-                                    obj.title = alertParts[0].Trim();
-                                    if (alertParts.Length == 2)
-                                    {
-                                        obj.message = alertParts[1].Trim();
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                obj.content = jsonObj.GetString(CONTENT);
-                            }
-
+							// now extract the title and message from the content object
+							var contentObj = jsonObj.GetJSONObject (CONTENT);
+							obj.title = contentObj.GetString (TITLE);
+							obj.message = contentObj.GetString (MESSAGE);
+							
 							arrayFeeds.Add(obj);
-
 						}
 						catch (JSONException e)
 						{
 							e.PrintStackTrace();
+
+							throw;
 						}
 					}
-					mRegisterForFeedCallBack.Invoke(arrayFeeds,null);
 				}
+
+				mRegisterForFeedCallBack.Invoke (arrayFeeds, null);
 			}
 		}
 
