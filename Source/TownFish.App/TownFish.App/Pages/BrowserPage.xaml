@@ -394,8 +394,8 @@
 			  BackgroundColor="#E2E2E2"
 			  IsVisible="{Binding IsDiscoveriesVisible}">
 			<!-- Discoveries list -->
-			<ScrollView>
-				<StackLayout x:Name="lstDiscoveries" />
+			<ScrollView Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+				<StackLayout x:Name="lstDiscoveries" Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" />
 			</ScrollView>
 			<!-- ListView BORKED on iOS!!!! -->
 			<!--<ListView x:Name="lstDiscoveries"

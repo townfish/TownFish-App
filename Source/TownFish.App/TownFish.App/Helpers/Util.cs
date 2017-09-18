@@ -10,7 +10,7 @@ namespace TownFish.App.Helpers
 		public static T OnPlatform<T> (T iOS, T android, T uwp = default (T)) =>
 				Device.RuntimePlatform == Device.Android ? android :
 				Device.RuntimePlatform == Device.iOS ? iOS :
-				Device.RuntimePlatform == Device.UWP ? uwp :
+				Device.RuntimePlatform == Device.Windows ? uwp :
 				android; // assume all others are like Android
 	}
 }

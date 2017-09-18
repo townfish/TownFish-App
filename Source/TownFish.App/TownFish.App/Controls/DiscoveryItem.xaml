@@ -6,10 +6,10 @@
 		<TapGestureRecognizer Tapped="OnTapped" />
 	</Grid.GestureRecognizers>
 
-	<StackLayout Spacing="0">
-		<Image x:Name="imgPicture" Aspect="AspectFill" Source="{Binding PictureSource}" />
+	<StackLayout Spacing="0" Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" IsClippedToBounds="True">
+        <Image x:Name="imgPicture" Aspect="AspectFill" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Source="{Binding PictureSource}"/>
 
-		<Grid x:Name="pnlText" ColumnSpacing="0" BackgroundColor="White" HorizontalOptions="FillAndExpand">
+        <Grid x:Name="pnlText" ColumnSpacing="0" BackgroundColor="White" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" IsClippedToBounds="True">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="auto" />
 				<ColumnDefinition Width="*" />
@@ -42,6 +42,6 @@
 				   Text="{Binding Group}" />-->
 		</Grid>
 
-		<BoxView Color="Transparent" HeightRequest="6"/>
+		<BoxView Color="Transparent" HeightRequest="12"/>
 	</StackLayout>
 </Grid>

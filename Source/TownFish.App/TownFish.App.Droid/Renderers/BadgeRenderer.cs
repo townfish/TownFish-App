@@ -1,12 +1,9 @@
 ﻿using System;
-using System.ComponentModel;
 
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms;
 
 using Android.Graphics;
-using Android.Graphics.Drawables;
-using AColor = Android.Graphics.Color;
 
 using TownFish.App.Droid.Renderers;
 using TownFish.App.Controls;
@@ -93,8 +90,6 @@ namespace TownFish.App.Droid.Renderers
 		#region Fields
 
 		const float cDefaultCornerRadius = 5;
-
-		bool mDisposed;
 
 		#endregion Fields
 	}

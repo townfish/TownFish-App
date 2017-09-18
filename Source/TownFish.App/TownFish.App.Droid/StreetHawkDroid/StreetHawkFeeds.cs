@@ -15,13 +15,21 @@ using StreetHawkCrossplatform;
 
 namespace StreetHawkCrossplatform
 {
+	#region Helper Types
+
+	public class FeedException: Exception
+	{
+		public FeedException (string message) : base (message) {}
+	}
+
+	#endregion Helper Types
+
 	public class StreetHawkFeeds : Java.Lang.Object, IStreetHawkFeeds, ISHFeedItemObserver
 	{
 		static Application mApplication => StreetHawkAnalytics.Application;
 
 		const string FEED_ID = "feed_id";
-		const string TITLE = "title";
-		const string MESSAGE = "message";
+        const string ID = "id";
 		const string CAMPAIGN = "campaign";
 		const string CONTENT = "content";
 		const string ACTIVATES = "activates";
@@ -30,9 +38,23 @@ namespace StreetHawkCrossplatform
 		const string MODIFIED = "modified";
 		const string DELETED = "deleted";
 
-		public void NotifyFeedResult(string feedid, int result)
+		// added 1.8.19
+		const string ERROR = "error";
+		const string RESULTS = "results";
+        const string TITLE = "titleMsg";
+		const string MESSAGE = "messageMsg";
+
+        public void NotifyFeedResult(string feedid, int result)
 		{
-			SHFeedItem.GetInstance(mApplication.ApplicationContext).NotifyFeedResult(feedid ,result);
+            try
+            {
+                var item = SHFeedItem.GetInstance(mApplication.ApplicationContext);
+                item.NotifyFeedResult(feedid, result);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
 		}
 
 		public void NotifyFeedResult(string feedid, string stepid, string feedresult, bool feedDelete, bool completed)
@@ -47,7 +69,7 @@ namespace StreetHawkCrossplatform
 			Log.Error("StreetHawk", "OnNewFeedAvailableCallback is not available for this release");
 		}
 
-		RegisterForFeedCallback mRegisterForFeedCallBack;
+		static RegisterForFeedCallback mRegisterForFeedCallBack;
 		public void ReadFeedData(int offset, RegisterForFeedCallback cb)
 		{
 			mRegisterForFeedCallBack = cb;
@@ -56,24 +78,42 @@ namespace StreetHawkCrossplatform
 
 		public void SendFeedAck(string feedid)
 		{
-			SHFeedItem.GetInstance(mApplication.ApplicationContext).SendFeedAck(feedid);
-		}
+            try
+            {
+                var item = SHFeedItem.GetInstance(mApplication.ApplicationContext);
+                item.SendFeedAck(feedid);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+            }
+        }
 
-		public void ShFeedReceived(JSONArray feeds)
+		public void ShFeedReceived (JSONObject feedResults)
 		{
-			if(null!=mRegisterForFeedCallBack){
-				if (null != feeds)
+			if (mRegisterForFeedCallBack != null && feedResults != null)
+			{
+				var arrayFeeds = new List<SHFeedObject>();
+
+				if (feedResults.Length() > 0)
 				{
-					List<SHFeedObject> arrayFeeds = new List<SHFeedObject>();
+					if (feedResults.Has (ERROR))
+						throw new FeedException (feedResults.GetString (ERROR));
+
+					var feeds = feedResults.GetJSONArray (RESULTS);
 					for (int i = 0; i < feeds.Length(); i++)
 					{
 						try
 						{
 							JSONObject jsonObj = feeds.GetJSONObject(i);
 							SHFeedObject obj = new SHFeedObject();
-							obj.feed_id = jsonObj.GetString(FEED_ID);
-							obj.title = jsonObj.GetString(TITLE);
-							obj.message = jsonObj.GetString(MESSAGE);
+
+							// we apparently don't know if the ID will be FEED_ID or ID, so check both
+                            if (jsonObj.Has(FEED_ID))
+                                obj.feed_id = jsonObj.GetString(FEED_ID);
+                            else if (jsonObj.Has(ID))
+                                obj.feed_id = jsonObj.GetString(ID);
+
 							obj.campaign = jsonObj.GetString(CAMPAIGN);
 							obj.content = jsonObj.GetString(CONTENT);
 							obj.activates = jsonObj.GetString(ACTIVATES);
@@ -81,16 +121,24 @@ namespace StreetHawkCrossplatform
 							obj.created = jsonObj.GetString(CREATED);
 							obj.modified = jsonObj.GetString(MODIFIED);
 							obj.deleted = jsonObj.GetString(DELETED);
-							arrayFeeds.Add(obj);
 
+							// now extract the title and message from the content object
+							var contentObj = jsonObj.GetJSONObject (CONTENT);
+							obj.title = contentObj.GetString (TITLE);
+							obj.message = contentObj.GetString (MESSAGE);
+							
+							arrayFeeds.Add(obj);
 						}
 						catch (JSONException e)
 						{
 							e.PrintStackTrace();
+
+							throw;
 						}
 					}
-					mRegisterForFeedCallBack.Invoke(arrayFeeds,null);
 				}
+
+				mRegisterForFeedCallBack.Invoke (arrayFeeds, null);
 			}
 		}
 
