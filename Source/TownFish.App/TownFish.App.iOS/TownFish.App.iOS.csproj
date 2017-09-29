@@ -91,7 +91,7 @@
     <MtouchFloat32>False</MtouchFloat32>
     <DeviceSpecificBuild>True</DeviceSpecificBuild>
     <MtouchNoSymbolStrip>False</MtouchNoSymbolStrip>
-    <CodesignKey>iPhone Developer: Dani Lindholm (74B5844E7J)</CodesignKey>
+    <CodesignKey>iPhone Developer</CodesignKey>
     <CodesignProvision>7812f0cf-4743-4ce6-adbd-420872cb1bc0</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
