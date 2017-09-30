@@ -665,11 +665,19 @@ namespace TownFish.App.Pages
 			if (!mIsSearchVisible || mHidingSearch)
 				return;
 
-			if (ViewModel.SearchLocationActive)
-				ViewModel.CancelLocationSearch();
-
+			// NOTE: This goes BEFORE cancelling search as it causes ebxSearch (which loses
+			// focus) to be updated with the search term (we don't konw how, but only if
+			// the case-insensitive value matches the current search term - yes, really!)
+			// which, due to binding, in turn causes the search results to be updated one
+			// more time, which results in the search results showing up again AFTER the
+			// location switch has occurred, thus hiding the main page. This resulted in
+			// Basecamp Issue 72.
+			//
 			// remove focus from search input
 			wbvContent.Focus();
+
+			if (ViewModel.SearchLocationActive)
+				ViewModel.CancelLocationSearch();
 
 			mHidingSearch = true;
 

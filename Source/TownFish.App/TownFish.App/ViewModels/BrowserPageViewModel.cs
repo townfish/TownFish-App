@@ -137,7 +137,7 @@ namespace TownFish.App.ViewModels
 			{
 				// allows us to clear loading content when not loading
 				if (Set (value))
-					OnPropertyChanged (() => LoadingWebViewSource);
+					OnPropertyChanged (nameof (LoadingWebViewSource));
 			}
 		}
 
@@ -475,8 +475,8 @@ namespace TownFish.App.ViewModels
 				// if collection changes, we may or may not have any items in the new one
 				if (Set (value))
 				{
-					OnPropertyChanged (() => SearchLocationActive);
-					OnPropertyChanged (() => SearchLocationListEmpty);
+					OnPropertyChanged (nameof (SearchLocationActive));
+					OnPropertyChanged (nameof (SearchLocationListEmpty));
 				}
 			}
 		}
@@ -496,7 +496,8 @@ namespace TownFish.App.ViewModels
 			set
 			{
 				// if text changes, update search results if enough has been entered
-				if (Set (value))
+				if (string.Compare (value, CurrentSearchTerm,
+						StringComparison.OrdinalIgnoreCase) != 0 && Set (value))
 				{
 					// update this for SearchFormatConverter to reference
 					CurrentSearchTerm = value;
@@ -543,7 +544,7 @@ namespace TownFish.App.ViewModels
 			{
 				// NOTE: side-effect - if this changes, location name might change too
 				if (Set (value))
-					OnPropertyChanged (() => IsLocationNameVisible);
+					OnPropertyChanged (nameof (IsLocationNameVisible));
 			}
 		}
 
@@ -555,7 +556,7 @@ namespace TownFish.App.ViewModels
 			{
 				// NOTE: side-effect - if this changes, location name might change too
 				if (Set (value))
-					OnPropertyChanged (() => IsLocationNameVisible);
+					OnPropertyChanged (nameof (IsLocationNameVisible));
 			}
 		}
 
@@ -571,8 +572,8 @@ namespace TownFish.App.ViewModels
 			{
 				if (Set (value))
 				{
-					OnPropertyChanged (() => IsDiscoveriesEmpty);
-					OnPropertyChanged (() => DiscoveryItemsCount);
+					OnPropertyChanged (nameof (IsDiscoveriesEmpty));
+					OnPropertyChanged (nameof (DiscoveryItemsCount));
 				}
 			}
 		}

@@ -329,7 +329,7 @@
 						   HorizontalOptions="Fill" VerticalOptions="Center"
 						   BackgroundColor="{Binding LocationsContrastBackgroundColour}"
 						   TextColor="{Binding LocationsSearchInputTextColour}"
-						   FontSize="13" Text="{Binding SearchTerm, Mode=TwoWay}" />
+						   FontSize="13" Text="{Binding SearchTerm}" />
 					<Image Grid.Column="2" Margin="8,4" IsVisible="{Binding SearchHasContent}"
 						   Source="close.png"
 						   VerticalOptions="Center" WidthRequest="16">
