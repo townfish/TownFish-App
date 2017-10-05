@@ -724,24 +724,25 @@ namespace TownFish.App.Pages
 			// which could result in loading never being removed
 			ViewModel.IsLoading = true;
 
-			if (!mFirstLoading)
+            mOpenedLoadingTime = DateTime.Now;
+
+            if (!mFirstLoading)
 			{
-				mOpenedLoadingTime = DateTime.Now;
 
 				pnlLoading.Opacity = 1;
 				pnlLoading.TranslationX = pnlLoading.Width;
 
 				await pnlLoading.TranslateTo (0, 0, cLoadingPanelAnimationTime, Easing.CubicInOut);
 			}
-			else // first loading (splash screen)
-			{
-				// HACK: to fix mysterious iOS 10+ 'stuck on splash' problem, hide loading
-				// after a long delay (Basecamp issue 77) in case it's not hidden by then
-				await Task.Delay (cHideFirstLoadingDelayMS);
+            else // first loading (splash screen)
+            {
+                // HACK: to fix mysterious iOS 10+ 'stuck on splash' problem, hide loading
+                // after a long delay (Basecamp issue 77) in case it's not hidden by then
+                await Task.Delay(cHideFirstLoadingDelayMS);
 
-				HideLoading();
-			}
-		}
+                HideLoading();
+            }
+        }
 
 		void HideLoading ([CallerMemberName] string caller = null)
 		{

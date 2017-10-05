@@ -56,8 +56,6 @@
 	<true/>
 	<key>UIStatusBarHidden~ipad</key>
 	<true/>
-	<key>UILaunchStoryboardName</key>
-	<string>Launch</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -67,17 +65,17 @@
 	<string>TownFish is now using your location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>TownFish recommends new things of interest to you and needs to use your location to notify you about freebies and special offers at venues near you</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>TownFish recommends new things of interest to you and needs to use your location to notify you about freebies and special offers at venues near you</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>TownFish uses Bluetooth to detect nearby iBeacons</string>
 	<key>NSCameraUsageDescription</key>
 	<string>TownFish allows you to post photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>TownFish allows you to post photos</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Launch</string>
-	<key>XSLaunchImageAssets</key>
-	<string>Resources/Media.xcassets/LaunchImages.launchimage</string>
 	<key>XSAppIconAssets</key>
 	<string>Resources/Media.xcassets/AppIcons.appiconset</string>
+	<key>UILaunchStoryboardName</key>
+	<string>Launch</string>
 </dict>
 </plist>

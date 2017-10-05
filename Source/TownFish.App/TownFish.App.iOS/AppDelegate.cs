@@ -57,5 +57,11 @@ namespace TownFish.App.iOS
 
 			return base.FinishedLaunching (app, options);
 		}
+
+        public override UIWindow Window
+        {
+            get;
+            set;
+        }
     }
 }
