@@ -197,9 +197,11 @@ namespace TownFish.App.Pages
 			{
 				// parse failed, fail gracefully
 
+				//await App.Current.MainPage.DisplayAlert ("",
 				Debug.WriteLine (
 						"BrowserPage.UberWebView_ScriptMessageReceived: " +
 						$"Parse of:\n{msg}\nfailed with error:\n{ex.Message}");
+						//, "Cancel");
 
 				// if it was the schema, just hide everything as it might contain rubbish
 				if (action == cSchemaAction)
@@ -218,9 +220,11 @@ namespace TownFish.App.Pages
 
 			try
 			{
+				//await App.Current.MainPage.DisplayAlert ("",
 				Debug.WriteLine (
 						"BrowserPage.UberWebView_ScriptMessageReceived: " +
 						$"Performing {action} on:\n{data}");
+						//, "Cancel");
 
 				switch (action)
 				{
@@ -274,8 +278,10 @@ namespace TownFish.App.Pages
 			}
 			catch (Exception ex)
 			{
+				//await App.Current.MainPage.DisplayAlert ("",
 				Debug.WriteLine (
 						$"BrowserPage.UberWebView_ScriptMessageReceived: {ex.Message}");
+						//, "Cancel");
 			}
 		}
 
@@ -446,7 +452,7 @@ namespace TownFish.App.Pages
 
 			// only hide loading if not in the process of hiding discoveries
 			if (!mHidingDiscoveries)
-				HideLoading();
+				Device.BeginInvokeOnMainThread (() => HideLoading());
 
 			// tell app to check sync token in case login changed
 			// (i.e. user logged out, or new user logged in)
@@ -714,8 +720,12 @@ namespace TownFish.App.Pages
 		/// <returns></returns>
 		async Task ShowLoadingAsync ([CallerMemberName] string caller = null)
 		{
-			Debug.WriteLine ($"ShowLoadingAsync: IsLoading = {ViewModel.IsLoading}; " +
-				$"caller = {caller}");
+			//if (App.Current.MainPage != null)
+			//	await App.Current.MainPage.DisplayAlert ("",
+			Debug.WriteLine (
+					$"ShowLoadingAsync: IsLoading = {ViewModel.IsLoading}; " +
+					$"caller = {caller}");
+					//, "Cancel");
 
 			if (ViewModel.IsLoading)
 				return;
@@ -734,22 +744,17 @@ namespace TownFish.App.Pages
 
 				await pnlLoading.TranslateTo (0, 0, cLoadingPanelAnimationTime, Easing.CubicInOut);
 			}
-            else // first loading (splash screen)
-            {
-                // HACK: to fix mysterious iOS 10+ 'stuck on splash' problem, hide loading
-                // after a long delay (Basecamp issue 77) in case it's not hidden by then
-                await Task.Delay(cHideFirstLoadingDelayMS);
+		}
 
-                HideLoading();
-            }
-        }
-
-		void HideLoading ([CallerMemberName] string caller = null)
+		async void HideLoading ([CallerMemberName] string caller = null)
 		{
 			async void Fade (string c)
 			{
-				Debug.WriteLine ($"HideLoading.Fade: IsLoading = {ViewModel.IsLoading}; " +
-					$"original caller = {caller}");
+				//await App.Current.MainPage.DisplayAlert ("",
+				Debug.WriteLine (
+						$"HideLoading.Fade: IsLoading = {ViewModel.IsLoading}; " +
+						$"original caller = {caller}");
+						//, "Cancel");
 
 				await pnlLoading.FadeTo (0, cLoadingPanelAnimationTime, Easing.CubicIn);
 
@@ -764,8 +769,11 @@ namespace TownFish.App.Pages
 				mHidingLoading = false;
 			}
 
-			Debug.WriteLine ($"HideLoading: IsLoading = {ViewModel.IsLoading}; " +
-				$"caller = {caller}");
+			//await App.Current.MainPage.DisplayAlert ("",
+			Debug.WriteLine (
+					$"HideLoading: IsLoading = {ViewModel.IsLoading}; " +
+					$"caller = {caller}");
+					//, "Cancel");
 
 			if (!ViewModel.IsLoading || mHidingLoading)
 				return;
@@ -781,12 +789,9 @@ namespace TownFish.App.Pages
 			var tms = TimeSpan.FromMilliseconds (cLoadingPanelAnimationTime + t);
 
 			// do it in a bit, in case we're on UI thread, so UI can get back to work first
-			Device.StartTimer (tms, () =>
-				{
-					Device.BeginInvokeOnMainThread (() => Fade (caller));
+			await Task.Delay (tms);
 
-					return false;
-				});
+			Fade (caller);
 		}
 
 		#endregion Methods
