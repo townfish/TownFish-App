@@ -669,7 +669,7 @@ namespace TownFish.App
 		#region Fields
 
 		// all magic URLs and paths used in this app
-		public const string SiteDomain = "dev.townfish.com";
+		public const string SiteDomain = "preview.townfish.com";
 		public const string BaseUrl = "http://" + SiteDomain;
 		public const string StartPath = "/";
 		public const string TermsUrl = BaseUrl + "/terms-of-use/";
@@ -686,7 +686,7 @@ namespace TownFish.App
 
 		public const string GcmSenderID = "7712235891";
 
-		public const string StreetHawkAppKey = "TownFish_DEV_SH";
+		public const string StreetHawkAppKey = "TownFish_BETA";
 
 		const string cLastDiscoveriesViewTimeKey = "LastDiscoveriesViewTime";
 
