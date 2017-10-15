@@ -686,7 +686,7 @@ namespace TownFish.App
 
 		public const string GcmSenderID = "7712235891";
 
-		public const string StreetHawkAppKey = "TownFish";
+		public const string StreetHawkAppKey = "TownFish_DEV_SH";
 
 		const string cLastDiscoveriesViewTimeKey = "LastDiscoveriesViewTime";
 
