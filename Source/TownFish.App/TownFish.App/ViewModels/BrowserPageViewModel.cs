@@ -13,7 +13,7 @@ using Xamarin.Forms;
 using Newtonsoft.Json;
 
 using TownFish.App.Models;
-
+using TownFish.App.Helpers;
 
 namespace TownFish.App.ViewModels
 {
@@ -154,8 +154,8 @@ namespace TownFish.App.ViewModels
 
 				using (var stm = App.Assembly.GetManifestResourceStream (
 						"TownFish.App.Resources.LoadingAnimation.html"))
-				using (var reader = new StreamReader (stm))
-					return reader.ReadToEnd();
+					using (var reader = new StreamReader (stm))
+						return reader.ReadToEnd();
 			}
 		}
 
@@ -465,6 +465,13 @@ namespace TownFish.App.ViewModels
 		#endregion Top Form
 
 		#region Search
+
+		public bool SearchEnabled => Util.OnPlatform (iOS: false, android: true);
+
+		public bool SearchDisabled => !SearchEnabled;
+
+		public string SearchPlaceholder => SearchEnabled ?
+				"Location e.g. Camden or NW1" : "Location search coming soon";
 
 		public ObservableCollection<TownfishLocationItem> LocationSearchItems
 		{

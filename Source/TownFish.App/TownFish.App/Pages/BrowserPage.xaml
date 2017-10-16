@@ -325,7 +325,8 @@
 						   IsVisible="{Binding IsVisible}"
 						   VerticalOptions="Center" WidthRequest="16" />
 					<Entry x:Name="ebxSearch" Grid.Column="1"
-						   Placeholder="Location e.g. Camden or NW1"
+						   IsEnabled="{Binding SearchEnabled}"
+						   Placeholder="{Binding SearchPlaceholder}"
 						   HorizontalOptions="Fill" VerticalOptions="Center"
 						   BackgroundColor="{Binding LocationsContrastBackgroundColour}"
 						   TextColor="{Binding LocationsSearchInputTextColour}"
