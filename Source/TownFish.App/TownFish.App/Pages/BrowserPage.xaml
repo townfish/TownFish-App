@@ -325,11 +325,12 @@
 						   IsVisible="{Binding IsVisible}"
 						   VerticalOptions="Center" WidthRequest="16" />
 					<Entry x:Name="ebxSearch" Grid.Column="1"
-						   Placeholder="Location e.g. Camden or NW1"
+						   IsEnabled="{Binding SearchEnabled}"
+						   Placeholder="{Binding SearchPlaceholder}"
 						   HorizontalOptions="Fill" VerticalOptions="Center"
 						   BackgroundColor="{Binding LocationsContrastBackgroundColour}"
 						   TextColor="{Binding LocationsSearchInputTextColour}"
-						   FontSize="13" Text="{Binding SearchTerm, Mode=TwoWay}" />
+						   FontSize="13" Text="{Binding SearchTerm}" />
 					<Image Grid.Column="2" Margin="8,4" IsVisible="{Binding SearchHasContent}"
 						   Source="close.png"
 						   VerticalOptions="Center" WidthRequest="16">

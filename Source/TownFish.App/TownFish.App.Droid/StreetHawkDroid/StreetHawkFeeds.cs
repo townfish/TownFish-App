@@ -91,11 +91,15 @@ namespace StreetHawkCrossplatform
 
 		public void ShFeedReceived (JSONObject feedResults)
 		{
-			if (mRegisterForFeedCallBack != null && feedResults != null)
-			{
-				var arrayFeeds = new List<SHFeedObject>();
+			if (mRegisterForFeedCallBack == null)
+				return;
 
-				if (feedResults.Length() > 0)
+			string errorMsg = null;
+			var arrayFeeds = new List<SHFeedObject>();
+
+			try
+			{
+				if ((feedResults?.Length() ?? 0) > 0)
 				{
 					if (feedResults.Has (ERROR))
 						throw new FeedException (feedResults.GetString (ERROR));
@@ -109,10 +113,10 @@ namespace StreetHawkCrossplatform
 							SHFeedObject obj = new SHFeedObject();
 
 							// we apparently don't know if the ID will be FEED_ID or ID, so check both
-                            if (jsonObj.Has(FEED_ID))
-                                obj.feed_id = jsonObj.GetString(FEED_ID);
-                            else if (jsonObj.Has(ID))
-                                obj.feed_id = jsonObj.GetString(ID);
+							if (jsonObj.Has(FEED_ID))
+								obj.feed_id = jsonObj.GetString(FEED_ID);
+							else if (jsonObj.Has(ID))
+								obj.feed_id = jsonObj.GetString(ID);
 
 							obj.campaign = jsonObj.GetString(CAMPAIGN);
 							obj.content = jsonObj.GetString(CONTENT);
@@ -137,9 +141,13 @@ namespace StreetHawkCrossplatform
 						}
 					}
 				}
-
-				mRegisterForFeedCallBack.Invoke (arrayFeeds, null);
 			}
+			catch (Exception ex)
+			{
+				errorMsg = ex.Message;
+			}
+
+			mRegisterForFeedCallBack.Invoke (arrayFeeds, errorMsg);
 		}
 
 		public void SHNotifyNewFeedItem()

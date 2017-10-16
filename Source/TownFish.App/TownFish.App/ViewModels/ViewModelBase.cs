@@ -117,9 +117,9 @@ namespace TownFish.App.ViewModels
 
 #if DEBUG
 			var v = value?.ToString() ?? "<null>";
-			if (string.IsNullOrEmpty (v)) v = "\"\"";
+			if (v == "") v = "\"\"";
 
-			Debug.WriteLine ($"ViewModelBase.Set: Property {name} changed to {v}");
+			Debug.WriteLine ($"ViewModelBase.Set (name): Property {name} changed to {v}");
 #endif
 
 			OnPropertyChanged (name);
@@ -143,6 +143,13 @@ namespace TownFish.App.ViewModels
 
 			field = value;
 
+#if DEBUG
+			var v = value?.ToString() ?? "<null>";
+			if (v == "") v = "\"\"";
+
+			Debug.WriteLine ($"ViewModelBase.Set (field): Property {name} changed to {v}");
+#endif
+
 			OnPropertyChanged (name);
 
 			return true;
@@ -160,6 +167,24 @@ namespace TownFish.App.ViewModels
 			PropertyChanged?.Invoke (this, pcea);
 
 			IsDirty = true; // if something's changed, I'm dirty
+		}
+
+		/// <summary>
+		/// Raises a strongly-typed property changed event for the given property.
+		/// </summary>
+		/// <remarks>
+		/// Called with an expression, e.g.:
+		/// <code>OnPropertyChanged (() => MyProperty);</code>
+		/// </remarks>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="propExp"></param>
+		protected virtual void OnPropertyChanged<T> (Expression<Func<T>> propExp)
+		{
+			var name = PropertyName (propExp);
+
+			Debug.WriteLine ($"ViewModelBase.OnProertyChanged<T>: Property {name} changed");
+
+			OnPropertyChanged (name);
 		}
 
 		/// <summary>
@@ -243,20 +268,6 @@ namespace TownFish.App.ViewModels
 				};
 
 			PropertyChanged += localHandler;
-		}
-
-		/// <summary>
-		/// Raises a strongly-typed property changed event for the given property.
-		/// </summary>
-		/// <remarks>
-		/// Called with an expression, e.g.:
-		/// <code>OnPropertyChanged (() => MyProperty);</code>
-		/// </remarks>
-		/// <typeparam name="T"></typeparam>
-		/// <param name="propExp"></param>
-		protected virtual void OnPropertyChanged<T> (Expression<Func<T>> propExp)
-		{
-			OnPropertyChanged (PropertyName (propExp));
 		}
 
 		/// <summary>

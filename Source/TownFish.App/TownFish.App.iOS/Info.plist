@@ -17,13 +17,13 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>MinimumOSVersion</key>
-	<string>8.0</string>
+	<string>9.3</string>
 	<key>CFBundleDisplayName</key>
 	<string>TownFish</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.matt.townfish</string>
 	<key>CFBundleVersion</key>
-	<string>170915</string>
+	<string>171013</string>
 	<key>CFBundleIconFiles</key>
 	<array>
 		<string>Icon-60@2x.png</string>
@@ -32,7 +32,7 @@
 		<string>Icon-Small-40@2x.png</string>
 	</array>
 	<key>CFBundleShortVersionString</key>
-	<string>1.1.17</string>
+	<string>1.1.21</string>
 	<key>UIStatusBarTintParameters</key>
 	<dict>
 		<key>UINavigationBar</key>
@@ -56,8 +56,6 @@
 	<true/>
 	<key>UIStatusBarHidden~ipad</key>
 	<true/>
-	<key>UILaunchStoryboardName</key>
-	<string>Launch</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -67,17 +65,17 @@
 	<string>TownFish is now using your location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>TownFish recommends new things of interest to you and needs to use your location to notify you about freebies and special offers at venues near you</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>TownFish recommends new things of interest to you and needs to use your location to notify you about freebies and special offers at venues near you</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>TownFish uses Bluetooth to detect nearby iBeacons</string>
 	<key>NSCameraUsageDescription</key>
 	<string>TownFish allows you to post photos</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>TownFish allows you to post photos</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Launch</string>
-	<key>XSLaunchImageAssets</key>
-	<string>Resources/Media.xcassets/LaunchImages.launchimage</string>
 	<key>XSAppIconAssets</key>
 	<string>Resources/Media.xcassets/AppIcons.appiconset</string>
+	<key>UILaunchStoryboardName</key>
+	<string>Launch</string>
 </dict>
 </plist>

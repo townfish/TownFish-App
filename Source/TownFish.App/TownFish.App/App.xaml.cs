@@ -279,11 +279,11 @@ namespace TownFish.App
 			shPush.RegisterForRawJSON (async (title, message, json) =>
 				{
 #if DEBUG
-				Device.BeginInvokeOnMainThread (() =>
-					{
-						var msg = $"title: {title}\r\nmessage: {message}\r\nJSON: {json}";
-						MainPage.DisplayAlert ("Received JSON push:", msg, "OK");
-					});
+					Device.BeginInvokeOnMainThread (() =>
+						{
+							var msg = $"title: {title}\r\nmessage: {message}\r\nJSON: {json}";
+							MainPage.DisplayAlert ("Received JSON push:", msg, "OK");
+						});
 #endif
 					try
 					{
@@ -313,7 +313,7 @@ namespace TownFish.App
 					catch (Exception ex)
 					{
 						Debug.WriteLine (
-									$"App.InitStreetHawk/RegisterForRawJSON: {ex.Message}");
+								$"App.InitStreetHawk/RegisterForRawJSON: {ex.Message}");
 					}
 				});
 
@@ -413,32 +413,39 @@ namespace TownFish.App
 			{
 				shFeeds.ReadFeedData (0, (feedItems, error) =>
 					{
-						// now we're back from callback we can cancel the timeout
-						cts.Dispose();
-
-						if (error != null)
+						try
 						{
+							// now we're back from callback we can cancel the timeout
+							cts.Dispose();
+
+							if (error != null)
+							{
 #if DEBUG
-							Current.MainPage.DisplayAlert ("New feeds available but fetch failed:", error, "OK");
+								Current?.MainPage?.DisplayAlert ("New feeds available but fetch failed:", error, "OK");
 #endif
-							throw new Exception (error);
-						}
+								throw new Exception (error);
+							}
 #if false//DEBUG
-						var feedMsg = "";
+							var feedMsg = "";
 
-						foreach (var feedItem in feedItems)
-							feedMsg = $"Title: {feedItem.title}; Message: {feedItem.message}; Content: {feedItem.content}. \r\n{feedMsg}";
+							foreach (var feedItem in feedItems)
+								feedMsg = $"Title: {feedItem.title}; Message: {feedItem.message}; Content: {feedItem.content}. \r\n{feedMsg}";
 
-						Current.MainPage.DisplayAlert ($"New feeds available and fetched {feedItems.Count}:", feedMsg, "OK");
+							Current.MainPage.DisplayAlert ($"New feeds available and fetched {feedItems.Count}:", feedMsg, "OK");
 #endif
-						// acknowledge receipt to SH and indicate positive result
-						foreach (var feedItem in feedItems)
-						{
-							shFeeds.SendFeedAck (feedItem.feed_id);
-							shFeeds.NotifyFeedResult (feedItem.feed_id, 1);
-						}
+							// acknowledge receipt to SH and indicate positive result
+							foreach (var feedItem in feedItems)
+							{
+								shFeeds.SendFeedAck (feedItem.feed_id);
+								shFeeds.NotifyFeedResult (feedItem.feed_id, 1);
+							}
 
-						tcs.TrySetResult (GetDiscoveryItems (feedItems));
+							tcs.TrySetResult (GetDiscoveryItems (feedItems));
+						}
+						catch (Exception ex)
+						{
+							tcs.TrySetException (ex);
+						}
 					});
 			}
 			catch (Exception ex)
@@ -679,7 +686,7 @@ namespace TownFish.App
 
 		public const string GcmSenderID = "7712235891";
 
-		public const string StreetHawkAppKey = "TownFish";
+		public const string StreetHawkAppKey = "TownFish_DEV_SH";
 
 		const string cLastDiscoveriesViewTimeKey = "LastDiscoveriesViewTime";
 

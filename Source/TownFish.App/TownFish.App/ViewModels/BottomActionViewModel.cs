@@ -25,7 +25,7 @@ namespace TownFish.App.ViewModels
 			set
 			{
 				if (Set (value))
-					OnPropertyChanged (() => HasSuperCount);
+					OnPropertyChanged (nameof (HasSuperCount));
 			}
 		}
 
@@ -36,7 +36,7 @@ namespace TownFish.App.ViewModels
 			set
 			{
 				if (Set (value))
-					OnPropertyChanged (() => SuperCountBackgroundColour);
+					OnPropertyChanged (nameof (SuperCountBackgroundColour));
 			}
 		}
 

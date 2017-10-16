@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
@@ -143,7 +144,7 @@ namespace TownFish.App.Pages
         {
             if (wbvContent.CanGoBack)
             {
-				// hackish - fake a back callback, to handle back with discoveries/info showing
+				// hacky - fake a back callback, to handle back with discoveries/info showing
 				// or to let JS code handle actually going back in webview if necessary
 
                 ViewModel_CallbackRequested (this,
@@ -196,9 +197,11 @@ namespace TownFish.App.Pages
 			{
 				// parse failed, fail gracefully
 
+				//await App.Current.MainPage.DisplayAlert ("",
 				Debug.WriteLine (
 						"BrowserPage.UberWebView_ScriptMessageReceived: " +
 						$"Parse of:\n{msg}\nfailed with error:\n{ex.Message}");
+						//, "Cancel");
 
 				// if it was the schema, just hide everything as it might contain rubbish
 				if (action == cSchemaAction)
@@ -217,9 +220,11 @@ namespace TownFish.App.Pages
 
 			try
 			{
+				//await App.Current.MainPage.DisplayAlert ("",
 				Debug.WriteLine (
 						"BrowserPage.UberWebView_ScriptMessageReceived: " +
 						$"Performing {action} on:\n{data}");
+						//, "Cancel");
 
 				switch (action)
 				{
@@ -273,8 +278,10 @@ namespace TownFish.App.Pages
 			}
 			catch (Exception ex)
 			{
+				//await App.Current.MainPage.DisplayAlert ("",
 				Debug.WriteLine (
 						$"BrowserPage.UberWebView_ScriptMessageReceived: {ex.Message}");
+						//, "Cancel");
 			}
 		}
 
@@ -364,12 +371,12 @@ namespace TownFish.App.Pages
 		//async void lstDiscoveries_ItemTapped (object sender, ItemTappedEventArgs e)
 		{
 			// when using ListView:
-			//var fivm = e.Item as DiscoveryItemViewModel;
+			//var divm = e.Item as DiscoveryItemViewModel;
 
 			// when using StackView:
 			var discoveryItem = sender as DiscoveryItem;
-			if (discoveryItem.BindingContext is DiscoveryItemViewModel fivm)
-				Navigate (fivm.LinkUrl);
+			if (discoveryItem.BindingContext is DiscoveryItemViewModel divm)
+				Navigate (divm.LinkUrl);
 		}
 
 #pragma warning restore IDE1006 // Naming Styles
@@ -443,9 +450,9 @@ namespace TownFish.App.Pages
 			//		mBottomActionFrames [i].BackgroundColor =
 			//				ViewModel.BottomActions [i].SuperCountBackgroundColour;
 
-			// only hide loading if already showing it but not in the process of hiding discoveries
-			if (ViewModel.IsLoading && !mHidingDiscoveries)
-				HideLoading();
+			// only hide loading if not in the process of hiding discoveries
+			if (!mHidingDiscoveries)
+				Device.BeginInvokeOnMainThread (() => HideLoading());
 
 			// tell app to check sync token in case login changed
 			// (i.e. user logged out, or new user logged in)
@@ -618,7 +625,7 @@ namespace TownFish.App.Pages
 				ViewModel.IsDiscoveriesVisible = false;
 				ViewModel.DiscoveryItems = null; // side-effect: updates visibility properties!
 
-				// bitofahack - if returning to locations page it takes a while for the menu to
+				// hacky - if returning to locations page it takes a while for the menu to
 				// be reloaded due to server round-trip, during which time the location name will
 				// be visible as well as the discoveries menu, so just clear it here as it will
 				// be set again anyway on completion of page load
@@ -665,65 +672,91 @@ namespace TownFish.App.Pages
 			if (!mIsSearchVisible || mHidingSearch)
 				return;
 
-			if (ViewModel.SearchLocationActive)
-				ViewModel.CancelLocationSearch();
-
-			// remove focus from search input
-			wbvContent.Focus();
-
 			mHidingSearch = true;
 
-			// first, kill any existing animations
-			ViewExtensions.CancelAnimations (pnlLocations);
-			ViewExtensions.CancelAnimations (pnlTopSearch);
+			try
+			{
+				// NOTE: This goes BEFORE cancelling search as it causes ebxSearch (which loses
+				// focus) to be updated with the search term (we don't know how, but only if
+				// the case-insensitive value matches the current search term - yes, really!)
+				// which, due to binding, in turn causes the search results to be updated one
+				// more time, which results in the search results showing up again AFTER the
+				// location switch has occurred, thus hiding the main page. This resulted in
+				// Basecamp Issue 72.
+				//
+				// remove focus from search input
+				wbvContent.Focus();
 
-			var locXlate = pnlLocations.TranslateTo (0, -pnlLocations.Height, cLocationPanelAnimationTime, Easing.CubicInOut);
-			var tsXlate = pnlTopSearch.TranslateTo (-pnlTopSearch.Width, 0, cLocationPanelAnimationTime, Easing.CubicInOut);
+				if (ViewModel.SearchLocationActive)
+					ViewModel.CancelLocationSearch();
 
-			await Task.WhenAll (locXlate, tsXlate);
+				// first, kill any existing animations
+				ViewExtensions.CancelAnimations (pnlLocations);
+				ViewExtensions.CancelAnimations (pnlTopSearch);
 
-			mIsSearchVisible = false;
-			mHidingSearch = false;
+				var locXlate = pnlLocations.TranslateTo (0, -pnlLocations.Height, cLocationPanelAnimationTime, Easing.CubicInOut);
+				var tsXlate = pnlTopSearch.TranslateTo (-pnlTopSearch.Width, 0, cLocationPanelAnimationTime, Easing.CubicInOut);
+
+				await Task.WhenAll (locXlate, tsXlate);
+			}
+			finally
+			{
+				mIsSearchVisible = false;
+				mHidingSearch = false;
+			}
 		}
 
 		/// <summary>
 		/// Fire-and-forget loading revealer.
 		/// </summary>
-		async void ShowLoading()
+		async void ShowLoading ([CallerMemberName] string caller = null)
 		{
-			await ShowLoadingAsync();
+			await ShowLoadingAsync (caller);
 		}
 
 		/// <summary>
 		/// Awaitable loading revealer.
 		/// </summary>
 		/// <returns></returns>
-		async Task ShowLoadingAsync()
+		async Task ShowLoadingAsync ([CallerMemberName] string caller = null)
 		{
+			//if (App.Current.MainPage != null)
+			//	await App.Current.MainPage.DisplayAlert ("",
+			Debug.WriteLine (
+					$"ShowLoadingAsync: IsLoading = {ViewModel.IsLoading}; " +
+					$"caller = {caller}");
+					//, "Cancel");
+
 			if (ViewModel.IsLoading)
 				return;
 
-			// set this here in case page loads faster than loading animation completes,
+			// set this ASAP in case page loads faster than loading animation completes,
 			// which could result in loading never being removed
-
 			ViewModel.IsLoading = true;
 
-			if (!mFirstLoading)
+            mOpenedLoadingTime = DateTime.Now;
+
+            if (!mFirstLoading)
 			{
-				mOpenedLoadingTime = DateTime.Now;
 
 				pnlLoading.Opacity = 1;
 				pnlLoading.TranslationX = pnlLoading.Width;
+
 				await pnlLoading.TranslateTo (0, 0, cLoadingPanelAnimationTime, Easing.CubicInOut);
 			}
 		}
 
-		void HideLoading()
+		async void HideLoading ([CallerMemberName] string caller = null)
 		{
-			async void Fade()
+			async void Fade (string c)
 			{
+				//await App.Current.MainPage.DisplayAlert ("",
+				Debug.WriteLine (
+						$"HideLoading.Fade: IsLoading = {ViewModel.IsLoading}; " +
+						$"original caller = {caller}");
+						//, "Cancel");
+
 				await pnlLoading.FadeTo (0, cLoadingPanelAnimationTime, Easing.CubicIn);
-				ViewModel.IsLoading = false;
 
 				// make sure we only show splash loading once
 				if (mFirstLoading)
@@ -731,18 +764,34 @@ namespace TownFish.App.Pages
 					mFirstLoading = false;
 					imgSplash.IsVisible = false;
 				}
+
+				ViewModel.IsLoading = false;
+				mHidingLoading = false;
 			}
 
-			if (!ViewModel.IsLoading)
+			//await App.Current.MainPage.DisplayAlert ("",
+			Debug.WriteLine (
+					$"HideLoading: IsLoading = {ViewModel.IsLoading}; " +
+					$"caller = {caller}");
+					//, "Cancel");
+
+			if (!ViewModel.IsLoading || mHidingLoading)
 				return;
 
+			// remember we're in the process of hiding to prevent double call
+			// (Basecamp issue 77, possibly)
+			mHidingLoading = true;
+
 			// if called too quickly, wait around a bit so it doesn't flash
-			var t = Math.Max (0, cLoadingDelayTime -
+			var t = Math.Max (0, cLoadingDelayMS -
 					(int) (DateTime.Now - mOpenedLoadingTime).TotalMilliseconds);
 
+			var tms = TimeSpan.FromMilliseconds (cLoadingPanelAnimationTime + t);
+
 			// do it in a bit, in case we're on UI thread, so UI can get back to work first
-			Device.StartTimer (TimeSpan.FromMilliseconds (cLoadingPanelAnimationTime + t),
-					() => { Device.BeginInvokeOnMainThread (Fade); return false; });
+			await Task.Delay (tms);
+
+			Fade (caller);
 		}
 
 		#endregion Methods
@@ -764,7 +813,8 @@ namespace TownFish.App.Pages
 #endif
 
 		// minimum time to show loading for
-        const int cLoadingDelayTime = 1000;
+        const int cLoadingDelayMS = 1000;
+		const int cHideFirstLoadingDelayMS = 10000;
 
 		// apparently iOS status bar height is always 20 in XF (apparently, I said)
 		const double cTopPaddingiOS = 20;
@@ -808,6 +858,7 @@ namespace TownFish.App.Pages
 		bool mShowingSearch;
 		bool mHidingSearch;
 		bool mHidingDiscoveries;
+		bool mHidingLoading;
 
 		string mLastSourceUrl;
 
