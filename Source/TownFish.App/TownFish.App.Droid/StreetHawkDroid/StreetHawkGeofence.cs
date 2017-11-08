@@ -5,7 +5,7 @@ using Android.Util;
 
 using Com.Streethawk.Library.Geofence;
 using StreetHawkCrossplatform;
-
+using System.Collections.Generic;
 
 [assembly: Xamarin.Forms.Dependency(typeof(StreetHawkGeofence))]
 
@@ -59,14 +59,14 @@ namespace StreetHawkCrossplatform
 			SHGeofence.GetInstance(mApplication.ApplicationContext).StopMonitoring();
 		}
 
-		public void OnDeviceEnteringGeofence()
+		public void OnDeviceEnteringGeofence(IList<GeofenceData> data)
 		{
 			//TODO Add function in native to support this callback
 
 			Log.Error("StreetHawk","OnDeviceEnteringGeofence is not supported in this release");
 		}
 
-		public void OnDeviceLeavingGeofence()
+		public void OnDeviceLeavingGeofence(IList<GeofenceData> data)
 		{
 			//TODO Add function in native to support this callback
 
