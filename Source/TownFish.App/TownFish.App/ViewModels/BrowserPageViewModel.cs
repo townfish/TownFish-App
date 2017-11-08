@@ -466,7 +466,7 @@ namespace TownFish.App.ViewModels
 
 		#region Search
 
-		public bool SearchEnabled => Util.OnPlatform (iOS: false, android: true);
+		public bool SearchEnabled => true;
 
 		public bool SearchDisabled => !SearchEnabled;
 
