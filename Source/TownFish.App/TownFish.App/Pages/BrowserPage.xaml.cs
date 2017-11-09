@@ -28,6 +28,9 @@ namespace TownFish.App.Pages
 		{
 			InitializeComponent();
 
+            // set custom user agent
+            wbvContent.CustomUserAgent = cCustomUserAgent;
+
 			// set up JS bridge action scripts
 			wbvContent.PageLoadedScript = cPageLoadScript;
 
@@ -843,7 +846,9 @@ namespace TownFish.App.Pages
 		const string cMoreActions = null; // e.g. "Please Select:";
 		const string cCancel = "Cancel";
 
-		TownFishMenuMap mCurrentMenuMap;
+        const string cCustomUserAgent = "com.townfish.app";
+
+        TownFishMenuMap mCurrentMenuMap;
 
 		bool mFirstLoading = true;
 		bool mFirstShowing = true;

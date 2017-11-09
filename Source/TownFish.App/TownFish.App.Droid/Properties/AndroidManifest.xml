@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.townfish.app" android:installLocation="auto" android:versionCode="171013" android:versionName="1.1.21.0" android:largeHeap="false">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.townfish.app" android:installLocation="auto" android:versionCode="171109" android:versionName="1.1.22.0" android:largeHeap="false">
 	<uses-sdk android:minSdkVersion="16" />
 	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
