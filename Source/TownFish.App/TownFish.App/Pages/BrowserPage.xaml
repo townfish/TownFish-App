@@ -396,7 +396,7 @@
 			  IsVisible="{Binding IsDiscoveriesVisible}">
 			<!-- Discoveries list -->
 			<ScrollView Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-				<StackLayout x:Name="lstDiscoveries" Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" />
+				<StackLayout x:Name="lstDiscoveries" Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="8" />
 			</ScrollView>
 			<!-- ListView BORKED on iOS!!!! -->
 			<!--<ListView x:Name="lstDiscoveries"

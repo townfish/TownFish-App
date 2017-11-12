@@ -30,7 +30,7 @@ namespace StreetHawkCrossplatform
 
 		const string FEED_ID = "feed_id";
         const string ID = "id";
-		const string CAMPAIGN = "campaign";
+		const string CAMPAIGN = "campaignid";
 		const string CONTENT = "content";
 		const string ACTIVATES = "activates";
 		const string EXPIRES = "expires";
@@ -73,6 +73,8 @@ namespace StreetHawkCrossplatform
 		public void ReadFeedData(int offset, RegisterForFeedCallback cb)
 		{
 			mRegisterForFeedCallBack = cb;
+
+            // Set offset to 0, to get ALL Feeds 
 			SHFeedItem.GetInstance(mApplication.ApplicationContext).ReadFeedData(offset);
 		}
 
@@ -89,6 +91,41 @@ namespace StreetHawkCrossplatform
             }
         }
 
+
+		/*
+         * Typical ShFeedReceived JSON Format 
+         * {  
+           "count":2,
+           "next":null,
+           "previous":null,
+           "results":[  
+              {  
+                 "installid":"16b1055c-af42-470f-8f33-74502422c367",
+                 "num_feeds":36,
+                 "campaignid":"4308f434-a531-4850-a323-810542b07ddf",
+                 "expires":"2017-09-14T22:53:15Z",
+                 "modified":"2017-08-25T03:47:16.201000Z",
+                 "app_key":"SHSample_bison",
+                 "created":"2017-08-25T03:47:16.193000Z",
+                 "content":{  
+                    "aps":{  
+                       "sound":"default",
+                       "category":"8049",
+                       "badge":1,
+                       "alert":"FREE DRINKS! Come get your free Drinks "
+                          },
+                    "c":8049,
+           "l":3,
+             "titleMsg":"FREE DRINKS!",
+             "messageMsg":"Come get your free Drinks"
+            },
+                 "id":"4b5169cf-849f-4141-b6c5-aab34d419367"
+            },
+         * 
+         * 
+         * 
+         * 
+        */
 		public void ShFeedReceived (JSONObject feedResults)
 		{
 			if (mRegisterForFeedCallBack == null)
@@ -113,29 +150,40 @@ namespace StreetHawkCrossplatform
 							SHFeedObject obj = new SHFeedObject();
 
 							// we apparently don't know if the ID will be FEED_ID or ID, so check both
-							if (jsonObj.Has(FEED_ID))
-								obj.feed_id = jsonObj.GetString(FEED_ID);
-							else if (jsonObj.Has(ID))
-								obj.feed_id = jsonObj.GetString(ID);
+                            if (jsonObj.Has(FEED_ID))
+                                obj.feed_id = jsonObj.GetString(FEED_ID);
+                            else if (jsonObj.Has(ID))
+                                obj.feed_id = jsonObj.GetString(ID);
 
+                            // Campaign id
 							obj.campaign = jsonObj.GetString(CAMPAIGN);
-							obj.content = jsonObj.GetString(CONTENT);
-							obj.activates = jsonObj.GetString(ACTIVATES);
-							obj.expires = jsonObj.GetString(EXPIRES);
-							obj.created = jsonObj.GetString(CREATED);
+
+							//obj.content = jsonObj.GetString(CONTENT);
+							//obj.activates = jsonObj.GetString(ACTIVATES);
+
+                            // expires time in ISO format (May not expire if schedule is forever)
+                            if(jsonObj.Has(EXPIRES))
+                                obj.expires = jsonObj.GetString(EXPIRES);
+                            // Can put this in, but do not exit loop if not exist 
+
+                            // created time in ISO format 
+                            obj.created = jsonObj.GetString(CREATED);
+
+                            // modified time in ISO format 
 							obj.modified = jsonObj.GetString(MODIFIED);
-							obj.deleted = jsonObj.GetString(DELETED);
+
+							//obj.deleted = jsonObj.GetString(DELETED);
 
 							// now extract the title and message from the content object
 							var contentObj = jsonObj.GetJSONObject (CONTENT);
 							obj.title = contentObj.GetString (TITLE);
 							obj.message = contentObj.GetString (MESSAGE);
-							
+
 							arrayFeeds.Add(obj);
 						}
 						catch (JSONException e)
 						{
-							e.PrintStackTrace();
+                            e.PrintStackTrace();
 
 							throw;
 						}
