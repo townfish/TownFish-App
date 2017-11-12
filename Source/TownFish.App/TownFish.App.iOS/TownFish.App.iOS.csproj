@@ -122,7 +122,7 @@
     <OptimizePNGs>True</OptimizePNGs>
     <MtouchFloat32>False</MtouchFloat32>
     <CodesignKey>iPhone Distribution: TownFish Limited (LK2389XQ78)</CodesignKey>
-    <CodesignProvision>afe5e7c1-ebd8-4691-85c0-fe9250827b1e</CodesignProvision>
+    <CodesignProvision>Store Distribution Profile (Philip)</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
     <DebugType>none</DebugType>
