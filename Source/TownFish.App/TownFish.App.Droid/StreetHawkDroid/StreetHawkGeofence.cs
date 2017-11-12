@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Collections.Generic;
 using Android.App;
 using Android.Util;
 
@@ -59,18 +59,40 @@ namespace StreetHawkCrossplatform
 			SHGeofence.GetInstance(mApplication.ApplicationContext).StopMonitoring();
 		}
 
-		public void OnDeviceEnteringGeofence()
-		{
-			//TODO Add function in native to support this callback
+        /* GeoFence Data consists of
+         * GeoFence ID = id of geoFence of Geofence
+         * Latitude = get latitude of GeoFence  
+         * Longitude = get Longitude of GeoFence  
+         * Radius = getting Radius of Geofence
+         * ParentId = getting Parent id of Geofence
+         * Distance = getting Distance of Geofence
+         */
+        public void OnDeviceEnteringGeofence(IList<GeofenceData> geoFence)
+        {
+            // When Device enters GeoFence
+            foreach (var item in geoFence)
+            {
+                String geoId = item.GeofenceID;
+                double geoLatitude = item.Latitude;
+                double geoLongitude = item.Longitude;
+                float geoRadius = item.Radius;
+                double geoDistance = item.Distance;
+            }
+            return;
+        }
 
-			Log.Error("StreetHawk","OnDeviceEnteringGeofence is not supported in this release");
-		}
-
-		public void OnDeviceLeavingGeofence()
-		{
-			//TODO Add function in native to support this callback
-
-			Log.Error("StreetHawk", "OnDeviceEnteringGeofence is not supported in this release");
-		}
-	}
+        public void OnDeviceLeavingGeofence(IList<GeofenceData> geoFence)
+        {
+            // When Device leaves GeoFence 
+            foreach(var item in geoFence)
+            {
+                String geoId = item.GeofenceID;
+                double geoLatitdue = item.Latitude;
+                double geoLongitude = item.Longitude;
+                float geoRadius = item.Radius;
+                double geoDistance = item.Distance;
+            }
+            return;
+        }
+    }
 }
