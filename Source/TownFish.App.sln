@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2009
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TownFish.App.Droid", "TownFish.App\TownFish.App.Droid\TownFish.App.Droid.csproj", "{A3D44BFB-2A6A-4FDB-ABE0-D49C56F7F041}"
 EndProject
@@ -217,5 +217,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {523A4038-37D0-406C-990F-8C324682DE75}
 	EndGlobalSection
 EndGlobal
