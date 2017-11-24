@@ -32,7 +32,8 @@ namespace StreetHawkCrossplatform
         const string ID = "id";
 		const string CAMPAIGN = "campaignid";
 		const string CONTENT = "content";
-		const string ACTIVATES = "activates";
+        const string CONTENT_JSON = "d";
+        const string ACTIVATES = "activates";
 		const string EXPIRES = "expires";
 		const string CREATED = "created";
 		const string MODIFIED = "modified";
@@ -158,11 +159,8 @@ namespace StreetHawkCrossplatform
                             // Campaign id
 							obj.campaign = jsonObj.GetString(CAMPAIGN);
 
-							//obj.content = jsonObj.GetString(CONTENT);
-							//obj.activates = jsonObj.GetString(ACTIVATES);
-
                             // expires time in ISO format (May not expire if schedule is forever)
-                            if(jsonObj.Has(EXPIRES))
+                            if (jsonObj.Has(EXPIRES))
                                 obj.expires = jsonObj.GetString(EXPIRES);
                             // Can put this in, but do not exit loop if not exist 
 
@@ -178,8 +176,9 @@ namespace StreetHawkCrossplatform
 							var contentObj = jsonObj.GetJSONObject (CONTENT);
 							obj.title = contentObj.GetString (TITLE);
 							obj.message = contentObj.GetString (MESSAGE);
+                            obj.content = contentObj.GetString(CONTENT_JSON);
 
-							arrayFeeds.Add(obj);
+                            arrayFeeds.Add(obj);
 						}
 						catch (JSONException e)
 						{
