@@ -536,9 +536,18 @@ namespace TownFish.App.Pages
             // remember where we're going...
             ViewModel.SourceUrl = url;
 
-			// ... and as WebView isn't bound to ViewModel.SourceUrl, tell it now
-			wbvContent.Source = url;
-		}
+            //Most WebView operations need to be done on UI thread, so switch now
+            Device.BeginInvokeOnMainThread(() =>
+            {
+                // On initial load, set the WebView Source directly - 
+                // on subsequent navigation requests, use JavaScript to get around strange bug 
+                // with Android WebView
+                if (wbvContent.Source == null)
+                    wbvContent.Source = url;
+                else
+                    wbvContent.InvokeScript(string.Format("window.location.assign(\"{0}\");", url));
+            });
+        }
 
 		void UpdateDiscoveryItems()
 		{

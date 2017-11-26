@@ -23,7 +23,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.matt.townfish</string>
 	<key>CFBundleVersion</key>
-	<string>171109</string>
+	<string>171126</string>
 	<key>CFBundleIconFiles</key>
 	<array>
 		<string>Icon-60@2x.png</string>
