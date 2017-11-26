@@ -54,7 +54,9 @@ namespace TownFish.App
 
 		void OnBackgroundDiscoveriesReceived()
 		{
-			BackgroundDiscoveriesReceived?.Invoke (this, EventArgs.Empty);
+            while (BackgroundDiscoveriesReceived == null)
+                Task.Delay(1000);
+            BackgroundDiscoveriesReceived.Invoke(this, EventArgs.Empty);
 		}
 
 		protected override void OnStart()
@@ -85,7 +87,7 @@ namespace TownFish.App
         {
             if (json.Contains("img") || json.Contains("url"))
             {
-                OnBackgroundDiscoveriesReceived();
+                Task.Run((Action)OnBackgroundDiscoveriesReceived);
             }
         }
 

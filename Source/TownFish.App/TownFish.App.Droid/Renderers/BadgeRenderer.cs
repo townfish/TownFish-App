@@ -7,7 +7,7 @@ using Android.Graphics;
 
 using TownFish.App.Droid.Renderers;
 using TownFish.App.Controls;
-
+using Android.Content;
 
 [assembly: ExportRenderer (typeof (Badge), typeof (BadgeRenderer))]
 
@@ -18,8 +18,11 @@ namespace TownFish.App.Droid.Renderers
 	{
 		#region Construction
 
-		public BadgeRenderer()
+		public BadgeRenderer (Context context)
+            : base (context)
 		{
+            mContext = context;
+
 			SetWillNotDraw (false);
 		}
 
@@ -67,7 +70,7 @@ namespace TownFish.App.Droid.Renderers
 			if (cornerRadius == -1f)
 				cornerRadius = cDefaultCornerRadius;
 
-			var r = Forms.Context.ToPixels (cornerRadius);
+			var r = mContext.ToPixels (cornerRadius);
 			var c = el.Colour.ToAndroid();
 
 			using (var paint = new Paint { AntiAlias = true })
@@ -90,6 +93,8 @@ namespace TownFish.App.Droid.Renderers
 		#region Fields
 
 		const float cDefaultCornerRadius = 5;
+
+        Context mContext;
 
 		#endregion Fields
 	}

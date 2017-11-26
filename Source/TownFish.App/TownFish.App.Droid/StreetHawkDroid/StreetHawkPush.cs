@@ -106,8 +106,8 @@ namespace StreetHawkCrossplatform
        // Starting our service that implements ISHObserver
         public void Register()
         {
-            Intent serviceToStart = new Intent(Xamarin.Forms.Forms.Context, typeof(JsonService));
-            Xamarin.Forms.Forms.Context.StartService(serviceToStart);
+            Intent serviceToStart = new Intent(mApplication.ApplicationContext, typeof(JsonService));
+            mApplication.ApplicationContext.StartService(serviceToStart);
         }
 
 
