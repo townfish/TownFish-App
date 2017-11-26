@@ -63,7 +63,7 @@ namespace StreetHawkCrossplatform
 			//TODO: not implement yet
 		}
 
-		RegisterForNewFeedCallback mNewFeedCallbak;
+		//RegisterForNewFeedCallback mNewFeedCallbak;
 		public void OnNewFeedAvailableCallback(RegisterForNewFeedCallback cb)
 		{
 			//TODO : implement broadcast receiver in native to receive feed notification and notifies server
