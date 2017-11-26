@@ -88,7 +88,7 @@
 		</Grid>
 
 		<!-- Bottom Menu Bar -->
-		<Grid Grid.Row="3" Padding="10,6"
+		<Grid Grid.Row="3" Padding="10,0"
 			  BackgroundColor="{Binding BottomMenuBackgroundColour}"
 			  IsVisible="{Binding IsBottomBarVisible}">
 			<Grid.ColumnDefinitions>
@@ -267,7 +267,7 @@
 				   Text="{Binding PageTitle}" />
 
 			<!-- 1st right button, with solid background and padding to expand tap area -->
-			<Grid Grid.Column="2" Padding="10,0"
+			<Grid Grid.Column="2" Padding="10,6"
 				  BackgroundColor="{Binding MenuBarBackgroundColour}">
 				<Grid.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding TopBarRightCommand}"/>
@@ -286,7 +286,7 @@
 			</Grid>
 
 			<!-- 2nd right button, with solid background and padding to expand tap area -->
-			<Grid Grid.Column="3" Padding="10,0"
+			<Grid Grid.Column="3" Padding="10,6"
 				  BackgroundColor="{Binding MenuBarBackgroundColour}">
 				<Grid.GestureRecognizers>
 					<TapGestureRecognizer Command="{Binding TopBarRight1Command}"/>
@@ -342,7 +342,7 @@
 			</Frame>
 
 			<!-- this goes here to cover ingress and egress of search panel -->
-			<Grid Grid.Column="0" Padding="10,0"
+			<Grid Grid.Column="0" Padding="10,6"
 				  BackgroundColor="{Binding MenuBarBackgroundColour}">
 				<Grid.GestureRecognizers>
 					<TapGestureRecognizer x:Name="gstLocationImage"
