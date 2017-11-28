@@ -45,26 +45,21 @@ namespace StreetHawkCrossplatform
         const string TITLE = "titleMsg";
 		const string MESSAGE = "messageMsg";
 
-        public void NotifyFeedResult(string feedid, int result)
+		public void NotifyFeedResult(string feedid, string feedresult, bool feedDelete, bool completed)
 		{
             try
             {
                 var item = SHFeedItem.GetInstance(mApplication.ApplicationContext);
-                item.NotifyFeedResult(feedid, result);
+                item.NotifyFeedResult(feedid, feedresult, feedDelete, completed);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
             }
-		}
+        }
 
-		public void NotifyFeedResult(string feedid, string stepid, string feedresult, bool feedDelete, bool completed)
-		{
-			//TODO: not implement yet
-		}
-
-		//RegisterForNewFeedCallback mNewFeedCallbak;
-		public void OnNewFeedAvailableCallback(RegisterForNewFeedCallback cb)
+        //RegisterForNewFeedCallback mNewFeedCallbak;
+        public void OnNewFeedAvailableCallback(RegisterForNewFeedCallback cb)
 		{
 			//TODO : implement broadcast receiver in native to receive feed notification and notifies server
 			Log.Error("StreetHawk", "OnNewFeedAvailableCallback is not available for this release");

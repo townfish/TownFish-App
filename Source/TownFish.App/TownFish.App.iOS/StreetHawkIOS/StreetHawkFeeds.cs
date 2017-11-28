@@ -17,12 +17,7 @@ namespace StreetHawkCrossplatform
 			SHFeed.instance().sendFeedAck(feedid);
 		}
 
-		public void NotifyFeedResult(string feedid, int result)
-		{
-			SHFeed.instance().sendLogForFeed(feedid, (StreethawkIOS.Feed.SHFeedResult)result);
-		}
-
-		public void NotifyFeedResult(string feedid, string stepid, string feedresult, bool feedDelete, bool completed)
+		public void NotifyFeedResult(string feedid, string feedresult, bool feedDelete, bool completed)
 		{
 			StreethawkIOS.Feed.SHFeedResult result = SHFeedResult.SHResult_Accept;
 			if (feedresult.Equals("postponed"))
@@ -33,7 +28,7 @@ namespace StreetHawkCrossplatform
 			{
 				result = SHFeedResult.SHResult_Decline;
 			}
-			SHFeed.instance().notifyFeedResult(feedid, result, stepid, feedDelete, completed);
+			SHFeed.instance().notifyFeedResult(feedid, result, null, feedDelete, completed);
 		}
 
 		public void ReadFeedData(int offset, RegisterForFeedCallback cb)

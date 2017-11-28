@@ -85,13 +85,10 @@ namespace TownFish.App
 
         public void LaunchedFromNotification(string json)
         {
-            if (json.Contains("img") || json.Contains("url"))
-            {
-                Task.Run((Action)OnBackgroundDiscoveriesReceived);
-            }
+            HandlePushNotification(json, true);
         }
 
-		protected override async void OnResume()
+        protected override async void OnResume()
 		{
             mResumedTime = DateTime.UtcNow;
 			AppResumed?.Invoke (this, EventArgs.Empty);
@@ -277,7 +274,10 @@ namespace TownFish.App
 
 #endif // SH_OPTIONAL
 
-			//Optional: Callback when receive json push.
+            //Optional: Callback when receive json push.
+            //Called when application is active (Android/iOS) and
+            //when application is launched/activated by clicking on
+            //a push notifification ON iOS ONLY
 			shPush.RegisterForRawJSON (async (title, message, json) =>
 				{
 #if DEBUG
@@ -288,31 +288,15 @@ namespace TownFish.App
 						});
 #endif
 					try
-					{
-						var now = DateTime.UtcNow;
-						var wasBackgrounded = (now - mStartTime).TotalSeconds < 5 ||
-								(mSleepTime != null && mResumedTime == null) ||
-								(now - mResumedTime.GetValueOrDefault ()).TotalSeconds < 5;
+                    {
+                        var now = DateTime.UtcNow;
+                        var wasBackgrounded = (now - mStartTime).TotalSeconds < 5 ||
+                                (mSleepTime != null && mResumedTime == null) ||
+                                (now - mResumedTime.GetValueOrDefault()).TotalSeconds < 5;
 
-						var content = JsonConvert.DeserializeObject<Dictionary<string, string>> (json);
-						if (content.TryGetValue ("dataType", out var dataType) &&
-								content.TryGetValue ("route", out var route) &&
-								dataType == "vanilla_notification" &&
-								route.ToLower().Contains ("townfish.com"))
-						{
-							OnPushUrlReceived (route, wasBackgrounded);
-						}
-						else
-						{
-							Discoveries = await GetDiscoveries();
-
-							if ((dataType == "messageFeed" ||
-									content.TryGetValue("img", out var img)) &&
-									wasBackgrounded)
-								OnBackgroundDiscoveriesReceived();
-						}
-					}
-					catch (Exception ex)
+                        await HandlePushNotification(json, wasBackgrounded);
+                    }
+                    catch (Exception ex)
 					{
 						Debug.WriteLine (
 								$"App.InitStreetHawk/RegisterForRawJSON: {ex.Message}");
@@ -350,7 +334,28 @@ namespace TownFish.App
 			}
 		}
 
-		public static Task<IList<DiscoveryItemViewModel>> GetDiscoveries()
+        private async Task HandlePushNotification(string json, bool wasBackgrounded)
+        {
+            var content = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            if (content.TryGetValue("dataType", out var dataType) &&
+                    content.TryGetValue("route", out var route) &&
+                    dataType == "vanilla_notification" &&
+                    route.ToLower().Contains("townfish.com"))
+            {
+                OnPushUrlReceived(route, wasBackgrounded);
+            }
+            else
+            {
+                Discoveries = await GetDiscoveries();
+
+                if ((dataType == "messageFeed" ||
+                        content.TryGetValue("img", out var img)) &&
+                        wasBackgrounded)
+                    OnBackgroundDiscoveriesReceived();
+            }
+        }
+
+        public static Task<IList<DiscoveryItemViewModel>> GetDiscoveries()
 		{
 			// converts list of SHFeed items to list of Discovery items
 			IList<DiscoveryItemViewModel> GetDiscoveryItems (List<SHFeedObject> feedItems)
@@ -439,7 +444,7 @@ namespace TownFish.App
 							foreach (var feedItem in feedItems)
 							{
 								shFeeds.SendFeedAck (feedItem.feed_id);
-								shFeeds.NotifyFeedResult (feedItem.feed_id, 1);
+								shFeeds.NotifyFeedResult (feedItem.feed_id, ACCEPTED, false, true);
 							}
 
 							tcs.TrySetResult (GetDiscoveryItems (feedItems));
@@ -692,7 +697,9 @@ namespace TownFish.App
 
 		const string cLastDiscoveriesViewTimeKey = "LastDiscoveriesViewTime";
 
-		const string cCode = "Code";
+        private const string ACCEPTED = "accepted";
+
+        const string cCode = "Code";
 		const string cSHCuid = "shcuid";
 		const string cSynced = "synced";
 		const int cSHSyncDelay = 3000;
