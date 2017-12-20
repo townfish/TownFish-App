@@ -38,32 +38,15 @@ namespace TownFish.App
 			DeviceID = deviceID;
 		}
 
-        #endregion Construction
+		#endregion Construction
 
-        #region Methods
-
-        void OnPushUrlReceived (string route, bool wasBackgrounded)
-		{
-			PushUrlReceived?.Invoke (this, (route, wasBackgrounded));
-		}
-
-		void OnDiscoveriesUpdated()
-		{
-			DiscoveriesUpdated?.Invoke (this, EventArgs.Empty);
-		}
-
-		void OnBackgroundDiscoveriesReceived()
-		{
-            while (BackgroundDiscoveriesReceived == null)
-                Task.Delay(1000);
-            BackgroundDiscoveriesReceived.Invoke(this, EventArgs.Empty);
-		}
+		#region Methods
 
 		protected override void OnStart()
 		{
-            mStartTime = DateTime.UtcNow;
-            mSleepTime = null;
-            mResumedTime = null;
+			mStartTime = DateTime.UtcNow;
+			mSleepTime = null;
+			mResumedTime = null;
 
 			InitStreetHawk();
 
@@ -78,34 +61,52 @@ namespace TownFish.App
 
 		protected override void OnSleep()
 		{
-            mSleepTime = DateTime.UtcNow;
-            mResumedTime = null;
+			mSleepTime = DateTime.UtcNow;
+			mResumedTime = null;
 			AppSuspended?.Invoke (this, EventArgs.Empty);
 		}
 
-        public void LaunchedFromNotification(string json)
-        {
-            HandlePushNotification(json, true);
-        }
-
-        protected override async void OnResume()
+		protected override async void OnResume()
 		{
-            mResumedTime = DateTime.UtcNow;
+			mResumedTime = DateTime.UtcNow;
 			AppResumed?.Invoke (this, EventArgs.Empty);
 
 			// SH doesn't call feed callback when backgrounded, so check for
 			// new items here in case any came in whilst we were away
 
-            try
-            {
-                Discoveries = await GetDiscoveries();
-            }
-            catch (TimeoutException ex)
-            {
-                Debug.WriteLine(ex);
-            }
+			try
+			{
+				Discoveries = await GetDiscoveries();
+			}
+			catch (TimeoutException ex)
+			{
+				Debug.WriteLine (ex);
+			}
+		}
 
-        }
+		void OnPushUrlReceived (string route, bool wasBackgrounded)
+		{
+			PushUrlReceived?.Invoke (this, (route, wasBackgrounded));
+		}
+
+		void OnDiscoveriesUpdated()
+		{
+			DiscoveriesUpdated?.Invoke (this, EventArgs.Empty);
+		}
+
+		void OnBackgroundDiscoveriesReceived()
+		{
+			// HACK: wait for main page to hook event so we can then raise it
+			while (BackgroundDiscoveriesReceived == null)
+				Task.Delay (1000);
+
+			BackgroundDiscoveriesReceived.Invoke (this, EventArgs.Empty);
+		}
+
+		public async void LaunchedFromNotification (string json)
+		{
+			await HandlePushNotification (json, wasBackgrounded: true);
+		}
 
 		public void OnBackButtonPressed()
 		{
@@ -125,23 +126,23 @@ namespace TownFish.App
 			// https://github.com/StreetHawkSDK/XamHawkDemoApp/blob/master/XamHawkDemo/XamHawkDemo/App.xaml.cs
 
 			var shAnalytics = DependencyService.Get<IStreetHawkAnalytics>();
-            var shBeacon = DependencyService.Get<IStreetHawkBeacon>();
-            var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
-            var shGeofence = DependencyService.Get<IStreetHawkGeofence>();
-            var shLocations = DependencyService.Get<IStreetHawkLocations>();
-            var shPush = DependencyService.Get<IStreetHawkPush>();
+			var shBeacon = DependencyService.Get<IStreetHawkBeacon>();
+			var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
+			var shGeofence = DependencyService.Get<IStreetHawkGeofence>();
+			var shLocations = DependencyService.Get<IStreetHawkLocations>();
+			var shPush = DependencyService.Get<IStreetHawkPush>();
 
-            //Optional: enable XCode console logs.
-            shAnalytics.SetEnableLogs (true);
+			//Optional: enable XCode console logs.
+			shAnalytics.SetEnableLogs (true);
 
-            shAnalytics.SetAppKey (StreetHawkAppKey);
+			shAnalytics.SetAppKey (StreetHawkAppKey);
 
 			// Initialize StreetHawk when App starts.
 			//Mandatory: set app key and call init.
 			shAnalytics.Init();
 
 			shPush.RegisterForPushMessaging (GcmSenderID); // GCM push ID (Android only)
-            shPush.Register();
+			shPush.Register();
 
 			//shPush.SetGcmSenderId (GcmSenderID); // appears to be obsolete in latest SH Xamarin SDK
 
@@ -274,10 +275,10 @@ namespace TownFish.App
 
 #endif // SH_OPTIONAL
 
-            //Optional: Callback when receive json push.
-            //Called when application is active (Android/iOS) and
-            //when application is launched/activated by clicking on
-            //a push notifification ON iOS ONLY
+			//Optional: Callback when receive json push.
+			//Called when application is active (Android/iOS) and
+			//when application is launched/activated by clicking on
+			//a push notification ON iOS ONLY
 			shPush.RegisterForRawJSON (async (title, message, json) =>
 				{
 #if DEBUG
@@ -288,15 +289,15 @@ namespace TownFish.App
 						});
 #endif
 					try
-                    {
-                        var now = DateTime.UtcNow;
-                        var wasBackgrounded = (now - mStartTime).TotalSeconds < 5 ||
-                                (mSleepTime != null && mResumedTime == null) ||
-                                (now - mResumedTime.GetValueOrDefault()).TotalSeconds < 5;
+					{
+						var now = DateTime.UtcNow;
+						var wasBackgrounded = (now - mStartTime).TotalSeconds < 5 ||
+								(mSleepTime != null && mResumedTime == null) ||
+								(now - mResumedTime.GetValueOrDefault()).TotalSeconds < 5;
 
-                        await HandlePushNotification(json, wasBackgrounded);
-                    }
-                    catch (Exception ex)
+						await HandlePushNotification (json, wasBackgrounded);
+					}
+					catch (Exception ex)
 					{
 						Debug.WriteLine (
 								$"App.InitStreetHawk/RegisterForRawJSON: {ex.Message}");
@@ -334,28 +335,28 @@ namespace TownFish.App
 			}
 		}
 
-        private async Task HandlePushNotification(string json, bool wasBackgrounded)
-        {
-            var content = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            if (content.TryGetValue("dataType", out var dataType) &&
-                    content.TryGetValue("route", out var route) &&
-                    dataType == "vanilla_notification" &&
-                    route.ToLower().Contains("townfish.com"))
-            {
-                OnPushUrlReceived(route, wasBackgrounded);
-            }
-            else
-            {
-                Discoveries = await GetDiscoveries();
+		async Task HandlePushNotification (string json, bool wasBackgrounded)
+		{
+			var content = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+			if (content.TryGetValue ("dataType", out var dataType) &&
+					content.TryGetValue ("route", out var route) &&
+					dataType == "vanilla_notification" &&
+					route.ToLower().Contains ("townfish.com"))
+			{
+				OnPushUrlReceived (route, wasBackgrounded);
+			}
+			else
+			{
+				Discoveries = await GetDiscoveries();
 
-                if ((dataType == "messageFeed" ||
-                        content.TryGetValue("img", out var img)) &&
-                        wasBackgrounded)
-                    OnBackgroundDiscoveriesReceived();
-            }
-        }
+				if ((dataType == "messageFeed" ||
+						content.TryGetValue ("img", out var img)) &&
+						wasBackgrounded)
+					OnBackgroundDiscoveriesReceived();
+			}
+		}
 
-        public static Task<IList<DiscoveryItemViewModel>> GetDiscoveries()
+		public static Task<IList<DiscoveryItemViewModel>> GetDiscoveries()
 		{
 			// converts list of SHFeed items to list of Discovery items
 			IList<DiscoveryItemViewModel> GetDiscoveryItems (List<SHFeedObject> feedItems)
@@ -377,12 +378,12 @@ namespace TownFish.App
 							linkUrl = val;
 					}
 
-                    var created = string.IsNullOrEmpty(item.created) ? null : (DateTime?)DateTime.Parse(item.created, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
-                    var modified = string.IsNullOrEmpty(item.modified) ? null : (DateTime?)DateTime.Parse(item.modified, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
-                    var expires = string.IsNullOrEmpty(item.expires) ? null : (DateTime?)DateTime.Parse(item.expires, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+					var created = string.IsNullOrEmpty(item.created) ? null : (DateTime?)DateTime.Parse(item.created, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+					var modified = string.IsNullOrEmpty(item.modified) ? null : (DateTime?)DateTime.Parse(item.modified, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+					var expires = string.IsNullOrEmpty(item.expires) ? null : (DateTime?)DateTime.Parse(item.expires, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
 
 
-                    items.Add (new DiscoveryItemViewModel
+					items.Add (new DiscoveryItemViewModel
 					{
 						PictureUrl = imgUrl,
 						LinkUrl = linkUrl,
@@ -555,8 +556,8 @@ namespace TownFish.App
 
 		public void UpdateAppBadgeCount (int count)
 		{
-            var shAnalytics = DependencyService.Get<IStreetHawkAnalytics>();
-            shAnalytics?.TagNumeric ("sh_badge_number", count);
+			var shAnalytics = DependencyService.Get<IStreetHawkAnalytics>();
+			shAnalytics?.TagNumeric ("sh_badge_number", count);
 		}
 
 		#endregion StreetHawk
@@ -697,9 +698,9 @@ namespace TownFish.App
 
 		const string cLastDiscoveriesViewTimeKey = "LastDiscoveriesViewTime";
 
-        private const string ACCEPTED = "accepted";
+		private const string ACCEPTED = "accepted";
 
-        const string cCode = "Code";
+		const string cCode = "Code";
 		const string cSHCuid = "shcuid";
 		const string cSynced = "synced";
 		const int cSHSyncDelay = 3000;
@@ -716,9 +717,9 @@ namespace TownFish.App
 		static int sGettingDiscoveries;
 		static IList<DiscoveryItemViewModel> sDiscoveries;
 
-        DateTime mStartTime;
-        DateTime? mSleepTime;
-        DateTime? mResumedTime;
+		DateTime mStartTime;
+		DateTime? mSleepTime;
+		DateTime? mResumedTime;
 
 		#endregion Fields
 	}
