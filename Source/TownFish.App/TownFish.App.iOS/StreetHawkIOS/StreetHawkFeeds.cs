@@ -28,7 +28,7 @@ namespace StreetHawkCrossplatform
 			{
 				result = SHFeedResult.SHResult_Decline;
 			}
-			SHFeed.instance().notifyFeedResult(feedid, result, null, feedDelete, completed);
+			SHFeed.instance().notifyFeedResult(feedid, result, "", feedDelete, completed);
 		}
 
 		public void ReadFeedData(int offset, RegisterForFeedCallback cb)

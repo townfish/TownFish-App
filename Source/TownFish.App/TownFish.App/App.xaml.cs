@@ -678,7 +678,7 @@ namespace TownFish.App
 
 		// all magic URLs and paths used in this app
 		public const string SiteDomain = "dev.townfish.com";
-		public const string BaseUrl = "http://" + SiteDomain;
+		public const string BaseUrl = "https://" + SiteDomain;
 		public const string StartPath = "/";
 		public const string TermsUrl = BaseUrl + "/terms-of-use/";
 		public const string SHCuidUrl = BaseUrl + "/profile/shcuid/{0}?syncToken={1}";
