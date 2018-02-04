@@ -198,7 +198,7 @@ namespace StreetHawkCrossplatform
 				_pushDataCallback(data);
 				return true; //not able to get return value from js, so once implement `registerPushDataCallback` all confirm dialog use js, not like native sdk which can override some and leave others not affected.
 			}
-			return false;
+			return true;
 		}
 
 		public override void onReceiveResult(StreethawkIOS.Push.PushDataForApplication pushData, StreethawkIOS.Push.SHPushResult result)

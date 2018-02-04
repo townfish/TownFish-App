@@ -181,13 +181,9 @@
 				<Label TextColor="{Binding LocationsTextColour}" FontSize="12" >
 					<Label.FormattedText>
 						<FormattedString>
-							<Span Text="Use the top bar to search for other locations that are available where you can ask the locals for recommendations and advice, and view anything in the newsfeed. Please read our " />
-							<Span x:Name="spnMemberAgreementLink" Text="Member Agreement" />
+							<Span Text="Use the top bar to search for other locations that are available where you can ask the locals for recommendations and advice, and view anything in the newsfeed." />
 						</FormattedString>
 					</Label.FormattedText>
-					<Label.GestureRecognizers>
-						<TapGestureRecognizer Tapped="BrowserPage_MemberAgreementTapped" />
-					</Label.GestureRecognizers>
 				</Label>
 			</Grid>
 			<Grid Grid.Row="4" Padding="20,6,20,20" >
@@ -396,7 +392,7 @@
 			  IsVisible="{Binding IsDiscoveriesVisible}">
 			<!-- Discoveries list -->
 			<ScrollView Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-				<StackLayout x:Name="lstDiscoveries" Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="8" />
+				<StackLayout x:Name="lstDiscoveries" Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="6" />
 			</ScrollView>
 			<!-- ListView BORKED on iOS!!!! -->
 			<!--<ListView x:Name="lstDiscoveries"
