@@ -61,14 +61,14 @@ namespace TownFish.App.Droid
 
         protected override void OnPause()
         {
-            Log.Info("MainActivity", "OnPause");
+            Log.Debug("MainActivity", "OnPause");
             IsActive = false;
             base.OnPause();
         }
 
         protected override void OnResume()
         {
-            Log.Info("MainActivity", "OnResume");
+            Log.Debug("MainActivity", "OnResume");
             IsActive = true;
             base.OnResume();
         }

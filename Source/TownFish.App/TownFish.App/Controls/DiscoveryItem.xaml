@@ -41,7 +41,5 @@
 				   TextColor="Gray" FontSize="10" HorizontalOptions="End"
 				   Text="{Binding Group}" />-->
 		</Grid>
-
-		<BoxView Color="Transparent" HeightRequest="12"/>
 	</StackLayout>
 </Grid>

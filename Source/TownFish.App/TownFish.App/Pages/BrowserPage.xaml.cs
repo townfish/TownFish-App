@@ -104,9 +104,6 @@ namespace TownFish.App.Pages
 			if (ViewModel == null)
 				return;
 
-			// manually set this as span isn't bindable
-			spnMemberAgreementLink.ForegroundColor = ViewModel.DiscoveriesLinkColour;
-
 			// Because we use DisplayActionSheet
 			ViewModel.TopActionMoreCommand = new Command (async _ =>
 				{
