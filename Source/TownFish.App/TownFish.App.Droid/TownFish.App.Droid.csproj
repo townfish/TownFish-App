@@ -83,25 +83,25 @@
     <Reference Include="Mono.Android.Export" />
     <Reference Include="mscorlib" />
     <Reference Include="StreetHawkAnalytics, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\StreetHawkAnalytics.1.8.21\lib\StreetHawkAnalytics.dll</HintPath>
+      <HintPath>..\..\packages\StreetHawkAnalytics.1.8.23\lib\StreetHawkAnalytics.dll</HintPath>
     </Reference>
     <Reference Include="StreetHawkBeacon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\StreetHawkBeacon.1.8.21\lib\StreetHawkBeacon.dll</HintPath>
+      <HintPath>..\..\packages\StreetHawkBeacon.1.8.23\lib\StreetHawkBeacon.dll</HintPath>
     </Reference>
     <Reference Include="StreetHawkFeeds, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\StreetHawkFeeds.1.8.21\lib\StreetHawkFeeds.dll</HintPath>
+      <HintPath>..\..\packages\StreetHawkFeeds.1.8.23\lib\StreetHawkFeeds.dll</HintPath>
     </Reference>
     <Reference Include="StreetHawkGeofence, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\StreetHawkGeofence.1.8.21\lib\StreetHawkGeofence.dll</HintPath>
+      <HintPath>..\..\packages\StreetHawkGeofence.1.8.23\lib\StreetHawkGeofence.dll</HintPath>
     </Reference>
     <Reference Include="StreetHawkGrowth, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\StreetHawkGrowth.1.8.21\lib\StreetHawkGrowth.dll</HintPath>
+      <HintPath>..\..\packages\StreetHawkGrowth.1.8.23\lib\StreetHawkGrowth.dll</HintPath>
     </Reference>
     <Reference Include="StreetHawkLocations, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\StreetHawkLocations.1.8.21\lib\StreetHawkLocations.dll</HintPath>
+      <HintPath>..\..\packages\StreetHawkLocations.1.8.23\lib\StreetHawkLocations.dll</HintPath>
     </Reference>
     <Reference Include="StreetHawkPush, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\StreetHawkPush.1.8.21\lib\StreetHawkPush.dll</HintPath>
+      <HintPath>..\..\packages\StreetHawkPush.1.8.23\lib\StreetHawkPush.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

@@ -105,6 +105,8 @@ namespace TownFish.App
 
 		public async void LaunchedFromNotification (string json)
 		{
+			Debug.WriteLine ($"App.LaunchedFromNotification: Calling HandlePushNotification");
+
 			await HandlePushNotification (json, wasBackgrounded: true);
 		}
 
@@ -337,22 +339,37 @@ namespace TownFish.App
 
 		async Task HandlePushNotification (string json, bool wasBackgrounded)
 		{
-			var content = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-			if (content.TryGetValue ("dataType", out var dataType) &&
-					content.TryGetValue ("route", out var route) &&
-					dataType == "vanilla_notification" &&
-					route.ToLower().Contains ("townfish.com"))
-			{
-				OnPushUrlReceived (route, wasBackgrounded);
-			}
-			else
-			{
-				Discoveries = await GetDiscoveries();
+			Debug.WriteLine ("App.HandlePushNotification: " +
+					$"wasBackgrounded = {wasBackgrounded}; json = \r\n{json}");
 
-				if ((dataType == "messageFeed" ||
-						content.TryGetValue ("img", out var img)) &&
-						wasBackgrounded)
-					OnBackgroundDiscoveriesReceived();
+			try
+			{
+				var content = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+				if (content.TryGetValue ("dataType", out var dataType) &&
+						content.TryGetValue ("route", out var route) &&
+						dataType == "vanilla_notification" &&
+						route.ToLower().Contains ("townfish.com"))
+				{
+					Debug.WriteLine ("App.HandlePushNotification: " +
+						$"Vanilla notification received; navigating to:\r\n{route}");
+
+					OnPushUrlReceived (route, wasBackgrounded);
+				}
+				else
+				{
+					Debug.WriteLine ($"App.HandlePushNotification: Getting Discoveries");
+
+					Discoveries = await GetDiscoveries();
+
+					if ((dataType == "messageFeed" ||
+							content.TryGetValue ("img", out var img)) &&
+							wasBackgrounded)
+						OnBackgroundDiscoveriesReceived();
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine ($"App.HandlePushNotification: Error {ex.Message}");
 			}
 		}
 
@@ -414,7 +431,7 @@ namespace TownFish.App
 			var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
 
 			// if it takes too long to return (call my callback below), give up to prevent leaks
-			var cts = new CancellationTokenSource (10000);
+			var cts = new CancellationTokenSource (30000);
 			cts.Token.Register (() => tcs.TrySetException (new TimeoutException()));
 
 			try
