@@ -66,27 +66,25 @@ namespace TownFish.App
 			AppSuspended?.Invoke (this, EventArgs.Empty);
 		}
 
-		protected override async void OnResume()
+		protected override void OnResume()
 		{
 			mResumedTime = DateTime.UtcNow;
 			AppResumed?.Invoke (this, EventArgs.Empty);
-
-			// SH doesn't call feed callback when backgrounded, so check for
-			// new items here in case any came in whilst we were away
-
-			try
-			{
-				Discoveries = await GetDiscoveries();
-			}
-			catch (TimeoutException ex)
-			{
-				Debug.WriteLine (ex);
-			}
 		}
 
-		void OnPushUrlReceived (string route, bool wasBackgrounded)
+		async void OnPushUrlReceived (string route, bool wasBackgrounded)
 		{
-			PushUrlReceived?.Invoke (this, (route, wasBackgrounded));
+			Debug.WriteLine ($"App.OnPushUrlReceived: " +
+				$"Waiting for PushUrlReceived to be hooked");
+
+			// wait for main page to hook event so we can then raise it
+			while (PushUrlReceived == null)
+				await Task.Delay (100);
+
+			Debug.WriteLine ($"App.OnPushUrlReceived: " +
+				$"GOT PushUrlReceived; invoking");
+
+			PushUrlReceived.Invoke (this, (route, wasBackgrounded));
 		}
 
 		void OnDiscoveriesUpdated()
@@ -94,18 +92,25 @@ namespace TownFish.App
 			DiscoveriesUpdated?.Invoke (this, EventArgs.Empty);
 		}
 
-		void OnBackgroundDiscoveriesReceived()
+		async void OnBackgroundDiscoveriesReceived()
 		{
-			// HACK: wait for main page to hook event so we can then raise it
+			Debug.WriteLine ($"App.OnBackgroundDiscoveriesReceived: " +
+				$"Waiting for BackgroundDiscoveriesReceived to be hooked");
+
+			// wait for main page to hook event so we can then raise it
 			while (BackgroundDiscoveriesReceived == null)
-				Task.Delay (1000);
+				await Task.Delay (100);
+
+			Debug.WriteLine ($"App.OnBackgroundDiscoveriesReceived: " +
+				$"GOT BackgroundDiscoveriesReceived; invoking");
 
 			BackgroundDiscoveriesReceived.Invoke (this, EventArgs.Empty);
 		}
 
 		public async void LaunchedFromNotification (string json)
 		{
-			Debug.WriteLine ($"App.LaunchedFromNotification: Calling HandlePushNotification");
+			Debug.WriteLine ($"App.LaunchedFromNotification: " +
+				$"Calling HandlePushNotification");
 
 			await HandlePushNotification (json, wasBackgrounded: true);
 		}
@@ -302,7 +307,7 @@ namespace TownFish.App
 					catch (Exception ex)
 					{
 						Debug.WriteLine (
-								$"App.InitStreetHawk/RegisterForRawJSON: {ex.Message}");
+								$"App.InitStreetHawk/RegisterForRawJSON: {ex.Message}\r\n{ex}");
 					}
 				});
 
@@ -329,11 +334,13 @@ namespace TownFish.App
 			// on app load, we need to get feed to show count and cache items
 			try
 			{
+				Debug.WriteLine ($"App.InitStreetHawk: Getting Discoveries");
+
 				Discoveries = await GetDiscoveries();
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine ($"App.InitStreetHawk: {ex.Message}");
+				Debug.WriteLine ($"App.InitStreetHawk: Error {ex.Message}\r\n{ex}");
 			}
 		}
 
@@ -359,7 +366,13 @@ namespace TownFish.App
 				{
 					Debug.WriteLine ($"App.HandlePushNotification: Getting Discoveries");
 
-					Discoveries = await GetDiscoveries();
+					// avoid re-entering GetDiscoveries unnecessarily by just waiting for the
+					// call in InitStreetHawk() above to get them
+
+					while (Discoveries == null)
+						await Task.Delay (100);
+
+					Debug.WriteLine ($"App.HandlePushNotification: GOT Discoveries");
 
 					if ((dataType == "messageFeed" ||
 							content.TryGetValue ("img", out var img)) &&
@@ -369,7 +382,8 @@ namespace TownFish.App
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine ($"App.HandlePushNotification: Error {ex.Message}");
+				Debug.WriteLine ($"App.HandlePushNotification: " +
+					$"Error {ex.Message}\r\n{ex}");
 			}
 		}
 
@@ -419,66 +433,84 @@ namespace TownFish.App
 				return items;
 			}
 
-			if (++sGettingDiscoveries > 1)
-			{
-				--sGettingDiscoveries;
-
-				// indicate re-entry by returning null
-				return null;
-			}
+			Debug.WriteLine ($"App.GetDiscoveries: " +
+				$"Starting; sGettingDiscoveries = {sGettingDiscoveries}");
 
 			var tcs = new TaskCompletionSource<IList<DiscoveryItemViewModel>>();
 			var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
 
+			if (++sGettingDiscoveries > 1)
+			{
+				--sGettingDiscoveries;
+
+				Debug.WriteLine ($"App.GetDiscoveries: " +
+					$"Already running - abandoning; sGettingDiscoveries = {sGettingDiscoveries}");
+
+				// indicate re-entry by returning null
+				tcs.TrySetResult (null);
+
+				return tcs.Task;
+			}
+
 			// if it takes too long to return (call my callback below), give up to prevent leaks
 			var cts = new CancellationTokenSource (30000);
-			cts.Token.Register (() => tcs.TrySetException (new TimeoutException()));
+			cts.Token.Register (() =>
+				{
+					tcs.TrySetException (new TimeoutException());
 
-			try
-			{
-				shFeeds.ReadFeedData (0, (feedItems, error) =>
+					// don't forget this in this case!
+					--sGettingDiscoveries;
+
+					Debug.WriteLine ($"App.GetDiscoveries: " +
+						$"Timeout waiting for callback; sGettingDiscoveries = {sGettingDiscoveries}");
+				});
+
+			shFeeds.ReadFeedData (0, (feedItems, error) =>
+				{
+					try
 					{
-						try
-						{
-							// now we're back from callback we can cancel the timeout
-							cts.Dispose();
+						// now we're back from callback we can cancel the timeout
+						cts.Dispose();
 
-							if (error != null)
-							{
+						if (error != null)
+						{
 #if DEBUG
-								Current?.MainPage?.DisplayAlert ("New feeds available but fetch failed:", error, "OK");
+							Current?.MainPage?.DisplayAlert ("New feeds available but fetch failed:", error, "OK");
 #endif
-								throw new Exception (error);
-							}
+							throw new Exception (error);
+						}
 #if false//DEBUG
-							var feedMsg = "";
+						var feedMsg = "";
 
-							foreach (var feedItem in feedItems)
-								feedMsg = $"Title: {feedItem.title}; Message: {feedItem.message}; Content: {feedItem.content}. \r\n{feedMsg}";
+						foreach (var feedItem in feedItems)
+							feedMsg = $"Title: {feedItem.title}; Message: {feedItem.message}; Content: {feedItem.content}. \r\n{feedMsg}";
 
-							Current.MainPage.DisplayAlert ($"New feeds available and fetched {feedItems.Count}:", feedMsg, "OK");
+						Current.MainPage.DisplayAlert ($"New feeds available and fetched {feedItems.Count}:", feedMsg, "OK");
 #endif
-							// acknowledge receipt to SH and indicate positive result
-							foreach (var feedItem in feedItems)
-							{
-								shFeeds.SendFeedAck (feedItem.feed_id);
-								shFeeds.NotifyFeedResult (feedItem.feed_id, ACCEPTED, false, true);
-							}
-
-							tcs.TrySetResult (GetDiscoveryItems (feedItems));
-						}
-						catch (Exception ex)
+						// acknowledge receipt to SH and indicate positive result
+						foreach (var feedItem in feedItems)
 						{
-							tcs.TrySetException (ex);
+							shFeeds.SendFeedAck (feedItem.feed_id);
+							shFeeds.NotifyFeedResult (feedItem.feed_id, ACCEPTED, false, true);
 						}
-					});
-			}
-			catch (Exception ex)
-			{
-				tcs.TrySetException (ex);
-			}
 
-			--sGettingDiscoveries;
+						tcs.TrySetResult (GetDiscoveryItems (feedItems));
+					}
+					catch (Exception ex)
+					{
+						tcs.TrySetException (ex);
+
+						Debug.WriteLine ($"App.GetDiscoveries: " +
+							$"Error {ex.Message}\r\n{ex}");
+					}
+					finally
+					{
+						--sGettingDiscoveries;
+
+						Debug.WriteLine ($"App.GetDiscoveries: " +
+							$"Finished; sGettingDiscoveries = {sGettingDiscoveries}");
+					}
+				});
 
 			return tcs.Task;
 		}
@@ -554,7 +586,8 @@ namespace TownFish.App
 							}
 							catch (Exception ex)
 							{
-								Debug.WriteLine ($"App.CheckCuid: Sync attempt {i} to {url} failed with {ex.Message}");
+								Debug.WriteLine ($"App.CheckCuid: " +
+									$"Sync attempt {i} to {url} failed with {ex.Message}\r\n{ex}");
 							}
 						}
 					}
@@ -562,7 +595,8 @@ namespace TownFish.App
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine ($"App.CheckCuid: Failed with {ex.Message}");
+				Debug.WriteLine ($"App.CheckCuid: " +
+					$"Failed with {ex.Message}\r\n{ex}");
 			}
 			finally
 			{
