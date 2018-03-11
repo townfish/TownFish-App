@@ -337,6 +337,8 @@ namespace TownFish.App
 				Debug.WriteLine ($"App.InitStreetHawk: Getting Discoveries");
 
 				Discoveries = await GetDiscoveries();
+
+				Debug.WriteLine ($"App.InitStreetHawk: GOT Discoveries");
 			}
 			catch (Exception ex)
 			{
@@ -366,11 +368,7 @@ namespace TownFish.App
 				{
 					Debug.WriteLine ($"App.HandlePushNotification: Getting Discoveries");
 
-					// avoid re-entering GetDiscoveries unnecessarily by just waiting for the
-					// call in InitStreetHawk() above to get them
-
-					while (Discoveries == null)
-						await Task.Delay (100);
+					Discoveries = await GetDiscoveries();
 
 					Debug.WriteLine ($"App.HandlePushNotification: GOT Discoveries");
 
@@ -387,129 +385,153 @@ namespace TownFish.App
 			}
 		}
 
+		/// <summary>
+		/// Gets the list of <see cref="DiscoverItemViewModel"/> items.
+		/// </summary>
+		/// <remarks>
+		/// We have to go through this entire manual async and monitor palaver
+		/// because StreetHawk sometimes doesn't call back the callback, so we
+		/// have to set a timeout and handle it manually to avoid leaking
+		/// task instances.
+		/// </remarks>
+		/// <returns></returns>
 		public static Task<IList<DiscoveryItemViewModel>> GetDiscoveries()
 		{
-			// converts list of SHFeed items to list of Discovery items
-			IList<DiscoveryItemViewModel> GetDiscoveryItems (List<SHFeedObject> feedItems)
-			{
-				var items = new List<DiscoveryItemViewModel>();
-				foreach (var item in feedItems)
-				{
-					string imgUrl = null;
-					string linkUrl = null;
-
-					var content = JsonConvert.DeserializeObject<Dictionary<string, string>> (item.content);
-					foreach (var key in content.Keys)
-					{
-						var val = content [key];
-
-						if (key == "img" || key.StartsWith ("image"))
-							imgUrl = val;
-						else if (key == "url" || key.EndsWith ("link"))
-							linkUrl = val;
-					}
-
-					var created = string.IsNullOrEmpty(item.created) ? null : (DateTime?)DateTime.Parse(item.created, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
-					var modified = string.IsNullOrEmpty(item.modified) ? null : (DateTime?)DateTime.Parse(item.modified, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
-					var expires = string.IsNullOrEmpty(item.expires) ? null : (DateTime?)DateTime.Parse(item.expires, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
-
-
-					items.Add (new DiscoveryItemViewModel
-					{
-						PictureUrl = imgUrl,
-						LinkUrl = linkUrl,
-						Title = item.title?.Trim(),
-						Text = item.message?.Trim(),
-						Created = created,
-						Modified = modified,
-						Expires = expires,
-						Group = item.campaign
-					});
-				}
-
-				// return in descending creation order (i.e. reverse date)
-				items.Sort ((a, b) => b.Created.GetValueOrDefault().CompareTo (a.Created.GetValueOrDefault()));
-
-				return items;
-			}
-
-			Debug.WriteLine ($"App.GetDiscoveries: " +
-				$"Starting; sGettingDiscoveries = {sGettingDiscoveries}");
+			Debug.WriteLine ($"App.GetDiscoveries: Starting");
 
 			var tcs = new TaskCompletionSource<IList<DiscoveryItemViewModel>>();
-			var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
 
-			if (++sGettingDiscoveries > 1)
-			{
-				--sGettingDiscoveries;
-
-				Debug.WriteLine ($"App.GetDiscoveries: " +
-					$"Already running - abandoning; sGettingDiscoveries = {sGettingDiscoveries}");
-
-				// indicate re-entry by returning null
-				tcs.TrySetResult (null);
-
-				return tcs.Task;
-			}
-
-			// if it takes too long to return (call my callback below), give up to prevent leaks
-			var cts = new CancellationTokenSource (30000);
-			cts.Token.Register (() =>
+			// move to threadpool to make sure monitor doesn't block the UI thread
+			Task.Run (() =>
 				{
-					tcs.TrySetException (new TimeoutException());
+					#region Local functions
 
-					// don't forget this in this case!
-					--sGettingDiscoveries;
+					// waits for event before proceeding
+					void Enter() => sDiscoveriesEvent.WaitOne();
 
-					Debug.WriteLine ($"App.GetDiscoveries: " +
-						$"Timeout waiting for callback; sGettingDiscoveries = {sGettingDiscoveries}");
-				});
+					// sets event to allow next waiter to proceed
+					void Leave() => sDiscoveriesEvent.Set();
 
-			shFeeds.ReadFeedData (0, (feedItems, error) =>
-				{
-					try
+					// converts list of SHFeed items to list of Discovery items
+					IList<DiscoveryItemViewModel> GetDiscoveryItems (List<SHFeedObject> feedItems)
 					{
-						// now we're back from callback we can cancel the timeout
-						cts.Dispose();
-
-						if (error != null)
+						var items = new List<DiscoveryItemViewModel>();
+						foreach (var item in feedItems)
 						{
+							string imgUrl = null;
+							string linkUrl = null;
+
+							var content = JsonConvert.DeserializeObject<Dictionary<string, string>> (item.content);
+							foreach (var key in content.Keys)
+							{
+								var val = content [key];
+
+								if (key == "img" || key.StartsWith ("image"))
+									imgUrl = val;
+								else if (key == "url" || key.EndsWith ("link"))
+									linkUrl = val;
+							}
+
+							var created = string.IsNullOrEmpty(item.created) ? null : (DateTime?)DateTime.Parse(item.created, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+							var modified = string.IsNullOrEmpty(item.modified) ? null : (DateTime?)DateTime.Parse(item.modified, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+							var expires = string.IsNullOrEmpty(item.expires) ? null : (DateTime?)DateTime.Parse(item.expires, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+
+
+							items.Add (new DiscoveryItemViewModel
+							{
+								PictureUrl = imgUrl,
+								LinkUrl = linkUrl,
+								Title = item.title?.Trim(),
+								Text = item.message?.Trim(),
+								Created = created,
+								Modified = modified,
+								Expires = expires,
+								Group = item.campaign
+							});
+						}
+
+						// return in descending creation order (i.e. reverse date)
+						items.Sort ((a, b) => b.Created.GetValueOrDefault().CompareTo (a.Created.GetValueOrDefault()));
+
+						return items;
+					}
+
+					#endregion Local functions
+
+					Enter();
+
+					Debug.WriteLine ($"App.GetDiscoveries: Started");
+
+					// if it takes too long to return (i.e. to call my callback
+					// below), give up to prevent leaks
+
+					var cts = new CancellationTokenSource (30000);
+					cts.Token.Register (() =>
+						{
+							tcs.TrySetException (new TimeoutException());
+
+							Debug.WriteLine ($"App.GetDiscoveries: Timeout waiting for callback");
+
+							Leave();
+						});
+
+					var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
+					shFeeds.ReadFeedData (0, (feedItems, error) =>
+						{
+							// if task completed (failed or timed out), just leave
+							if (tcs.Task.IsCompleted)
+								return;
+
+							try
+							{
+								// now we're back from callback we can cancel the timeout
+								cts.Dispose();
+
+								if (error != null)
+								{
 #if DEBUG
-							Current?.MainPage?.DisplayAlert ("New feeds available but fetch failed:", error, "OK");
+									Device.BeginInvokeOnMainThread (() =>
+										 Current?.MainPage?.DisplayAlert (
+												"App.GetDiscoveries: New feeds " +
+												"available but fetch failed:",
+												error, "OK"));
 #endif
-							throw new Exception (error);
-						}
+									throw new Exception (error);
+								}
 #if false//DEBUG
-						var feedMsg = "";
+								var feedMsg = "";
 
-						foreach (var feedItem in feedItems)
-							feedMsg = $"Title: {feedItem.title}; Message: {feedItem.message}; Content: {feedItem.content}. \r\n{feedMsg}";
+								foreach (var feedItem in feedItems)
+									feedMsg = $"Title: {feedItem.title}; Message: {feedItem.message}; Content: {feedItem.content}. \r\n{feedMsg}";
 
-						Current.MainPage.DisplayAlert ($"New feeds available and fetched {feedItems.Count}:", feedMsg, "OK");
+								Device.BeginInvokeOnMainThread(() =>
+									Current?.MainPage?.DisplayAlert (
+											"New feeds available and fetched " +
+											$"{feedItems.Count}:", feedMsg, "OK"));
 #endif
-						// acknowledge receipt to SH and indicate positive result
-						foreach (var feedItem in feedItems)
-						{
-							shFeeds.SendFeedAck (feedItem.feed_id);
-							shFeeds.NotifyFeedResult (feedItem.feed_id, ACCEPTED, false, true);
-						}
+								// acknowledge receipt to SH and indicate positive result
+								foreach (var feedItem in feedItems)
+								{
+									shFeeds.SendFeedAck (feedItem.feed_id);
+									shFeeds.NotifyFeedResult (feedItem.feed_id, ACCEPTED, false, true);
+								}
 
-						tcs.TrySetResult (GetDiscoveryItems (feedItems));
-					}
-					catch (Exception ex)
-					{
-						tcs.TrySetException (ex);
+								tcs.TrySetResult (GetDiscoveryItems (feedItems));
+							}
+							catch (Exception ex)
+							{
+								tcs.TrySetException (ex);
 
-						Debug.WriteLine ($"App.GetDiscoveries: " +
-							$"Error {ex.Message}\r\n{ex}");
-					}
-					finally
-					{
-						--sGettingDiscoveries;
+								Debug.WriteLine ($"App.GetDiscoveries: " +
+									$"Error {ex.Message}\r\n{ex}");
+							}
+							finally
+							{
+								Debug.WriteLine ($"App.GetDiscoveries: Finished");
 
-						Debug.WriteLine ($"App.GetDiscoveries: " +
-							$"Finished; sGettingDiscoveries = {sGettingDiscoveries}");
-					}
+								Leave();
+							}
+						});
 				});
 
 			return tcs.Task;
@@ -702,10 +724,6 @@ namespace TownFish.App
 
 			private set
 			{
-				// null is set if GetDiscoveries fails, so ignore
-				if (value == null)
-					return;
-
 				sDiscoveries = value;
 
 				Current.OnDiscoveriesUpdated();
@@ -765,7 +783,9 @@ namespace TownFish.App
 		// NOTE: use LastDiscoveriesViewTime property to save persistently
 		static DateTime sLastDiscoveriesViewTime = DateTime.MinValue;
 
-		static int sGettingDiscoveries;
+		// start this off set so first in gets it
+		static AutoResetEvent sDiscoveriesEvent = new AutoResetEvent (true);
+
 		static IList<DiscoveryItemViewModel> sDiscoveries;
 
 		DateTime mStartTime;
