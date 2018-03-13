@@ -22,21 +22,13 @@ namespace StreetHawkCrossplatform
 		void SendFeedAck(string feedid);
 
 		/// <summary>
-		/// Notifies user's action on feed item. 1 for accepted, 0 for later and -1 for decline.
-		/// </summary>
-		/// <param name="feedid">The feed id of result feed.</param>
-		/// <param name="result">Result. 1 for accepted, 0 for postpone, -1 for declined.</param>
-		void NotifyFeedResult(string feedid, int result);
-
-		/// <summary>
 		/// Notifies user's action on feed item. 
 		/// </summary>
 		/// <param name="feedid">The feed id of result feed.</param>
-		/// <param name="stepid">The ID or label about a step.</param>
 		/// <param name="feedresult">The result for accept, or postpone or decline. String must be accepted|postponed|rejected.</param>
 		/// <param name="feedDelete">Set to <c>true</c> if feed items should be deleted from server for the given install. </param>
 		/// <param name="completed">Set to <c>true</c> when tour complete.</param>
-		void NotifyFeedResult(string feedid, string stepid, string feedresult, bool feedDelete, bool completed);
+		void NotifyFeedResult(string feedid, string feedresult, bool feedDelete, bool completed);
 
 		/// <summary>
 		/// Fetch feed data from StreetHawk server.
