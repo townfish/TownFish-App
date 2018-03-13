@@ -66,27 +66,25 @@ namespace TownFish.App
 			AppSuspended?.Invoke (this, EventArgs.Empty);
 		}
 
-		protected override async void OnResume()
+		protected override void OnResume()
 		{
 			mResumedTime = DateTime.UtcNow;
 			AppResumed?.Invoke (this, EventArgs.Empty);
-
-			// SH doesn't call feed callback when backgrounded, so check for
-			// new items here in case any came in whilst we were away
-
-			try
-			{
-				Discoveries = await GetDiscoveries();
-			}
-			catch (TimeoutException ex)
-			{
-				Debug.WriteLine (ex);
-			}
 		}
 
-		void OnPushUrlReceived (string route, bool wasBackgrounded)
+		async void OnPushUrlReceived (string route, bool wasBackgrounded)
 		{
-			PushUrlReceived?.Invoke (this, (route, wasBackgrounded));
+			Debug.WriteLine ($"App.OnPushUrlReceived: " +
+				$"Waiting for PushUrlReceived to be hooked");
+
+			// wait for main page to hook event so we can then raise it
+			while (PushUrlReceived == null)
+				await Task.Delay (100);
+
+			Debug.WriteLine ($"App.OnPushUrlReceived: " +
+				$"GOT PushUrlReceived; invoking");
+
+			PushUrlReceived.Invoke (this, (route, wasBackgrounded));
 		}
 
 		void OnDiscoveriesUpdated()
@@ -94,17 +92,26 @@ namespace TownFish.App
 			DiscoveriesUpdated?.Invoke (this, EventArgs.Empty);
 		}
 
-		void OnBackgroundDiscoveriesReceived()
+		async void OnBackgroundDiscoveriesReceived()
 		{
-			// HACK: wait for main page to hook event so we can then raise it
+			Debug.WriteLine ($"App.OnBackgroundDiscoveriesReceived: " +
+				$"Waiting for BackgroundDiscoveriesReceived to be hooked");
+
+			// wait for main page to hook event so we can then raise it
 			while (BackgroundDiscoveriesReceived == null)
-				Task.Delay (1000);
+				await Task.Delay (100);
+
+			Debug.WriteLine ($"App.OnBackgroundDiscoveriesReceived: " +
+				$"GOT BackgroundDiscoveriesReceived; invoking");
 
 			BackgroundDiscoveriesReceived.Invoke (this, EventArgs.Empty);
 		}
 
 		public async void LaunchedFromNotification (string json)
 		{
+			Debug.WriteLine ($"App.LaunchedFromNotification: " +
+				$"Calling HandlePushNotification");
+
 			await HandlePushNotification (json, wasBackgrounded: true);
 		}
 
@@ -300,7 +307,7 @@ namespace TownFish.App
 					catch (Exception ex)
 					{
 						Debug.WriteLine (
-								$"App.InitStreetHawk/RegisterForRawJSON: {ex.Message}");
+								$"App.InitStreetHawk/RegisterForRawJSON: {ex.Message}\r\n{ex}");
 					}
 				});
 
@@ -327,141 +334,205 @@ namespace TownFish.App
 			// on app load, we need to get feed to show count and cache items
 			try
 			{
+				Debug.WriteLine ($"App.InitStreetHawk: Getting Discoveries");
+
 				Discoveries = await GetDiscoveries();
+
+				Debug.WriteLine ($"App.InitStreetHawk: GOT Discoveries");
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine ($"App.InitStreetHawk: {ex.Message}");
+				Debug.WriteLine ($"App.InitStreetHawk: Error {ex.Message}\r\n{ex}");
 			}
 		}
 
 		async Task HandlePushNotification (string json, bool wasBackgrounded)
 		{
-			var content = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-			if (content.TryGetValue ("dataType", out var dataType) &&
-					content.TryGetValue ("route", out var route) &&
-					dataType == "vanilla_notification" &&
-					route.ToLower().Contains ("townfish.com"))
-			{
-				OnPushUrlReceived (route, wasBackgrounded);
-			}
-			else
-			{
-				Discoveries = await GetDiscoveries();
-
-				if ((dataType == "messageFeed" ||
-						content.TryGetValue ("img", out var img)) &&
-						wasBackgrounded)
-					OnBackgroundDiscoveriesReceived();
-			}
-		}
-
-		public static Task<IList<DiscoveryItemViewModel>> GetDiscoveries()
-		{
-			// converts list of SHFeed items to list of Discovery items
-			IList<DiscoveryItemViewModel> GetDiscoveryItems (List<SHFeedObject> feedItems)
-			{
-				var items = new List<DiscoveryItemViewModel>();
-				foreach (var item in feedItems)
-				{
-					string imgUrl = null;
-					string linkUrl = null;
-
-					var content = JsonConvert.DeserializeObject<Dictionary<string, string>> (item.content);
-					foreach (var key in content.Keys)
-					{
-						var val = content [key];
-
-						if (key == "img" || key.StartsWith ("image"))
-							imgUrl = val;
-						else if (key == "url" || key.EndsWith ("link"))
-							linkUrl = val;
-					}
-
-					var created = string.IsNullOrEmpty(item.created) ? null : (DateTime?)DateTime.Parse(item.created, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
-					var modified = string.IsNullOrEmpty(item.modified) ? null : (DateTime?)DateTime.Parse(item.modified, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
-					var expires = string.IsNullOrEmpty(item.expires) ? null : (DateTime?)DateTime.Parse(item.expires, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
-
-
-					items.Add (new DiscoveryItemViewModel
-					{
-						PictureUrl = imgUrl,
-						LinkUrl = linkUrl,
-						Title = item.title?.Trim(),
-						Text = item.message?.Trim(),
-						Created = created,
-						Modified = modified,
-						Expires = expires,
-						Group = item.campaign
-					});
-				}
-
-				// return in descending creation order (i.e. reverse date)
-				items.Sort ((a, b) => b.Created.GetValueOrDefault().CompareTo (a.Created.GetValueOrDefault()));
-
-				return items;
-			}
-
-			if (++sGettingDiscoveries > 1)
-			{
-				--sGettingDiscoveries;
-
-				// indicate re-entry by returning null
-				return null;
-			}
-
-			var tcs = new TaskCompletionSource<IList<DiscoveryItemViewModel>>();
-			var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
-
-			// if it takes too long to return (call my callback below), give up to prevent leaks
-			var cts = new CancellationTokenSource (10000);
-			cts.Token.Register (() => tcs.TrySetException (new TimeoutException()));
+			Debug.WriteLine ("App.HandlePushNotification: " +
+					$"wasBackgrounded = {wasBackgrounded}; json = \r\n{json}");
 
 			try
 			{
-				shFeeds.ReadFeedData (0, (feedItems, error) =>
-					{
-						try
-						{
-							// now we're back from callback we can cancel the timeout
-							cts.Dispose();
+				var content = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+				if (content.TryGetValue ("dataType", out var dataType) &&
+						content.TryGetValue ("route", out var route) &&
+						dataType == "vanilla_notification" &&
+						route.ToLower().Contains ("townfish.com"))
+				{
+					Debug.WriteLine ("App.HandlePushNotification: " +
+						$"Vanilla notification received; navigating to:\r\n{route}");
 
-							if (error != null)
-							{
-#if DEBUG
-								Current?.MainPage?.DisplayAlert ("New feeds available but fetch failed:", error, "OK");
-#endif
-								throw new Exception (error);
-							}
-#if false//DEBUG
-							var feedMsg = "";
+					OnPushUrlReceived (route, wasBackgrounded);
+				}
+				else
+				{
+					Debug.WriteLine ($"App.HandlePushNotification: Getting Discoveries");
 
-							foreach (var feedItem in feedItems)
-								feedMsg = $"Title: {feedItem.title}; Message: {feedItem.message}; Content: {feedItem.content}. \r\n{feedMsg}";
+					Discoveries = await GetDiscoveries();
 
-							Current.MainPage.DisplayAlert ($"New feeds available and fetched {feedItems.Count}:", feedMsg, "OK");
-#endif
-							// acknowledge receipt to SH and indicate positive result
-							foreach (var feedItem in feedItems)
-							{
-								shFeeds.SendFeedAck (feedItem.feed_id);
-								shFeeds.NotifyFeedResult (feedItem.feed_id, ACCEPTED, false, true);
-							}
+					Debug.WriteLine ($"App.HandlePushNotification: GOT Discoveries");
 
-							tcs.TrySetResult (GetDiscoveryItems (feedItems));
-						}
-						catch (Exception ex)
-						{
-							tcs.TrySetException (ex);
-						}
-					});
+					if ((dataType == "messageFeed" ||
+							content.TryGetValue ("img", out var img)) &&
+							wasBackgrounded)
+						OnBackgroundDiscoveriesReceived();
+				}
 			}
 			catch (Exception ex)
 			{
-				tcs.TrySetException (ex);
+				Debug.WriteLine ($"App.HandlePushNotification: " +
+					$"Error {ex.Message}\r\n{ex}");
 			}
+		}
 
-			--sGettingDiscoveries;
+		/// <summary>
+		/// Gets the list of <see cref="DiscoverItemViewModel"/> items.
+		/// </summary>
+		/// <remarks>
+		/// We have to go through this entire manual async and monitor palaver
+		/// because StreetHawk sometimes doesn't call back the callback, so we
+		/// have to set a timeout and handle it manually to avoid leaking
+		/// task instances.
+		/// </remarks>
+		/// <returns></returns>
+		public static Task<IList<DiscoveryItemViewModel>> GetDiscoveries()
+		{
+			Debug.WriteLine ($"App.GetDiscoveries: Starting");
+
+			var tcs = new TaskCompletionSource<IList<DiscoveryItemViewModel>>();
+
+			// move to threadpool to make sure monitor doesn't block the UI thread
+			Task.Run (() =>
+				{
+					#region Local functions
+
+					// waits for event before proceeding
+					void Enter() => sDiscoveriesEvent.WaitOne();
+
+					// sets event to allow next waiter to proceed
+					void Leave() => sDiscoveriesEvent.Set();
+
+					// converts list of SHFeed items to list of Discovery items
+					IList<DiscoveryItemViewModel> GetDiscoveryItems (List<SHFeedObject> feedItems)
+					{
+						var items = new List<DiscoveryItemViewModel>();
+						foreach (var item in feedItems)
+						{
+							string imgUrl = null;
+							string linkUrl = null;
+
+							var content = JsonConvert.DeserializeObject<Dictionary<string, string>> (item.content);
+							foreach (var key in content.Keys)
+							{
+								var val = content [key];
+
+								if (key == "img" || key.StartsWith ("image"))
+									imgUrl = val;
+								else if (key == "url" || key.EndsWith ("link"))
+									linkUrl = val;
+							}
+
+							var created = string.IsNullOrEmpty(item.created) ? null : (DateTime?)DateTime.Parse(item.created, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+							var modified = string.IsNullOrEmpty(item.modified) ? null : (DateTime?)DateTime.Parse(item.modified, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+							var expires = string.IsNullOrEmpty(item.expires) ? null : (DateTime?)DateTime.Parse(item.expires, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
+
+
+							items.Add (new DiscoveryItemViewModel
+							{
+								PictureUrl = imgUrl,
+								LinkUrl = linkUrl,
+								Title = item.title?.Trim(),
+								Text = item.message?.Trim(),
+								Created = created,
+								Modified = modified,
+								Expires = expires,
+								Group = item.campaign
+							});
+						}
+
+						// return in descending creation order (i.e. reverse date)
+						items.Sort ((a, b) => b.Created.GetValueOrDefault().CompareTo (a.Created.GetValueOrDefault()));
+
+						return items;
+					}
+
+					#endregion Local functions
+
+					Enter();
+
+					Debug.WriteLine ($"App.GetDiscoveries: Started");
+
+					// if it takes too long to return (i.e. to call my callback
+					// below), give up to prevent leaks
+
+					var cts = new CancellationTokenSource (30000);
+					cts.Token.Register (() =>
+						{
+							tcs.TrySetException (new TimeoutException());
+
+							Debug.WriteLine ($"App.GetDiscoveries: Timeout waiting for callback");
+
+							Leave();
+						});
+
+					var shFeeds = DependencyService.Get<IStreetHawkFeeds>();
+					shFeeds.ReadFeedData (0, (feedItems, error) =>
+						{
+							// if task completed (failed or timed out), just leave
+							if (tcs.Task.IsCompleted)
+								return;
+
+							try
+							{
+								// now we're back from callback we can cancel the timeout
+								cts.Dispose();
+
+								if (error != null)
+								{
+#if DEBUG
+									Device.BeginInvokeOnMainThread (() =>
+										 Current?.MainPage?.DisplayAlert (
+												"App.GetDiscoveries: New feeds " +
+												"available but fetch failed:",
+												error, "OK"));
+#endif
+									throw new Exception (error);
+								}
+#if false//DEBUG
+								var feedMsg = "";
+
+								foreach (var feedItem in feedItems)
+									feedMsg = $"Title: {feedItem.title}; Message: {feedItem.message}; Content: {feedItem.content}. \r\n{feedMsg}";
+
+								Device.BeginInvokeOnMainThread(() =>
+									Current?.MainPage?.DisplayAlert (
+											"New feeds available and fetched " +
+											$"{feedItems.Count}:", feedMsg, "OK"));
+#endif
+								// acknowledge receipt to SH and indicate positive result
+								foreach (var feedItem in feedItems)
+								{
+									shFeeds.SendFeedAck (feedItem.feed_id);
+									shFeeds.NotifyFeedResult (feedItem.feed_id, ACCEPTED, false, true);
+								}
+
+								tcs.TrySetResult (GetDiscoveryItems (feedItems));
+							}
+							catch (Exception ex)
+							{
+								tcs.TrySetException (ex);
+
+								Debug.WriteLine ($"App.GetDiscoveries: " +
+									$"Error {ex.Message}\r\n{ex}");
+							}
+							finally
+							{
+								Debug.WriteLine ($"App.GetDiscoveries: Finished");
+
+								Leave();
+							}
+						});
+				});
 
 			return tcs.Task;
 		}
@@ -537,7 +608,8 @@ namespace TownFish.App
 							}
 							catch (Exception ex)
 							{
-								Debug.WriteLine ($"App.CheckCuid: Sync attempt {i} to {url} failed with {ex.Message}");
+								Debug.WriteLine ($"App.CheckCuid: " +
+									$"Sync attempt {i} to {url} failed with {ex.Message}\r\n{ex}");
 							}
 						}
 					}
@@ -545,7 +617,8 @@ namespace TownFish.App
 			}
 			catch (Exception ex)
 			{
-				Debug.WriteLine ($"App.CheckCuid: Failed with {ex.Message}");
+				Debug.WriteLine ($"App.CheckCuid: " +
+					$"Failed with {ex.Message}\r\n{ex}");
 			}
 			finally
 			{
@@ -651,10 +724,6 @@ namespace TownFish.App
 
 			private set
 			{
-				// null is set if GetDiscoveries fails, so ignore
-				if (value == null)
-					return;
-
 				sDiscoveries = value;
 
 				Current.OnDiscoveriesUpdated();
@@ -714,7 +783,9 @@ namespace TownFish.App
 		// NOTE: use LastDiscoveriesViewTime property to save persistently
 		static DateTime sLastDiscoveriesViewTime = DateTime.MinValue;
 
-		static int sGettingDiscoveries;
+		// start this off set so first in gets it
+		static AutoResetEvent sDiscoveriesEvent = new AutoResetEvent (true);
+
 		static IList<DiscoveryItemViewModel> sDiscoveries;
 
 		DateTime mStartTime;

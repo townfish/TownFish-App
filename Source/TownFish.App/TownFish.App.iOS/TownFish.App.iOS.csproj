@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\Xamarin.Forms.2.5.0.121934\build\netstandard1.0\Xamarin.Forms.props" Condition="Exists('..\..\packages\Xamarin.Forms.2.5.0.121934\build\netstandard1.0\Xamarin.Forms.props')" />
+  <Import Project="..\..\packages\Xamarin.Forms.2.5.0.280555\build\netstandard1.0\Xamarin.Forms.props" Condition="Exists('..\..\packages\Xamarin.Forms.2.5.0.280555\build\netstandard1.0\Xamarin.Forms.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
@@ -254,75 +254,45 @@
       <HintPath>..\..\References\Apptelic.UberWebView.iOS.dll</HintPath>
     </Reference>
     <Reference Include="Streethawk.IOS.Beacon-Unified">
-      <HintPath>..\..\Components\streethawkbeacon-1.8.7\lib\ios-unified\Streethawk.IOS.Beacon-Unified.dll</HintPath>
+      <HintPath>..\..\References\StreetHawk.iOS.1.8.7\Streethawk.IOS.Beacon-Unified.dll</HintPath>
     </Reference>
     <Reference Include="Streethawk.IOS.Core-Unified">
-      <HintPath>..\..\Components\streethawkanalytics-1.8.7\lib\ios-unified\Streethawk.IOS.Core-Unified.dll</HintPath>
+      <HintPath>..\..\References\StreetHawk.iOS.1.8.7\Streethawk.IOS.Core-Unified.dll</HintPath>
     </Reference>
     <Reference Include="Streethawk.IOS.Feed-Unified">
-      <HintPath>..\..\Components\streethawkfeeds-1.8.7\lib\ios-unified\Streethawk.IOS.Feed-Unified.dll</HintPath>
+      <HintPath>..\..\References\StreetHawk.iOS.1.8.7\Streethawk.IOS.Feed-Unified.dll</HintPath>
     </Reference>
     <Reference Include="Streethawk.IOS.Geofence-Unified">
-      <HintPath>..\..\Components\streethawkgeofence-1.8.7\lib\ios-unified\Streethawk.IOS.Geofence-Unified.dll</HintPath>
+      <HintPath>..\..\References\StreetHawk.iOS.1.8.7\Streethawk.IOS.Geofence-Unified.dll</HintPath>
     </Reference>
     <Reference Include="Streethawk.IOS.Growth-Unified">
-      <HintPath>..\..\Components\streethawkgrowth-1.8.7\lib\ios-unified\Streethawk.IOS.Growth-Unified.dll</HintPath>
+      <HintPath>..\..\References\StreetHawk.iOS.1.8.7\Streethawk.IOS.Growth-Unified.dll</HintPath>
     </Reference>
     <Reference Include="Streethawk.IOS.Location-Unified">
-      <HintPath>..\..\Components\streethawklocations-1.8.7\lib\ios-unified\Streethawk.IOS.Location-Unified.dll</HintPath>
+      <HintPath>..\..\References\StreetHawk.iOS.1.8.7\Streethawk.IOS.Location-Unified.dll</HintPath>
     </Reference>
     <Reference Include="Streethawk.IOS.Push-Unified">
-      <HintPath>..\..\Components\streethawkpush-1.8.7\lib\ios-unified\Streethawk.IOS.Push-Unified.dll</HintPath>
+      <HintPath>..\..\References\StreetHawk.iOS.1.8.7\Streethawk.IOS.Push-Unified.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.Forms.Core, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Xamarin.Forms.2.5.0.121934\lib\Xamarin.iOS10\Xamarin.Forms.Core.dll</HintPath>
+      <HintPath>..\..\packages\Xamarin.Forms.2.5.0.280555\lib\Xamarin.iOS10\Xamarin.Forms.Core.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Platform, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Xamarin.Forms.2.5.0.121934\lib\Xamarin.iOS10\Xamarin.Forms.Platform.dll</HintPath>
+      <HintPath>..\..\packages\Xamarin.Forms.2.5.0.280555\lib\Xamarin.iOS10\Xamarin.Forms.Platform.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Platform.iOS, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Xamarin.Forms.2.5.0.121934\lib\Xamarin.iOS10\Xamarin.Forms.Platform.iOS.dll</HintPath>
+      <HintPath>..\..\packages\Xamarin.Forms.2.5.0.280555\lib\Xamarin.iOS10\Xamarin.Forms.Platform.iOS.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.Forms.Xaml, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Xamarin.Forms.2.5.0.121934\lib\Xamarin.iOS10\Xamarin.Forms.Xaml.dll</HintPath>
+      <HintPath>..\..\packages\Xamarin.Forms.2.5.0.280555\lib\Xamarin.iOS10\Xamarin.Forms.Xaml.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.iOS" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\close.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <XamarinComponentReference Include="streethawkanalytics">
-      <Visible>False</Visible>
-      <Version>1.8.7</Version>
-    </XamarinComponentReference>
-    <XamarinComponentReference Include="streethawkbeacon">
-      <Visible>False</Visible>
-      <Version>1.8.7</Version>
-    </XamarinComponentReference>
-    <XamarinComponentReference Include="streethawkfeeds">
-      <Visible>False</Visible>
-      <Version>1.8.7</Version>
-    </XamarinComponentReference>
-    <XamarinComponentReference Include="streethawkgeofence">
-      <Visible>False</Visible>
-      <Version>1.8.7</Version>
-    </XamarinComponentReference>
-    <XamarinComponentReference Include="streethawkgrowth">
-      <Visible>False</Visible>
-      <Version>1.8.7</Version>
-    </XamarinComponentReference>
-    <XamarinComponentReference Include="streethawklocations">
-      <Visible>False</Visible>
-      <Version>1.8.7</Version>
-    </XamarinComponentReference>
-    <XamarinComponentReference Include="streethawkpush">
-      <Visible>False</Visible>
-      <Version>1.8.7</Version>
-    </XamarinComponentReference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Resources\Media.xcassets\AppIcons.appiconset\Contents.json">
@@ -361,8 +331,8 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Xamarin.Forms.2.5.0.121934\build\netstandard1.0\Xamarin.Forms.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Xamarin.Forms.2.5.0.121934\build\netstandard1.0\Xamarin.Forms.props'))" />
-    <Error Condition="!Exists('..\..\packages\Xamarin.Forms.2.5.0.121934\build\netstandard1.0\Xamarin.Forms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Xamarin.Forms.2.5.0.121934\build\netstandard1.0\Xamarin.Forms.targets'))" />
+    <Error Condition="!Exists('..\..\packages\Xamarin.Forms.2.5.0.280555\build\netstandard1.0\Xamarin.Forms.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Xamarin.Forms.2.5.0.280555\build\netstandard1.0\Xamarin.Forms.props'))" />
+    <Error Condition="!Exists('..\..\packages\Xamarin.Forms.2.5.0.280555\build\netstandard1.0\Xamarin.Forms.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Xamarin.Forms.2.5.0.280555\build\netstandard1.0\Xamarin.Forms.targets'))" />
   </Target>
-  <Import Project="..\..\packages\Xamarin.Forms.2.5.0.121934\build\netstandard1.0\Xamarin.Forms.targets" Condition="Exists('..\..\packages\Xamarin.Forms.2.5.0.121934\build\netstandard1.0\Xamarin.Forms.targets')" />
+  <Import Project="..\..\packages\Xamarin.Forms.2.5.0.280555\build\netstandard1.0\Xamarin.Forms.targets" Condition="Exists('..\..\packages\Xamarin.Forms.2.5.0.280555\build\netstandard1.0\Xamarin.Forms.targets')" />
 </Project>

@@ -157,12 +157,19 @@ namespace TownFish.App.Pages
             }
 		}
 
-		void App_PushUrlReceived (object sender, (string url, bool wasBackgrounded) args)
+		async void App_PushUrlReceived (object sender, (string url, bool wasBackgrounded) args)
 		{
 			// Basecamp Item 32: only navigate if we're not logged in; if logged
 			// in the Vanilla code takes care of its own notifications
 
 			// Basecamp Item 40: navigate anyway if we were backgrounded
+
+			// if still loading main page, wait for that to finish first
+			while (ViewModel.IsLoading)
+				await Task.Delay (100);
+
+			Debug.WriteLine ($"BrowserPage.App_PushUrlReceived: " +
+					$"Navigating to {args.url}");
 
 			if (string.IsNullOrEmpty (ViewModel.SyncToken) || args.wasBackgrounded)
 				Navigate (args.url);
@@ -378,18 +385,26 @@ namespace TownFish.App.Pages
 
 #pragma warning restore IDE1006 // Naming Styles
 
-		void App_BackgroundDiscoveriesReceived (object sender, EventArgs e)
+		async void App_BackgroundDiscoveriesReceived (object sender, EventArgs e)
 		{
 			// if already showing discoveries we can ignore this
 			if (ViewModel.IsDiscoveriesVisible)
 				return;
 
+			// if still loading main page, wait for that to finish first
+			while (ViewModel.IsLoading)
+				await Task.Delay (100);
+
 			// can't just call ShowDiscoveries here as the menu won't be set;
 			// we have to ask the schema to tell us to show discoveries, then it
 			// sets the menu for us, but as we don't yet have a callback for that...
 
-			// HACK: replace with a callback to schema
-			Navigate (App.ShowFeedUrl + App.QueryString);
+			var url = App.ShowFeedUrl + App.QueryString;
+
+			Debug.WriteLine ($"BrowserPage.App_BackgroundDiscoveriesReceived: " +
+					$"Navigating to {url}");
+
+			Navigate (url);
 		}
 
 		/// <summary>
