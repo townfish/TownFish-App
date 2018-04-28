@@ -1,5 +1,0 @@
-# Ignore components but keep metadata
-*/
-!.gitignore
-!*.info
-!*.png
