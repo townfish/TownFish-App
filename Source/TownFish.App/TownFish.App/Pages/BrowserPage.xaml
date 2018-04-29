@@ -88,7 +88,7 @@
 		</Grid>
 
 		<!-- Bottom Menu Bar -->
-		<Grid Grid.Row="3" Padding="10,0"
+		<Grid x:Name="pnlBottomMenuBar" Grid.Row="3" Padding="10,0"
 			  BackgroundColor="{Binding BottomMenuBackgroundColour}"
 			  IsVisible="{Binding IsBottomBarVisible}">
 			<Grid.ColumnDefinitions>
