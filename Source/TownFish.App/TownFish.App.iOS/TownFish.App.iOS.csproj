@@ -255,26 +255,26 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\References\Apptelic.UberWebView.iOS.dll</HintPath>
     </Reference>
-    <Reference Include="Streethawk.IOS.Beacon, Version=1.8.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Streethawk.IOS.Beacon.1.8.7\lib\Streethawk.IOS.Beacon.dll</HintPath>
+    <Reference Include="Streethawk.IOS.Beacon-Unified, Version=1.8.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Streethawk.IOS.Beacon-Unified.1.8.7\lib\Streethawk.IOS.Beacon-Unified.dll</HintPath>
     </Reference>
-    <Reference Include="Streethawk.IOS.Core, Version=1.8.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Streethawk.IOS.Core.1.8.7\lib\Streethawk.IOS.Core.dll</HintPath>
+    <Reference Include="Streethawk.IOS.Core-Unified, Version=1.8.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Streethawk.IOS.Core-Unified.1.8.7\lib\Streethawk.IOS.Core-Unified.dll</HintPath>
     </Reference>
-    <Reference Include="Streethawk.IOS.Feed, Version=1.8.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Streethawk.IOS.Feed.1.8.7\lib\Streethawk.IOS.Feed.dll</HintPath>
+    <Reference Include="Streethawk.IOS.Feed-Unified, Version=1.8.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Streethawk.IOS.Feed-Unified.1.8.7\lib\Streethawk.IOS.Feed-Unified.dll</HintPath>
     </Reference>
-    <Reference Include="Streethawk.IOS.Geofence, Version=1.8.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Streethawk.IOS.Geofence.1.8.7\lib\Streethawk.IOS.Geofence.dll</HintPath>
+    <Reference Include="Streethawk.IOS.Geofence-Unified, Version=1.8.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Streethawk.IOS.Geofence-Unified.1.8.7\lib\Streethawk.IOS.Geofence-Unified.dll</HintPath>
     </Reference>
-    <Reference Include="Streethawk.IOS.Growth, Version=1.8.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Streethawk.IOS.Growth.1.8.7\lib\Streethawk.IOS.Growth.dll</HintPath>
+    <Reference Include="Streethawk.IOS.Growth-Unified, Version=1.8.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Streethawk.IOS.Growth-Unified.1.8.7\lib\Streethawk.IOS.Growth-Unified.dll</HintPath>
     </Reference>
-    <Reference Include="Streethawk.IOS.Location, Version=1.8.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Streethawk.IOS.Location.1.8.7\lib\Streethawk.IOS.Location.dll</HintPath>
+    <Reference Include="Streethawk.IOS.Location-Unified, Version=1.8.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Streethawk.IOS.Location-Unified.1.8.7\lib\Streethawk.IOS.Location-Unified.dll</HintPath>
     </Reference>
-    <Reference Include="Streethawk.IOS.Push, Version=1.8.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Streethawk.IOS.Push.1.8.7\lib\Streethawk.IOS.Push.dll</HintPath>
+    <Reference Include="Streethawk.IOS.Push-Unified, Version=1.8.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Streethawk.IOS.Push-Unified.1.8.7\lib\Streethawk.IOS.Push-Unified.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
