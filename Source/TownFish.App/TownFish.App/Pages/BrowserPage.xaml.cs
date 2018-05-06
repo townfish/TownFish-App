@@ -7,6 +7,8 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 using Xamarin.Forms;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 using Newtonsoft.Json;
 
@@ -28,8 +30,8 @@ namespace TownFish.App.Pages
 		{
 			InitializeComponent();
 
-            // set custom user agent
-            wbvContent.CustomUserAgent = cCustomUserAgent;
+			// set custom user agent
+			wbvContent.CustomUserAgent = cCustomUserAgent;
 
 			// set up JS bridge action scripts
 			wbvContent.PageLoadedScript = cPageLoadScript;
@@ -84,6 +86,19 @@ namespace TownFish.App.Pages
 			App.Current.AppResumed += App_Resumed;
 
 			base.OnAppearing();
+
+			var safeInsets = On<iOS>().SafeAreaInsets();
+			if (safeInsets.Top > 0)
+			{
+				var topPadding = pnlTopMenuBar.Padding;
+				var bottomPadding = pnlBottomMenuBar.Padding;
+
+				topPadding.Top = safeInsets.Top - 6;			// make it a
+				bottomPadding.Bottom = safeInsets.Bottom - 12;	// little tighter
+
+				pnlTopMenuBar.Padding = topPadding;
+				pnlBottomMenuBar.Padding = bottomPadding;
+			}
 		}
 
 		protected override void OnDisappearing()
@@ -292,8 +307,11 @@ namespace TownFish.App.Pages
 		void UberWebView_NavigationStarting (object sender, WebNavigatingEventArgs e)
 		{
 			// launch non-TownFish URLs in external browser
-			var uri = new Uri (e.Url);
-			if (uri.Host != App.SiteDomain && uri.Host != App.TwitterApiDomain)
+			var url = e.Url;
+			var uri = new Uri (url);
+
+			if (uri.Host != App.SiteDomain && uri.Host != App.TwitterApiDomain &&
+				!ViewModel.IsWhitelisted (url))
 			{
 				e.Cancel = true;
 

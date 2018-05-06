@@ -46,6 +46,8 @@ namespace TownFish.App.Models
 
 		public string SyncToken { get; set; }
 
+		public string[] WhitelistUrls { get; set; }
+
 		#endregion
 	}
 
