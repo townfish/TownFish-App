@@ -84,7 +84,7 @@ namespace TownFish.App.Pages
 
 				topPadding = pnlTopForm.Padding;
 				topPadding.Top += top;
-				pnlTopMenuBar.Padding = topPadding;
+				pnlTopForm.Padding = topPadding;
 
 				var bottomPadding = pnlBottomMenuBar.Padding;
 				bottomPadding.Bottom = bottom;
