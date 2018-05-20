@@ -52,25 +52,6 @@ namespace TownFish.App.Pages
 			wbvContent.NavigationStarted += UberWebView_NavigationStarted;
 			wbvContent.NavigationFinished += UberWebView_NavigationFinished;
 			wbvContent.NavigationFailed += UberWebView_NavigationFailed;
-
-			wbvContent.QueryParamDomain = App.SiteDomain;
-			wbvContent.QueryParam = App.QueryParam;
-
-			// get bottom action frames so we can manually set the background,
-			// as binding background colour crashes on Android (thanks, Xamarin!)
-			//mBottomActionFrames = new Frame[] { frmSuper0, frmSuper1, frmSuper2, frmSuper3, frmSuper4, frmSuper5 };
-
-			// on iOS we have to allow for the overlapping status bar at top of layout
-			if (Device.RuntimePlatform == Device.iOS)
-			{
-				var pad = pnlTopMenuBar.Padding;
-				pad.Top += cTopPaddingiOS;
-				pnlTopMenuBar.Padding = pad;
-
-				pad = pnlTopForm.Padding;
-				pad.Top += cTopPaddingiOS;
-				pnlTopForm.Padding = pad;
-			}
 		}
 
         #endregion Construction
@@ -87,16 +68,26 @@ namespace TownFish.App.Pages
 
 			base.OnAppearing();
 
-			var safeInsets = On<iOS>().SafeAreaInsets();
-			if (safeInsets.Top > 0)
+			// handle ios status bar padding and stupid notch on iPhone X and similar
+			if (Device.RuntimePlatform == Device.iOS)
 			{
+				var safeInsets = On<iOS>().SafeAreaInsets();
+				var top = safeInsets.Top > 0 ? safeInsets.Top - 6 : cTopPaddingiOS;
+				var bottom = safeInsets.Bottom > 0 ? safeInsets.Bottom - 12 : 0;
+
+				// valuds of 6 and 12 above to make it a little
+				// tighter than Apple default insets
+
 				var topPadding = pnlTopMenuBar.Padding;
-				var bottomPadding = pnlBottomMenuBar.Padding;
-
-				topPadding.Top = safeInsets.Top - 6;			// make it a
-				bottomPadding.Bottom = safeInsets.Bottom - 12;	// little tighter
-
+				topPadding.Top += top;
 				pnlTopMenuBar.Padding = topPadding;
+
+				topPadding = pnlTopForm.Padding;
+				topPadding.Top += top;
+				pnlTopMenuBar.Padding = topPadding;
+
+				var bottomPadding = pnlBottomMenuBar.Padding;
+				bottomPadding.Bottom = bottom;
 				pnlBottomMenuBar.Padding = bottomPadding;
 			}
 		}
@@ -127,7 +118,7 @@ namespace TownFish.App.Pages
 
 					var url = ViewModel.OverflowImages.FirstOrDefault (i => i.Value == selection)?.Href;
 					if (!string.IsNullOrWhiteSpace (url))
-						Navigate (App.BaseUrl + url + App.QueryString);
+						Navigate (App.BaseUrl + url);
 				});
 
 			ViewModel.LocationTapped += ViewModel_LocationTapped;
@@ -417,7 +408,7 @@ namespace TownFish.App.Pages
 			// we have to ask the schema to tell us to show discoveries, then it
 			// sets the menu for us, but as we don't yet have a callback for that...
 
-			var url = App.ShowFeedUrl + App.QueryString;
+			var url = App.ShowFeedUrl;
 
 			Debug.WriteLine ($"BrowserPage.App_BackgroundDiscoveriesReceived: " +
 					$"Navigating to {url}");
@@ -455,31 +446,25 @@ namespace TownFish.App.Pages
 		{
 			await HideDiscoveriesAsync();
 
-			Navigate (App.EditLikesUrl + App.QueryString);
+			Navigate (App.EditLikesUrl);
 		}
 
 		async void BrowserPage_EditProfileTapped (object sender, EventArgs e)
 		{
 			await HideDiscoveriesAsync();
 
-			Navigate (App.EditProfileUrl + App.QueryString);
+			Navigate (App.EditProfileUrl);
 		}
 
 		void BrowserPage_MemberAgreementTapped (object sender, EventArgs e)
 		{
 			HideSearchPanel();
 
-			Navigate (App.TermsUrl + App.QueryString);
+			Navigate (App.TermsUrl);
 		}
 
 		void ViewModel_MenusLoaded (object sender, EventArgs e)
 		{
-			// now update bottom action superscript frame background colours, in case they changed
-			//if (ViewModel.IsBottomBarVisible)
-			//	for (var i = 0; i < 6; i++)
-			//		mBottomActionFrames [i].BackgroundColor =
-			//				ViewModel.BottomActions [i].SuperCountBackgroundColour;
-
 			// only hide loading if not in the process of hiding discoveries
 			if (!mHidingDiscoveries)
 				Device.BeginInvokeOnMainThread (() => HideLoading());

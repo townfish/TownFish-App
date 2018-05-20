@@ -640,7 +640,7 @@ namespace TownFish.App.ViewModels
 
 		public void SetLocation (string cityID)
 		{
-			OnNavigateRequested (App.BaseUrl + mLocationSetFormat.Replace ("{id}", cityID) + App.QueryString);
+			OnNavigateRequested (App.BaseUrl + mLocationSetFormat.Replace ("{id}", cityID));
 		}
 
 		public void LoadMenuMap (TownFishMenuMap map)
@@ -740,12 +740,12 @@ namespace TownFish.App.ViewModels
 				// # date stamp no longer needed, so link is now same as back
 				//case "link":
 				//	return new Command (_ =>
-				//		{ OnNavigateRequested ( App.BaseUrl + item.Href + App.QueryString + "#" + DateTime.Now.Ticks;) }); // TODO: remove nav hash!
+				//		{ OnNavigateRequested ( App.BaseUrl + item.Href + "#" + DateTime.Now.Ticks;) }); // TODO: remove nav hash!
 
 				case "link":
 				case "back":
 					return new Command (_ =>
-						{ OnNavigateRequested (App.BaseUrl + item.Href + App.QueryString); });
+						{ OnNavigateRequested (App.BaseUrl + item.Href); });
 
 				case "noop":
 					return sNoOpCommand;
