@@ -54,7 +54,7 @@ namespace TownFish.App
 			{
 				BindingContext = new BrowserPageViewModel
 				{
-					SourceUrl = BaseUrl + StartPath + QueryString
+					SourceUrl = BaseUrl + StartPath
 				}
 			};
 		}
@@ -755,9 +755,6 @@ namespace TownFish.App
 		public const string EditProfileUrl = BaseUrl + "/profile/edit/generalinfo";
 		public const string EditLikesUrl = BaseUrl + "/profile/edit/likes";
 		public const string ShowFeedUrl = BaseUrl + "/profile/showfeed";
-
-		public const string QueryParam = "mode=app"; // parameter added to every request
-		public const string QueryString = "?" + QueryParam;
 
 		public const string TwitterApiDomain = "api.twitter.com";
 

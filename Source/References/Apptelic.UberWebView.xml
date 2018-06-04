@@ -45,6 +45,11 @@
             Gets or sets the source URL of the underlying WebView.
             </summary>
         </member>
+        <member name="P:Apptelic.UberWebViewLib.IUberWebViewRenderer.Referrer">
+            <summary>
+            If set, sets the HTTP 'referer' header for the following request.
+            </summary>
+        </member>
         <member name="T:Apptelic.UberWebViewLib.UberWebView">
             <summary>
             Implements an enhanced <see cref="T:Xamarin.Forms.WebView"/> with error handling and optional
@@ -191,6 +196,11 @@
         <member name="P:Apptelic.UberWebViewLib.UberWebView.Cookies">
             <summary>
             Gets the cookies.
+            </summary>
+        </member>
+        <member name="P:Apptelic.UberWebViewLib.UberWebView.Referrer">
+            <summary>
+            If set, sets the HTTP 'referer' header for the following request.
             </summary>
         </member>
     </members>

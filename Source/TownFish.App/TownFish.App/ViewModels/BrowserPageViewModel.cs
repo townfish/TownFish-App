@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 using System.Windows.Input;
 
 using Xamarin.Forms;
@@ -13,7 +14,7 @@ using Xamarin.Forms;
 using Newtonsoft.Json;
 
 using TownFish.App.Models;
-using TownFish.App.Helpers;
+
 
 namespace TownFish.App.ViewModels
 {
@@ -639,7 +640,7 @@ namespace TownFish.App.ViewModels
 
 		public void SetLocation (string cityID)
 		{
-			OnNavigateRequested (App.BaseUrl + mLocationSetFormat.Replace ("{id}", cityID) + App.QueryString);
+			OnNavigateRequested (App.BaseUrl + mLocationSetFormat.Replace ("{id}", cityID));
 		}
 
 		public void LoadMenuMap (TownFishMenuMap map)
@@ -649,6 +650,10 @@ namespace TownFish.App.ViewModels
 
 			mLocationApiFormat = map.LocationsAPI;
 			mLocationSetFormat = map.LocationSetUrl;
+
+			// if we're given a whitelist, set it
+			if ((map.WhitelistUrls?.Length ?? 0) > 0)
+				mWhitelistUrls = map.WhitelistUrls;
 
 			SyncToken = map.SyncToken;
 
@@ -735,12 +740,12 @@ namespace TownFish.App.ViewModels
 				// # date stamp no longer needed, so link is now same as back
 				//case "link":
 				//	return new Command (_ =>
-				//		{ OnNavigateRequested ( App.BaseUrl + item.Href + App.QueryString + "#" + DateTime.Now.Ticks;) }); // TODO: remove nav hash!
+				//		{ OnNavigateRequested ( App.BaseUrl + item.Href + "#" + DateTime.Now.Ticks;) }); // TODO: remove nav hash!
 
 				case "link":
 				case "back":
 					return new Command (_ =>
-						{ OnNavigateRequested (App.BaseUrl + item.Href + App.QueryString); });
+						{ OnNavigateRequested (App.BaseUrl + item.Href); });
 
 				case "noop":
 					return sNoOpCommand;
@@ -748,6 +753,18 @@ namespace TownFish.App.ViewModels
 				default:
 					return null;
 			}
+		}
+
+		public bool IsWhitelisted (string url)
+		{
+			if ((mWhitelistUrls?.Length ?? 0) == 0)
+				return false;
+
+			foreach (var w in mWhitelistUrls)
+				if (Regex.IsMatch (url, w, RegexOptions.IgnoreCase))
+					return true;
+
+			return false;
 		}
 
 		void OnMenusLoaded()
@@ -1032,6 +1049,7 @@ namespace TownFish.App.ViewModels
 
 		string mLocationApiFormat = "";
 		string mLocationSetFormat = "";
+		string[] mWhitelistUrls = null;
 
 		BottomActionViewModel mDiscoveriesMenuItemViewModel;
 
