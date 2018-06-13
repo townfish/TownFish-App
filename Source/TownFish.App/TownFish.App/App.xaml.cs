@@ -746,7 +746,7 @@ namespace TownFish.App
 		#region Fields
 
 		// all magic URLs and paths used in this app
-		public const string SiteDomain = "beta.townfish.com";
+		public const string SiteDomain = "townfish.com";
 		public const string BaseUrl = "https://" + SiteDomain;
 		public const string StartPath = "/";
 		public const string TermsUrl = BaseUrl + "/terms-of-use/";
