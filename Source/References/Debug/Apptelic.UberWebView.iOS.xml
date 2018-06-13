@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Apptelic.UberWebView.iOS</name>
+    </assembly>
+    <members>
+        <member name="T:Apptelic.UberWebViewLib.iOS.UberWebViewRenderer">
+            <summary>
+            Renders the <see cref="T:Apptelic.UberWebViewLib.UberWebView"/> on iOS.
+            </summary>
+        </member>
+        <member name="M:Apptelic.UberWebViewLib.iOS.UberWebViewRenderer.UberNavigationDelegate.DidFailNavigation(WebKit.WKWebView,WebKit.WKNavigation,Foundation.NSError)">
+            <summary>
+            When a request fails, raises the <see cref="E:Apptelic.UberWebViewLib.UberWebView.NavigationFailed"/>
+            event with an <see cref="T:System.ArgumentException"/> indicating the failure reason in
+            the message and the error code in the parameter name.
+            </summary>
+            <param name="webView"></param>
+            <param name="navigation"></param>
+            <param name="error"></param>
+        </member>
+        <member name="M:Apptelic.UberWebViewLib.iOS.UberWebViewRenderer.DidReceiveScriptMessage(WebKit.WKUserContentController,WebKit.WKScriptMessage)">
+            <summary>
+            Raises <see cref="E:Apptelic.UberWebViewLib.UberWebView.ScriptMessageReceived"/>.
+            </summary>
+            <param name="userContentController"></param>
+            <param name="message"></param>
+        </member>
+        <member name="M:Apptelic.UberWebViewLib.iOS.UberWebViewRenderer.InvokeScript(System.String)">
+            <summary>
+            Invokes the given script in the underlying WebView.
+            </summary>
+            <param name="script"></param>
+        </member>
+        <member name="M:Apptelic.UberWebViewLib.iOS.UberWebViewRenderer.GetCookies(System.Uri)">
+            <summary>
+            Gets cookies for all domains (if URL is null) or for a specific
+            domain / URL.
+            </summary>
+            <param name="uri"></param>
+            <returns></returns>
+            <remarks>
+            URI can't be null on Android.
+            </remarks>
+        </member>
+        <member name="M:Apptelic.UberWebViewLib.iOS.UberWebViewRenderer.SetCookies(System.Net.CookieCollection)">
+            <summary>
+            Sets the cookies to be used for subsequent requests.
+            </summary>
+            <param name="cookieJar">The cookie jar.</param>
+        </member>
+        <member name="M:Apptelic.UberWebViewLib.iOS.UberWebViewRenderer.DeleteCookies(System.Uri)">
+            <summary>
+            Clears cookies for given site/url.
+            </summary>
+            <param name="uri"></param>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:Apptelic.UberWebViewLib.iOS.UberWebViewRenderer.OnElementChanged(Xamarin.Forms.Platform.iOS.ElementChangedEventArgs{Apptelic.UberWebViewLib.UberWebView})">
+            <summary>
+            Connects and/or disconnects an <see cref="T:Apptelic.UberWebViewLib.UberWebView"/> instance to this renderer.
+            </summary>
+            <param name="e"></param>
+        </member>
+        <member name="P:Apptelic.UberWebViewLib.iOS.UberWebViewRenderer.Source">
+            <summary>
+            Gets or sets the source URL.
+            </summary>
+        </member>
+        <member name="P:Apptelic.UberWebViewLib.iOS.UberWebViewRenderer.Referrer">
+            <summary>
+            If set, sets the HTTP 'referer' header for the following request.
+            </summary>
+        </member>
+    </members>
+</doc>

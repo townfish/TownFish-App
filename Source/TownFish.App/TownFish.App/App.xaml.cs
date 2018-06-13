@@ -54,7 +54,7 @@ namespace TownFish.App
 			{
 				BindingContext = new BrowserPageViewModel
 				{
-					SourceUrl = BaseUrl + StartPath + QueryString
+					SourceUrl = BaseUrl + StartPath
 				}
 			};
 		}
@@ -746,7 +746,7 @@ namespace TownFish.App
 		#region Fields
 
 		// all magic URLs and paths used in this app
-		public const string SiteDomain = "dev.townfish.com";
+		public const string SiteDomain = "beta.townfish.com";
 		public const string BaseUrl = "https://" + SiteDomain;
 		public const string StartPath = "/";
 		public const string TermsUrl = BaseUrl + "/terms-of-use/";
@@ -756,14 +756,11 @@ namespace TownFish.App
 		public const string EditLikesUrl = BaseUrl + "/profile/edit/likes";
 		public const string ShowFeedUrl = BaseUrl + "/profile/showfeed";
 
-		public const string QueryParam = "mode=app"; // parameter added to every request
-		public const string QueryString = "?" + QueryParam;
-
 		public const string TwitterApiDomain = "api.twitter.com";
 
 		public const string GcmSenderID = "7712235891";
 
-		public const string StreetHawkAppKey = "TownFish";
+		public const string StreetHawkAppKey = "TownFish_BETA";
 
 		const string cLastDiscoveriesViewTimeKey = "LastDiscoveriesViewTime";
 
