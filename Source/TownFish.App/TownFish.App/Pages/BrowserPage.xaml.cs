@@ -54,11 +54,11 @@ namespace TownFish.App.Pages
 			wbvContent.NavigationFailed += UberWebView_NavigationFailed;
 		}
 
-        #endregion Construction
+		#endregion Construction
 
-        #region Methods
+		#region Methods
 
-        protected override void OnAppearing()
+		protected override void OnAppearing()
 		{
 			App.Current.BackButtonPressed += App_BackButtonPressed;
 			App.Current.PushUrlReceived += App_PushUrlReceived;
@@ -144,23 +144,23 @@ namespace TownFish.App.Pages
 		}
 
 		void App_BackButtonPressed (object sender, EventArgs e)
-        {
-            if (wbvContent.CanGoBack)
-            {
+		{
+			if (wbvContent.CanGoBack)
+			{
 				// hacky - fake a back callback, to handle back with discoveries/info showing
 				// or to let JS code handle actually going back in webview if necessary
 
-                ViewModel_CallbackRequested (this,
+				ViewModel_CallbackRequested (this,
 						new BrowserPageViewModel.CallbackInfo
 						{
 							IsNative = false,
 							Name = BrowserPageViewModel.CallbackInfo.Back
 						});
-            }
-            else
-            {
-                App.Current.CloseApp();
-            }
+			}
+			else
+			{
+				App.Current.CloseApp();
+			}
 		}
 
 		async void App_PushUrlReceived (object sender, (string url, bool wasBackgrounded) args)
@@ -280,7 +280,7 @@ namespace TownFish.App.Pages
 
 					case cHideDiscoveriesAction:
 						// when being told to hide discoveries, that includes info too
-                        mDiscoveriesInfoActive = false;
+						mDiscoveriesInfoActive = false;
 
 						HideDiscoveries();
 						break;
@@ -319,7 +319,7 @@ namespace TownFish.App.Pages
 
 		void UberWebView_NavigationFinished (object sender, string url)
 		{
-            // in case URL is changed by webview itself, save it here so we now what it is
+			// in case URL is changed by webview itself, save it here so we now what it is
 			ViewModel.SourceUrl = url; // don't use Navigate() here!
 
 			/* TODO: Paul said the menus should be hidden at the start of each
@@ -493,12 +493,12 @@ namespace TownFish.App.Pages
 				if (ViewModel.IsDiscoveriesInfoVisible)
 					return;
 
-                await ShowLoadingAsync();
+				await ShowLoadingAsync();
 
 				mDiscoveriesInfoActive = true;
 				ViewModel.IsDiscoveriesInfoVisible = true;
 
-                HideLoading();
+				HideLoading();
 
 				return;
 			}
@@ -506,28 +506,28 @@ namespace TownFish.App.Pages
 			// special-case back button on info page too, to show discoveries if there are
 			// any, otherwise do default back handling
 
-            if (info.Name == BrowserPageViewModel.CallbackInfo.Back &&
+			if (info.Name == BrowserPageViewModel.CallbackInfo.Back &&
 					ViewModel.IsDiscoveriesVisible && ViewModel.IsDiscoveriesInfoVisible &&
 					!ViewModel.IsDiscoveriesEmpty)
-            {
-                await ShowLoadingAsync();
+			{
+				await ShowLoadingAsync();
 
-                mDiscoveriesInfoActive = false;
-                ViewModel.IsDiscoveriesInfoVisible = false;
+				mDiscoveriesInfoActive = false;
+				ViewModel.IsDiscoveriesInfoVisible = false;
 
-                HideLoading();
+				HideLoading();
 
-                return;
-            }
+				return;
+			}
 
-            // make sure this is closed so location name shows
-            ViewModel.IsDiscoveriesInfoVisible = false;
+			// make sure this is closed so location name shows
+			ViewModel.IsDiscoveriesInfoVisible = false;
 
-            HideSearchPanel();
+			HideSearchPanel();
 
-            Device.BeginInvokeOnMainThread(() =>
-                wbvContent.InvokeScript(string.Format(cCallbackFormat, info.Name)));
-        }
+			Device.BeginInvokeOnMainThread(() =>
+				wbvContent.InvokeScript(string.Format(cCallbackFormat, info.Name)));
+		}
 
 		void ViewModel_NavigateRequested (object sender, string url)
 		{
@@ -537,32 +537,32 @@ namespace TownFish.App.Pages
 		void Navigate (string url)
 		{
 			if (string.IsNullOrEmpty (url))
-                return;
+				return;
 
-            // if it's a TF URL hide the discoveries and save URL for returning to later
-            if (url.StartsWith (App.BaseUrl))
+			// if it's a TF URL hide the discoveries and save URL for returning to later
+			if (url.StartsWith (App.BaseUrl))
 			{
 				HideDiscoveries();
 
 				// save this in case we come back later from an external URL
 				mLastSourceUrl = url;
-            }
+			}
 
-            // remember where we're going...
-            ViewModel.SourceUrl = url;
+			// remember where we're going...
+			ViewModel.SourceUrl = url;
 
-            //Most WebView operations need to be done on UI thread, so switch now
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                // On initial load, set the WebView Source directly - 
-                // on subsequent navigation requests, use JavaScript to get around strange bug 
-                // with Android WebView
-                if (wbvContent.Source == null)
-                    wbvContent.Source = url;
-                else
-                    wbvContent.InvokeScript(string.Format("window.location.assign(\"{0}\");", url));
-            });
-        }
+			//Most WebView operations need to be done on UI thread, so switch now
+			Device.BeginInvokeOnMainThread(() =>
+			{
+				// On initial load, set the WebView Source directly - 
+				// on subsequent navigation requests, use JavaScript to get around strange bug 
+				// with Android WebView
+				if (wbvContent.Source == null)
+					wbvContent.Source = url;
+				else
+					wbvContent.InvokeScript(string.Format("window.location.assign(\"{0}\");", url));
+			});
+		}
 
 		void UpdateDiscoveryItems()
 		{
@@ -617,7 +617,7 @@ namespace TownFish.App.Pages
 			if (ViewModel.IsDiscoveriesEmpty)
 				return;
 
-            Device.StartTimer (TimeSpan.FromSeconds (1), UpdateDiscoveryExpiry);
+			Device.StartTimer (TimeSpan.FromSeconds (1), UpdateDiscoveryExpiry);
 
 			// now we've shown discoveries, reset count & last view time
 			ViewModel.NewDiscoveriesCount = 0;
@@ -758,9 +758,9 @@ namespace TownFish.App.Pages
 			// which could result in loading never being removed
 			ViewModel.IsLoading = true;
 
-            mOpenedLoadingTime = DateTime.Now;
+			mOpenedLoadingTime = DateTime.Now;
 
-            if (!mFirstLoading)
+			if (!mFirstLoading)
 			{
 
 				pnlLoading.Opacity = 1;
@@ -837,7 +837,7 @@ namespace TownFish.App.Pages
 #endif
 
 		// minimum time to show loading for
-        const int cLoadingDelayMS = 1000;
+		const int cLoadingDelayMS = 1000;
 		const int cHideFirstLoadingDelayMS = 10000;
 
 		// apparently iOS status bar height is always 20 in XF (apparently, I said)
@@ -870,9 +870,9 @@ namespace TownFish.App.Pages
 		const string cMoreActions = null; // e.g. "Please Select:";
 		const string cCancel = "Cancel";
 
-        const string cCustomUserAgent = "com.townfish.app";
+		const string cCustomUserAgent = "com.townfish.app";
 
-        TownFishMenuMap mCurrentMenuMap;
+		TownFishMenuMap mCurrentMenuMap;
 
 		bool mFirstLoading = true;
 		bool mFirstShowing = true;
@@ -886,8 +886,8 @@ namespace TownFish.App.Pages
 
 		string mLastSourceUrl;
 
-        private bool mDiscoveriesInfoActive = false;
+		private bool mDiscoveriesInfoActive = false;
 
-        #endregion Fields
-    }
+		#endregion Fields
+	}
 }
