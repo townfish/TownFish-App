@@ -24,6 +24,13 @@
 	<string>com.matt.townfish</string>
 	<key>CFBundleVersion</key>
 	<string>180629</string>
+	<key>CFBundleIconFiles</key>
+	<array>
+		<string>Icon-60@2x.png</string>
+		<string>Icon-Small@2x.png</string>
+		<string>Icon-Small.png</string>
+		<string>Icon-Small-40@2x.png</string>
+	</array>
 	<key>CFBundleShortVersionString</key>
 	<string>1.3.4</string>
 	<key>UIStatusBarTintParameters</key>
@@ -68,7 +75,7 @@
 	<string>TownFish allows you to post photos</string>
 	<key>XSAppIconAssets</key>
 	<string>Resources/Media.xcassets/AppIcons.appiconset</string>
-	<key>XSLaunchImageAssets</key>
-	<string>Resources/Media.xcassets/LaunchImages.launchimage</string>
+	<key>UILaunchStoryboardName</key>
+	<string>Launch</string>
 </dict>
 </plist>
