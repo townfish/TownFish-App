@@ -199,8 +199,7 @@ namespace TownFish.App.ViewModels
 		/// <returns></returns>
 		public virtual string PropertyName<T> (Expression<Func<T>> propExp)
 		{
-			var memberExp = propExp.Body as MemberExpression;
-			if (memberExp == null)
+			if (!(propExp.Body is MemberExpression memberExp))
 				throw new ArgumentException ("Expression body must be a member expression");
 
 			return memberExp.Member.Name;
@@ -230,12 +229,10 @@ namespace TownFish.App.ViewModels
 		/// <param name="callback">Callback to receive new property value when changed</param>
 		public virtual void ObserveProperty<T> (Expression<Func<T>> propExp, Action<T> callback)
 		{
-			var memberExp = propExp.Body as MemberExpression;
-			if (memberExp == null)
+			if (!(propExp.Body is MemberExpression memberExp))
 				throw new ArgumentException ("Expression body must be a member expression");
 
-			var propInfo = memberExp.Member as PropertyInfo;
-			if (propInfo == null)
+			if (!(memberExp.Member is PropertyInfo propInfo))
 				throw new ArgumentException ("Member must be a property");
 
 			var name = propInfo.Name;
@@ -244,30 +241,26 @@ namespace TownFish.App.ViewModels
 			var weakCallback = callback.Target == this ? null : new WeakReference<Action<T>> (callback);
 			var strongCallback = callback.Target == this ? callback : null;
 
-			PropertyChangedEventHandler localHandler = null; // '= null' prevents unassigned error below
+			PropertyChanged += LocalHandler;
 
-			// this lambda captures both weakCallback and localHandler, so neither will be GC'd until the
-			// weakCallback target is no longer valid and PropertyChanged is unhooked for this observer
-
-			localHandler = (s, e) =>
+			// local helper
+			void LocalHandler (object s, PropertyChangedEventArgs e)
+			{
+				if (e.PropertyName == name)
 				{
-					if (e.PropertyName == name)
-					{
-						Action<T> targetHandler;
+					Action<T> targetHandler;
 
-						if (weakCallback != null)
-							weakCallback.TryGetTarget (out targetHandler);
-						else
-							targetHandler = strongCallback;
+					if (weakCallback != null)
+						weakCallback.TryGetTarget (out targetHandler);
+					else
+						targetHandler = strongCallback;
 
-						if (targetHandler != null)
-							targetHandler ((T) propInfo.GetValue (this));
-						else
-							PropertyChanged -= localHandler; // target has gone away, so I'm not needed
-					}
-				};
-
-			PropertyChanged += localHandler;
+					if (targetHandler != null)
+						targetHandler ((T) propInfo.GetValue (this));
+					else
+						PropertyChanged -= LocalHandler; // target has gone away, so I'm not needed
+				}
+			}
 		}
 
 		/// <summary>

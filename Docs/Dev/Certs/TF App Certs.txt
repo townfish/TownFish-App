@@ -1,0 +1,9 @@
+Name: AdHoc Dist. for TownFish Ltd. (com.matt.townfish)
+Type: iOS Distribution
+App ID: LK2389XQ78.com.matt.townfish
+Expires: May 20, 2019
+
+Name: Store Dist. for TownFish Ltd. (com.matt.townfish)
+Type: iOS Distribution
+App ID: LK2389XQ78.com.matt.townfish
+Expires: May 20, 2019
