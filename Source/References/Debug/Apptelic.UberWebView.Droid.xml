@@ -66,10 +66,5 @@
             Gets or sets the source URL.
             </summary>
         </member>
-        <member name="P:Apptelic.UberWebViewLib.Droid.UberWebViewRenderer.Referrer">
-            <summary>
-            If set, sets the HTTP 'referer' header for the following request.
-            </summary>
-        </member>
     </members>
 </doc>
