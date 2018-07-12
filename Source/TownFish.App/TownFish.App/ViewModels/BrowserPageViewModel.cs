@@ -615,14 +615,14 @@ namespace TownFish.App.ViewModels
 			{
 				using (var client = new HttpClient())
 				{
-                    var resultJson = await client.GetStringAsync(
-                            App.BaseUrl + mLocationApiFormat.Replace("{term}", SearchTerm.Trim()));
+					var resultJson = await client.GetStringAsync(
+							App.BaseUrl + mLocationApiFormat.Replace("{term}", SearchTerm.Trim()));
 
 					// if a selection has already been made, ignore these results
 					if (string.IsNullOrEmpty (SearchTerm))
 						return;
 
-                    if (!string.IsNullOrEmpty (resultJson))
+					if (!string.IsNullOrEmpty (resultJson))
 					{
 						var model = JsonConvert.DeserializeObject<TownFishLocationList> (resultJson);
 						if (model?.Items != null)
@@ -735,8 +735,8 @@ namespace TownFish.App.ViewModels
 
 				case "callback":
 				case "nativeCallback":
-                    return new Command(_ =>
-                        OnCallbackRequested(item.Name, item.Type == "nativeCallback"));
+					return new Command(_ =>
+						OnCallbackRequested(item.Name, item.Type == "nativeCallback"));
 				// # date stamp no longer needed, so link is now same as back
 				//case "link":
 				//	return new Command (_ =>
@@ -963,7 +963,7 @@ namespace TownFish.App.ViewModels
 
 				foreach (var item in bottom.Items)
 				{
-                    var superCount = GetSuperNumber(item);
+					var superCount = GetSuperNumber(item);
 
 					var action = new BottomActionViewModel
 					{
@@ -985,7 +985,7 @@ namespace TownFish.App.ViewModels
 				for (var i = bottom.Items.Count; i++ < 6; )
 					actions.Add (new BottomActionViewModel());
 
-                BottomActions = actions;
+				BottomActions = actions;
 			}
 
 			UpdateAppBadgeCount();
@@ -1043,7 +1043,7 @@ namespace TownFish.App.ViewModels
 
 		const string cDiscoveriesCountFormat = "{DiscoveriesCount}";
 
-		static Command sNoOpCommand = new Command (_ => {});
+		static readonly Command sNoOpCommand = new Command (_ => {});
 
 		public static string CurrentSearchTerm = "";
 
