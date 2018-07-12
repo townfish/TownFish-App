@@ -199,5 +199,11 @@ namespace StreetHawkCrossplatform
 				mInstallRegisterCallback.Invoke(installId);
 			}
 		}
+
+		public void OnInstallRegisterError (string p0)
+		{
+			// no idea what this does; was added by SH at some point,
+			// breaking the API contract
+		}
 	}
 }

@@ -32,6 +32,12 @@
             <param name="request">The request.</param>
             <param name="errorResponse">The error response.</param>
         </member>
+        <member name="M:Apptelic.UberWebViewLib.Droid.UberWebViewRenderer.#ctor(Android.Content.Context)">
+            <summary>
+            Creates a new instance of <see cref="T:Apptelic.UberWebViewLib.Droid.UberWebViewRenderer"/>.
+            </summary>
+            <param name="context"></param>
+        </member>
         <member name="M:Apptelic.UberWebViewLib.Droid.UberWebViewRenderer.InvokeScript(System.String)">
             <summary>
             Invokes the given script in the underlying WebView.
