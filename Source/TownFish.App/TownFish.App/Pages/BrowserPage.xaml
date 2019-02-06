@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			 xmlns:apptelic="clr-namespace:Apptelic.UberWebViewLib;assembly=Apptelic.UberWebView"
@@ -22,6 +22,15 @@
 				<Setter Property="VerticalOptions" Value="Center" />
 				<Setter Property="HorizontalOptions" Value="Center" />
 			</Style>
+            <Style x:Key="DiscoveriesBtnStyle" TargetType="Button">
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="BackgroundColor" Value="#509AF7" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="VerticalOptions" Value="Fill" />
+                <Setter Property="HorizontalOptions" Value="FillAndExpand" />
+                <Setter Property="BorderRadius" Value="0" />
+            </Style>
 		</ResourceDictionary>
 	</ContentPage.Resources>
 
@@ -391,7 +400,7 @@
 			  BackgroundColor="#E2E2E2"
 			  IsVisible="{Binding IsDiscoveriesVisible}">
 			<!-- Discoveries list -->
-			<ScrollView Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
+			<ScrollView x:Name="discoveriesScrollContainer" Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
 				<StackLayout x:Name="lstDiscoveries" Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="6" />
 			</ScrollView>
 			<!-- ListView BORKED on iOS!!!! -->
@@ -409,39 +418,31 @@
 			</ListView>-->
 
 			<!-- Discoveries info -->
-			<StackLayout x:Name="pnlDiscoveriesInfo" Spacing="0" Padding="24,18"
+			<StackLayout x:Name="pnlDiscoveriesInfo" Spacing="24" Padding="24,18"
 						 IsVisible="{Binding IsDiscoveriesInfoVisible}"
 						 BackgroundColor="#E2E2E2">
-				<Label Margin="0,12" XAlign="Center"
+				<Label HorizontalTextAlignment="Center"
 					   TextColor="Black" FontSize="14" FontAttributes="Bold"
 					   Text="There are currently no discoveries"
 					   IsVisible="{Binding IsDiscoveriesEmpty}" />
 
-				<Label Margin="0,12" XAlign="Center"
+				<Label HorizontalTextAlignment="Center"
 					   TextColor="Black" FontSize="14"
 					   Text="Discoveries are recommendations about local offers, free gifts, events, &amp; information" />
-				<Label Margin="0,12" XAlign="Center"
+				<Label HorizontalTextAlignment="Center"
 					   TextColor="Black" FontSize="14"
 					   Text="We use your profile information to match you to relevant discoveries" />
-				<Label Margin="0,12" XAlign="Center"
+				<Label HorizontalTextAlignment="Center"
 					   TextColor="Black" FontSize="14"
 					   Text="Make sure you’ve completed your profile and added personal interests so we only recommend discoveries that suit you." />
+                       
+                <StackLayout Margin="12,0" VerticalOptions="Fill" HorizontalOptions="FillAndExpand" Spacing="8">
+                    <Button Style="{StaticResource DiscoveriesBtnStyle}"
+                               Text="Update General Info" Clicked="BrowserPage_EditProfileTapped"  />
 
-				<Label Margin="0,12" XAlign="Center"
-					   TextColor="{Binding DiscoveriesLinkColour}" FontSize="14"
-					   Text="Improve your profile">
-					<Label.GestureRecognizers>
-						<TapGestureRecognizer Tapped="BrowserPage_EditProfileTapped" />
-					</Label.GestureRecognizers>
-				</Label>
-
-				<Label Margin="0,12" XAlign="Center"
-					   TextColor="{Binding DiscoveriesLinkColour}" FontSize="14"
-					   Text="Add more likes &amp; interests">
-					<Label.GestureRecognizers>
-						<TapGestureRecognizer Tapped="BrowserPage_EditLikesTapped" />
-					</Label.GestureRecognizers>
-				</Label>
+                    <Button Style="{StaticResource DiscoveriesBtnStyle}"
+                           Text="Update Likes &amp; Interests" Clicked="BrowserPage_EditLikesTapped"  />
+                </StackLayout>
 			</StackLayout>
 		</Grid>
 
