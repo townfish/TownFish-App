@@ -14,7 +14,7 @@ using Xamarin.Forms;
 using Newtonsoft.Json;
 
 using TownFish.App.Models;
-
+using TownFish.App.Helpers;
 
 namespace TownFish.App.ViewModels
 {
@@ -572,19 +572,19 @@ namespace TownFish.App.ViewModels
 
 		public bool IsDiscoveriesEmpty => DiscoveryItemsCount == 0;
 
-		public ObservableCollection<DiscoveryItemViewModel> DiscoveryItems
-		{
-			get { return Get<ObservableCollection<DiscoveryItemViewModel>>(); }
+        public ObservableRangeCollection<DiscoveryItemViewModel> DiscoveryItems
+        {
+            get { return Get<ObservableRangeCollection<DiscoveryItemViewModel>>(); }
 
-			set
-			{
-				if (Set (value))
-				{
-					OnPropertyChanged (nameof (IsDiscoveriesEmpty));
-					OnPropertyChanged (nameof (DiscoveryItemsCount));
-				}
-			}
-		}
+            set
+            {
+                if (Set(value))
+                {
+                    OnPropertyChanged(nameof(IsDiscoveriesEmpty));
+                    OnPropertyChanged(nameof(DiscoveryItemsCount));
+                }
+            }
+        }
 
 		public int NewDiscoveriesCount
 		{

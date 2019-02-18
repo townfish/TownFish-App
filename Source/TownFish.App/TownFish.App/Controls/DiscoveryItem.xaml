@@ -1,45 +1,75 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<Grid xmlns="http://xamarin.com/schemas/2014/forms"
-		xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-		x:Class="TownFish.App.Controls.DiscoveryItem">
-	<Grid.GestureRecognizers>
-		<TapGestureRecognizer Tapped="OnTapped" />
-	</Grid.GestureRecognizers>
+<?xml version="1.0" encoding="UTF-8" ?>
+<StackLayout x:Class="TownFish.App.Controls.DiscoveryItem"
+             xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:c="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms"
+             HorizontalOptions="FillAndExpand"
+             VerticalOptions="FillAndExpand"
+             IsClippedToBounds="True"
+             Spacing="0">
 
-	<StackLayout Spacing="0" Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" IsClippedToBounds="True">
-        <Image x:Name="imgPicture" Aspect="AspectFill" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Source="{Binding PictureSource}"/>
+    <c:CachedImage x:Name="imgPicture"
+                   HeightRequest="{Binding PictureHeight}"
+                   HorizontalOptions="FillAndExpand"
+                   VerticalOptions="FillAndExpand"
+                   Aspect="Fill"
+                   Source="{Binding PictureSource}" />
 
-        <Grid x:Name="pnlText" ColumnSpacing="0" BackgroundColor="White" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" IsClippedToBounds="True">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="auto" />
-				<ColumnDefinition Width="*" />
-			</Grid.ColumnDefinitions>
-			<Grid.RowDefinitions>
-				<RowDefinition Height="auto" />
-				<RowDefinition Height="auto" />
-				<RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-            </Grid.RowDefinitions>
+    <Grid x:Name="pnlText"
+          HorizontalOptions="FillAndExpand"
+          VerticalOptions="FillAndExpand"
+          BackgroundColor="White"
+          ColumnSpacing="0"
+          IsClippedToBounds="True">
 
-			<Label x:Name="lblTitle" Grid.Row="1" Grid.ColumnSpan="2" Margin="12,0"
-				   FontSize="18" FontAttributes="Bold" TextColor="Black"
-				   Text="{Binding Title}" />
-			<Label x:Name="lblText" Grid.Row="2" Grid.ColumnSpan="2" Margin="12,0"
-				   TextColor="Black" FontSize="14"
-				   Text="{Binding Text}" />
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-			<Label x:Name="lblTimeStamp" Grid.Row="3" Margin="12,0,6,12"
-				   TextColor="Gray" FontSize="12"
-				   Text="{Binding FormattedCreatedTime}" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
 
-            <Label x:Name="lblExpiresTimeStamp" Grid.Row="3" Grid.Column="1" Margin="6,0,12,12" HorizontalOptions="End"
-				   TextColor="Gray" FontSize="12"
-				   Text="{Binding FormattedExpiresTime}" />
+        <Label x:Name="lblTitle"
+               Grid.Row="1"
+               Grid.ColumnSpan="2"
+               Margin="12,0"
+               FontAttributes="Bold"
+               FontSize="18"
+               Text="{Binding Title}"
+               TextColor="Black" />
+        <Label x:Name="lblText"
+               Grid.Row="2"
+               Grid.ColumnSpan="2"
+               Margin="12,0"
+               FontSize="14"
+               Text="{Binding Text}"
+               TextColor="Black" />
 
-            <!-- Group not yet coming through from provider -->
-			<!--<Label x:Name="lblGroup" Grid.Row="3" Grid.Column="1" Margin="6,0,12,12"
-				   TextColor="Gray" FontSize="10" HorizontalOptions="End"
-				   Text="{Binding Group}" />-->
-		</Grid>
-	</StackLayout>
-</Grid>
+        <Label x:Name="lblTimeStamp"
+               Grid.Row="3"
+               Margin="12,0,6,12"
+               FontSize="12"
+               Text="{Binding FormattedCreatedTime}"
+               TextColor="Gray" />
+
+        <Label x:Name="lblExpiresTimeStamp"
+               Grid.Row="3"
+               Grid.Column="1"
+               Margin="6,0,12,12"
+               HorizontalOptions="End"
+               FontSize="12"
+               Text="{Binding FormattedExpiresTime}"
+               TextColor="Gray" />
+
+        <!--  Group not yet coming through from provider  -->
+        <!--<Label x:Name="lblGroup" Grid.Row="3" Grid.Column="1" Margin="6,0,12,12"
+                   TextColor="Gray" FontSize="10" HorizontalOptions="End"
+                   Text="{Binding Group}" />-->
+    </Grid>
+</StackLayout>
+

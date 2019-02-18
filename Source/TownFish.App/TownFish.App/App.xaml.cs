@@ -36,7 +36,9 @@ namespace TownFish.App
 			InitializeComponent();
 
 			DeviceID = deviceID;
-		}
+
+            WebImageDefaultHeight = (Xamarin.Essentials.DeviceDisplay.MainDisplayInfo.Width / Xamarin.Essentials.DeviceDisplay.MainDisplayInfo.Density) * 0.66;
+        }
 
 		#endregion Construction
 
@@ -694,7 +696,9 @@ namespace TownFish.App
 			}
 		}
 
-		public string DeviceID { get; }
+        public static double WebImageDefaultHeight { get; set; }
+
+        public string DeviceID { get; }
 
 		public static DateTime LastDiscoveriesViewTime
 		{

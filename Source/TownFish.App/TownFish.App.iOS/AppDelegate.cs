@@ -47,6 +47,8 @@ namespace TownFish.App.iOS
 
 			Forms.Init();
 
+            FFImageLoading.Forms.Platform.CachedImageRenderer.Init();
+
 			// NOTE: .ToString on old (iPhone 4?) device returns runtime junk text before the UUID,
 			// but .AsString seems to return just UUID text in all cases tested.
 			var deviceID = UIDevice.CurrentDevice.IdentifierForVendor.AsString();

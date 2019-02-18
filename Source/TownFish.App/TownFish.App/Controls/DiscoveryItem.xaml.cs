@@ -1,5 +1,5 @@
 ﻿using System;
-
+using FFImageLoading.Forms;
 using Xamarin.Forms;
 
 //using TownFish.App.Helpers;
@@ -7,8 +7,8 @@ using Xamarin.Forms;
 
 namespace TownFish.App.Controls
 {
-	public partial class DiscoveryItem: Grid //StackLayout
-	{
+	public partial class DiscoveryItem: StackLayout //Grid
+    {
 		#region Construction
 
 		public DiscoveryItem()
@@ -56,7 +56,7 @@ namespace TownFish.App.Controls
 
 		public event EventHandler Tapped;
 
-		public Image Image => imgPicture;
+		public CachedImage Image => imgPicture;
 
 		public ImageSource ImageSource => imgPicture.Source;
 

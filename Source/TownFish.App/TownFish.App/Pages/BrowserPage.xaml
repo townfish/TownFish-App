@@ -5,7 +5,7 @@
 			 xmlns:townfish="clr-namespace:TownFish.App;assembly=TownFish.App"
              xmlns:controls="clr-namespace:TownFish.App.Controls;assembly=TownFish.App"
 			 Title="TownFish"
-			 x:Class="TownFish.App.Pages.BrowserPage">
+			 x:Class="TownFish.App.Pages.BrowserPage" xmlns:ff="clr-namespace:FFImageLoading.Forms;assembly=FFImageLoading.Forms" xmlns:c="clr-namespace:TownFish.App.Controls">
 	<ContentPage.Resources>
 		<ResourceDictionary>
 			<townfish:SearchFormatConverter x:Key="searchCon"></townfish:SearchFormatConverter>
@@ -36,10 +36,10 @@
 
 	<Grid x:Name="rootGrid" RowSpacing="0" BackgroundColor="#484848">
 		<Grid.RowDefinitions>
-			<RowDefinition Height="auto" />
-			<RowDefinition Height="auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
-			<RowDefinition Height="auto"/>
+			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
 
 		<!-- WebView -->
@@ -53,15 +53,15 @@
 			  BackgroundColor="{Binding SubMenuBackgroundColour}"
 			  IsVisible="{Binding IsTopSubBarVisible}">
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
 
 			<Label Grid.Column="0" Text="{Binding TopAction1Label}"
@@ -125,11 +125,11 @@
 			  HorizontalOptions="Start" WidthRequest="420"
 			  BackgroundColor="{Binding LocationsBackgroundColour}">
 			<Grid.RowDefinitions>
-				<RowDefinition Height="auto" />
+				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
-				<RowDefinition Height="auto" />
-				<RowDefinition Height="auto" />
-				<RowDefinition Height="auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
 
 			<Grid BackgroundColor="{Binding LocationsContrastBackgroundColour}" Padding="10,5">
@@ -148,11 +148,11 @@
 								<Grid VerticalOptions="Center" Padding="10,12"
 									  ColumnSpacing="0" HeightRequest="24">
 									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="auto" />
+										<ColumnDefinition Width="Auto" />
 										<ColumnDefinition Width="12" />
 										<ColumnDefinition Width="*" />
-										<ColumnDefinition Width="auto" />
-										<ColumnDefinition Width="auto" />
+										<ColumnDefinition Width="Auto" />
+										<ColumnDefinition Width="Auto" />
 									</Grid.ColumnDefinitions>
 
 									<Image Source="{Binding LeftImage}"
@@ -175,7 +175,7 @@
 
 			<Grid Grid.Row="2" Padding="20,6">
 				<!--<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="auto" />
+					<ColumnDefinition Width="Auto" />
 					<ColumnDefinition Width="6" />
 					<ColumnDefinition Width="*" />
 				</Grid.ColumnDefinitions>
@@ -246,10 +246,10 @@
 			  BackgroundColor="{Binding MenuBarBackgroundColour}"
 			  HeightRequest="32" Padding="0,4" VerticalOptions="Start">
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition />
-				<ColumnDefinition Width="auto"/>
-				<ColumnDefinition Width="auto"/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="Auto"/>
 			</Grid.ColumnDefinitions>
 
 			<Label Grid.Column="1" VerticalOptions="Center"
@@ -319,9 +319,9 @@
 				<Grid ColumnSpacing="0"
 					  BackgroundColor="{Binding LocationsContrastBackgroundColour}">
 					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="auto" />
+						<ColumnDefinition Width="Auto" />
 						<ColumnDefinition Width="*" />
-						<ColumnDefinition Width="auto"/>
+						<ColumnDefinition Width="Auto"/>
 					</Grid.ColumnDefinitions>
 
 					<Image Grid.Column="0" Margin="8,4"
@@ -364,9 +364,9 @@
 			  BackgroundColor="{Binding MenuBarBackgroundColour}"
 			  HeightRequest="32" Padding="10,4" VerticalOptions="Start">
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="Auto" />
 			</Grid.ColumnDefinitions>
 
 			<Label Grid.Column="0" Margin="0,0"
@@ -396,26 +396,27 @@
 		</Grid>
 
 		<!-- Discoveries -->
-		<Grid x:Name="pnlDiscoveries" Grid.Row="1" Grid.RowSpan="2"
+		<Grid x:Name="pnlDiscoveries" Grid.Row="1" Grid.RowSpan="2" Margin="0" Padding="0" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand"
 			  BackgroundColor="#E2E2E2"
 			  IsVisible="{Binding IsDiscoveriesVisible}">
 			<!-- Discoveries list -->
-			<ScrollView x:Name="discoveriesScrollContainer" Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand">
-				<StackLayout x:Name="lstDiscoveries" Orientation="Vertical" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="6" />
-			</ScrollView>
+			<!-- <ScrollView x:Name="discoveriesScrollContainer" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Margin="0">
+				<StackLayout x:Name="lstDiscoveries" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Spacing="6" />
+			</ScrollView> -->
 			<!-- ListView BORKED on iOS!!!! -->
-			<!--<ListView x:Name="lstDiscoveries"
+			<ListView x:Name="lstDiscoveries" BackgroundColor="Transparent"
 					  HasUnevenRows="True" SeparatorVisibility="None"
-					  ItemsSource="{Binding DiscoveriesItems}"
-					  ItemTapped="lstDiscoveries_ItemTapped">
+					  ItemsSource="{Binding DiscoveryItems}" ItemTapped="lstDiscoveries_ItemTapped">
 				<ListView.ItemTemplate>
 					<DataTemplate>
 						<ViewCell>
-							<townfish:DiscoveriesItem />
+                            <ContentView BackgroundColor="Transparent" >
+							    <c:DiscoveryItem Margin="0,3" />
+                            </ContentView>
 						</ViewCell>
 					</DataTemplate>
 				</ListView.ItemTemplate>
-			</ListView>-->
+			</ListView>
 
 			<!-- Discoveries info -->
 			<StackLayout x:Name="pnlDiscoveriesInfo" Spacing="24" Padding="24,18"
@@ -454,7 +455,7 @@
 			<WebView Source="{Binding LoadingWebViewSource}"/>
 
 			<!-- splash image for first-time loading -->
-			<Image x:Name="imgSplash" Source="splash.png" HorizontalOptions="Center"
+			<ff:CachedImage x:Name="imgSplash" Source="splash.png" HorizontalOptions="Center"
 				   VerticalOptions="Center" />
 		</Grid>
 	</Grid>

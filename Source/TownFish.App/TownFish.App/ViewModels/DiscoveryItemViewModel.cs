@@ -77,6 +77,10 @@ namespace TownFish.App.ViewModels
 
         #region Properties
 
+        public double PictureScale { get; set; } = 1;
+
+        public double PictureHeight { get => PictureScale * App.WebImageDefaultHeight; }
+
         public string PictureUrl { get; set; }
 
 		public string LinkUrl { get; set; }
