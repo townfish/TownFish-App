@@ -27,7 +27,7 @@
     <MtouchArch>i386, x86_64</MtouchArch>
     <MtouchLink>None</MtouchLink>
     <MtouchDebug>True</MtouchDebug>
-    <CodesignKey>iPhone Developer</CodesignKey>
+    <CodesignKey>iPhone Developer: Alvyn Fasuyi (QLSRL9M243)</CodesignKey>
     <MtouchSdkVersion>
     </MtouchSdkVersion>
     <MtouchProfiling>False</MtouchProfiling>
@@ -40,6 +40,8 @@
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchFloat32>False</MtouchFloat32>
     <MtouchNoSymbolStrip>False</MtouchNoSymbolStrip>
+    <CodesignProvision>AdHoc Dist. for TownFish Ltd. (com.matt.townfish)</CodesignProvision>
+    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
@@ -61,6 +63,7 @@
     <MtouchTlsProvider>Default</MtouchTlsProvider>
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchFloat32>False</MtouchFloat32>
+    <CodesignKey>iPhone Developer: Alvyn Fasuyi (QLSRL9M243)</CodesignKey>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -88,7 +91,7 @@
     <MtouchFloat32>False</MtouchFloat32>
     <DeviceSpecificBuild>True</DeviceSpecificBuild>
     <MtouchNoSymbolStrip>False</MtouchNoSymbolStrip>
-    <CodesignKey>iPhone Distribution</CodesignKey>
+    <CodesignKey>iPhone Developer: Alvyn Fasuyi (QLSRL9M243)</CodesignKey>
     <CodesignProvision>AdHoc Dist. for TownFish Ltd. (com.matt.townfish)</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
@@ -99,10 +102,10 @@
     <WarningLevel>4</WarningLevel>
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <ConsolePause>false</ConsolePause>
-    <CodesignKey>iPhone Developer</CodesignKey>
+    <CodesignKey>iPhone Distribution</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <BuildIpa>true</BuildIpa>
-    <CodesignProvision />
+    <CodesignProvision>AdHoc Dist. for TownFish Ltd. (com.matt.townfish)</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
     <DebugType>none</DebugType>
@@ -123,7 +126,7 @@
     <MtouchUseThumb>False</MtouchUseThumb>
     <OptimizePNGs>True</OptimizePNGs>
     <MtouchFloat32>False</MtouchFloat32>
-    <CodesignKey>iPhone Developer</CodesignKey>
+    <CodesignKey>iPhone Developer: Alvyn Fasuyi (QLSRL9M243)</CodesignKey>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
     <DebugType>none</DebugType>
@@ -133,7 +136,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
     <MtouchArch>ARMv7, ARM64</MtouchArch>
-    <CodesignKey>iPhone Distribution: TownFish Limited (LK2389XQ78)</CodesignKey>
+    <CodesignKey>iPhone Developer: Alvyn Fasuyi (QLSRL9M243)</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <BuildIpa>True</BuildIpa>
     <IpaIncludeArtwork>False</IpaIncludeArtwork>
@@ -142,7 +145,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhoneSimulator'">
     <BuildIpa>True</BuildIpa>
     <IpaIncludeArtwork>False</IpaIncludeArtwork>
-    <CodesignKey>iPhone Developer</CodesignKey>
+    <CodesignKey>iPhone Developer: Alvyn Fasuyi (QLSRL9M243)</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <Optimize>true</Optimize>
   </PropertyGroup>
@@ -166,7 +169,7 @@
     <MtouchFloat32>False</MtouchFloat32>
     <BuildIpa>False</BuildIpa>
     <IpaIncludeArtwork>False</IpaIncludeArtwork>
-    <CodesignKey>iPhone Distribution: TownFish Limited (LK2389XQ78)</CodesignKey>
+    <CodesignKey>iPhone Developer: Alvyn Fasuyi (QLSRL9M243)</CodesignKey>
     <CodesignProvision>0f43ea35-2106-465a-a2f0-bbf00b0eeeae</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug-Ad-Hoc|iPhone'">
@@ -192,11 +195,12 @@
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchFloat32>False</MtouchFloat32>
     <DeviceSpecificBuild>False</DeviceSpecificBuild>
-    <CodesignKey>iPhone Distribution: TownFish Limited (LK2389XQ78)</CodesignKey>
+    <CodesignKey>iPhone Developer: Alvyn Fasuyi (QLSRL9M243)</CodesignKey>
     <CodesignProvision>0f43ea35-2106-465a-a2f0-bbf00b0eeeae</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'AppStore|iPhoneSimulator'">
     <Optimize>true</Optimize>
+    <CodesignKey>iPhone Developer: Alvyn Fasuyi (QLSRL9M243)</CodesignKey>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'Default' ">
     <AppExtensionDebugBundleId />
