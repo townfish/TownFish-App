@@ -1,4 +1,4 @@
-﻿//#define SH_OPTIONAL
+//#define SH_OPTIONAL
 
 using System;
 using System.Collections.Generic;
@@ -422,6 +422,7 @@ namespace TownFish.App
 						{
 							string imgUrl = null;
 							string linkUrl = null;
+                            double? scale = null;
 
 							var content = JsonConvert.DeserializeObject<Dictionary<string, string>> (item.content);
 							foreach (var key in content.Keys)
@@ -432,12 +433,14 @@ namespace TownFish.App
 									imgUrl = val;
 								else if (key == "url" || key.EndsWith ("link"))
 									linkUrl = val;
+
+                                if (key == "scale")
+                                    scale = double.Parse(val);
 							}
 
 							var created = string.IsNullOrEmpty(item.created) ? null : (DateTime?)DateTime.Parse(item.created, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
 							var modified = string.IsNullOrEmpty(item.modified) ? null : (DateTime?)DateTime.Parse(item.modified, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
 							var expires = string.IsNullOrEmpty(item.expires) ? null : (DateTime?)DateTime.Parse(item.expires, CultureInfo.CurrentCulture, DateTimeStyles.AssumeUniversal);
-
 
 							items.Add (new DiscoveryItemViewModel
 							{
@@ -448,7 +451,8 @@ namespace TownFish.App
 								Created = created,
 								Modified = modified,
 								Expires = expires,
-								Group = item.campaign
+                                Group = item.campaign,
+                                PictureScale = scale ?? 1.0
 							});
 						}
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace StreetHawkCrossplatform
@@ -95,6 +95,6 @@ namespace StreetHawkCrossplatform
 		/// A timestamp when the Feed item was deleted.
 		/// </summary>
 		public string deleted { get; set; }
-	}
+    }
 }
 
