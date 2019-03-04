@@ -127,9 +127,15 @@ namespace TownFish.App
 			AppCloseRequested?.Invoke (this, EventArgs.Empty);
 		}
 
-		#region StreetHawk
+        protected override void OnAppLinkRequestReceived(Uri uri)
+        {
+            // App opened through Universal App Link
+            base.OnAppLinkRequestReceived(uri);
+        }
 
-		async void InitStreetHawk()
+        #region StreetHawk
+
+        async void InitStreetHawk()
 		{
 			// NOTE: this code is derived from the SH Xamarin demo here:
 			// https://github.com/StreetHawkSDK/XamHawkDemoApp/blob/master/XamHawkDemo/XamHawkDemo/App.xaml.cs
@@ -799,4 +805,6 @@ namespace TownFish.App
 
 		#endregion Fields
 	}
+
+
 }
