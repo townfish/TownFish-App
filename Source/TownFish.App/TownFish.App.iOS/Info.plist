@@ -23,7 +23,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.matt.townfish</string>
 	<key>CFBundleVersion</key>
-	<string>190218</string>
+	<string>190415</string>
 	<key>CFBundleIconFiles</key>
 	<array>
 		<string>Icon-60@2x.png</string>
@@ -32,7 +32,7 @@
 		<string>Icon-Small-40@2x.png</string>
 	</array>
 	<key>CFBundleShortVersionString</key>
-	<string>1.3.6</string>
+	<string>1.3.7</string>
 	<key>UIStatusBarTintParameters</key>
 	<dict>
 		<key>UINavigationBar</key>
@@ -56,11 +56,6 @@
 	<true/>
 	<key>UIStatusBarHidden~ipad</key>
 	<true/>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>bluetooth-central</string>
-		<string>fetch</string>
-	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>TownFish is now using your location</string>
 	<key>NSLocationAlwaysUsageDescription</key>
@@ -79,5 +74,9 @@
 	<string>Launch</string>
 	<key>CFBundleName</key>
 	<string>TownFish</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 </dict>
 </plist>

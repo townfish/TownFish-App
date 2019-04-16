@@ -216,3 +216,9 @@ ModelManifest.xml
 # Mono debug symbols
 *.mdb
 /Source/TownFish.App/TownFish.App.Droid/TownFish.App.Droid.csproj.bak
+
+Source/\.mfractor/
+
+Source/\.DS_Store
+
+\.DS_Store

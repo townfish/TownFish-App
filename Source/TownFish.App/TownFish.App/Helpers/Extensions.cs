@@ -3,14 +3,24 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using Xamarin.Forms;
-
+using System.Text;
+using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Utilities.Encoders;
 
 namespace TownFish.App.Helpers
 {
-	static class Extensions
+    public static class Extensions
 	{
-	}
+        public static string GetMD5Hash(string input)
+        {
+            var data = Encoding.UTF8.GetBytes(input);
+            MD5Digest hash = new MD5Digest();
+            hash.BlockUpdate(data, 0, data.Length);
+            byte[] result = new byte[hash.GetDigestSize()];
+            hash.DoFinal(result, 0);
+            return Hex.ToHexString(result);
+        }
+    }
 
     public class ObservableRangeCollection<T> : ObservableCollection<T>
     {

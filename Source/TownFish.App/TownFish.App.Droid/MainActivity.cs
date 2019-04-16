@@ -1,29 +1,20 @@
-﻿//#define SH_NO_FEED
-
-using System;
-
+﻿using System;
 using Android.App;
+using Android.Content;
 using Android.Content.PM;
-using static Android.Provider.Settings;
-using Android.Runtime;
 using Android.OS;
+using Android.Runtime;
+using Android.Util;
 using Android.Views;
 using Android.Webkit;
-
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android;
-using Android.Content;
-using Android.Util;
+using static Android.Provider.Settings;
 
-#if !SH_NO_FEED
-using Com.Streethawk.Library.Feeds;
-#endif
-
-using StreetHawkCrossplatform;
 
 namespace TownFish.App.Droid
 {
-	[Activity (Label = "TownFish.App", Icon = "@drawable/icon",
+    [Activity (Label = "TownFish.App", Icon = "@drawable/icon",
         Theme = "@style/townfishTheme", MainLauncher = false, 
         ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation,
 		ScreenOrientation = ScreenOrientation.UserPortrait,
@@ -94,22 +85,15 @@ namespace TownFish.App.Droid
             IsActive = true;
 			base.OnCreate (bundle);
 
-#if DEBUG
+//#if DEBUG
 			if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
 				Android.Webkit.WebView.SetWebContentsDebuggingEnabled (true);
-#endif
+//#endif
+			
+            Forms.Init (this, bundle);
+            FFImageLoading.Forms.Platform.CachedImageRenderer.Init(false);
 
-			Forms.Init (this, bundle);
-
-			StreetHawkAnalytics.Init (this);
-
-#if !SH_NO_FEED
-			// separately initialise SH feeds
-			var shFeeds = DependencyService.Get<ISHFeedItemObserver>();
-			SHFeedItem.GetInstance (this).RegisterFeedItemObserver (shFeeds);
-#endif // !SH_NO_FEED
-
-			var deviceID = Secure.GetString (ApplicationContext.ContentResolver,
+            var deviceID = Secure.GetString (ApplicationContext.ContentResolver,
 					Secure.AndroidId);
 
 			mApp = new App (deviceID);

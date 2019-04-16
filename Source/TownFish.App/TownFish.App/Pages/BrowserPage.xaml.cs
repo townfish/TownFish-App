@@ -1,29 +1,94 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-
-using Xamarin.Forms;
-using Xamarin.Forms.PlatformConfiguration;
-using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-
-using Newtonsoft.Json;
-
 using Apptelic.UberWebViewLib;
-
-using TownFish.App.Controls;
+using Newtonsoft.Json;
 using TownFish.App.Helpers;
 using TownFish.App.Models;
 using TownFish.App.ViewModels;
-
+using Xamarin.Forms;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace TownFish.App.Pages
 {
     public partial class BrowserPage : ContentPage
     {
+        #region Fields
+
+#if DEBUG
+        const uint cLocationPanelAnimationTime = 250;
+        const uint cLoadingPanelAnimationTime = 250;
+#else
+        const uint cLocationPanelAnimationTime = 250;
+        const uint cLoadingPanelAnimationTime = 250;
+#endif
+
+        // minimum time to show loading for
+        const int cLoadingDelayMS = 1000;
+        const int cHideFirstLoadingDelayMS = 10000;
+
+        // apparently iOS status bar height is always 20 in XF (apparently, I said)
+        const double cTopPaddingiOS = 20;
+
+        const string cBeginLoadingAction = "app_schema_loading";
+        const string cBeginLoadingValue = "true";
+
+        const string cSchemaAction = "app_schema_reload";
+        const string cSchemaMethod = "twnfsh.getSchema()";
+
+        const string cMenusVisibleAction = "app_schema_visible";
+        const string cMenusVisibleMethod = "twnfsh.visibleMenus()";
+
+        const string cPopupMenuAction = "app_schema_popup_menu";
+        const string cPopupMenuMethod = "twnfsh.getPopupMenuSchema()";
+
+        const string cPushAction = "app_schema_push_messages";
+        const string cPushMethod = "twnfsh.getPushMessages()";
+
+        const string cShowDiscoveriesAction = "app_schema_show_feed";
+        const string cShowDiscoveriesValue = "true";
+        const string cHideDiscoveriesAction = "app_schema_hide_feed";
+        const string cHideDiscoveriesValue = "true";
+
+        const string cPerformAppSync = "app_sync";
+        const string cPerformAppSyncValue = "true";
+
+        const string cCallbackFormat = "twnfsh.runCallback('{0}')";
+
+        const string cMoreActions = null; // e.g. "Please Select:";
+        const string cCancel = "Cancel";
+
+        const string cCustomUserAgent = "com.townfish.app";
+
+        const string cPageLoadScript = "if (window.twnfsh && twnfsh.appReady) twnfsh.appReady();";
+
+
+        TownFishMenuMap mCurrentMenuMap;
+
+        bool pushTokenSynced = false;
+
+        bool mFirstLoading = true;
+        bool mFirstShowing = true;
+        DateTime mOpenedLoadingTime;
+
+        bool mIsSearchVisible;
+        bool mShowingSearch;
+        bool mHidingSearch;
+        bool mHidingDiscoveries;
+        bool mHidingLoading;
+
+        string mLastSourceUrl;
+
+        private bool mDiscoveriesInfoActive = false;
+
+        public BrowserPageViewModel ViewModel => BindingContext as BrowserPageViewModel;
+
+        #endregion Fields
+
         #region Construction
 
         public BrowserPage()
@@ -33,11 +98,12 @@ namespace TownFish.App.Pages
             // set custom user agent
             wbvContent.CustomUserAgent = cCustomUserAgent;
 
-            // set up JS bridge action scripts
-            wbvContent.PageLoadedScript = cPageLoadScript;
+            var playerHash = Extensions.GetMD5Hash(App.OnesignalPlayerId);
+            wbvContent.PageLoadedScript = $"window.playerHash='{playerHash}';" +"if (window.twnfsh && twnfsh.appReady)" + "{" +"twnfsh.appReady();" +"}";
 
             wbvContent.Actions = new Dictionary<string, string>
             {
+                { cPerformAppSync, cPerformAppSyncValue},
                 { cBeginLoadingAction, cBeginLoadingValue },
                 { cSchemaAction, cSchemaMethod },
                 { cMenusVisibleAction, cMenusVisibleMethod },
@@ -120,7 +186,7 @@ namespace TownFish.App.Pages
 
                    var url = ViewModel.OverflowImages.FirstOrDefault(i => i.Value == selection)?.Href;
                    if (!string.IsNullOrWhiteSpace(url))
-                       Navigate(App.BaseUrl + url);
+                       Navigate(Constants.BaseUrl + url);
                });
 
             ViewModel.LocationTapped += ViewModel_LocationTapped;
@@ -201,7 +267,7 @@ namespace TownFish.App.Pages
             try
             {
                 var model = JsonConvert.DeserializeObject<UberWebViewMessage>(msg);
-
+               
                 action = model.Action;
                 data = model.Result;
             }
@@ -286,6 +352,10 @@ namespace TownFish.App.Pages
 
                         HideDiscoveries();
                         break;
+
+                    case cPerformAppSync:
+                        PerformAppSync();
+                        break;
                 }
             }
             catch (Exception ex)
@@ -303,7 +373,7 @@ namespace TownFish.App.Pages
             var url = e.Url;
             var uri = new Uri(url);
 
-            if (uri.Host != App.SiteDomain && uri.Host != App.TwitterApiDomain &&
+            if (uri.Host != Constants.SiteDomain && uri.Host != Constants.TwitterApiDomain &&
                 !ViewModel.IsWhitelisted(url))
             {
                 e.Cancel = true;
@@ -339,7 +409,7 @@ namespace TownFish.App.Pages
 			*/
 
             var uri = new Uri(url);
-            if (uri.Host != App.SiteDomain)
+            if (uri.Host != Constants.SiteDomain)
             {
                 // for our site, don't reveal page until menu has been rendered,
                 // to avoid the 'jump' down problem; other sites show immediately as
@@ -410,7 +480,7 @@ namespace TownFish.App.Pages
             // we have to ask the schema to tell us to show discoveries, then it
             // sets the menu for us, but as we don't yet have a callback for that...
 
-            var url = App.ShowFeedUrl;
+            var url = Constants.ShowFeedUrl;
 
             Debug.WriteLine($"BrowserPage.App_BackgroundDiscoveriesReceived: " +
                     $"Navigating to {url}");
@@ -448,21 +518,21 @@ namespace TownFish.App.Pages
         {
             await HideDiscoveriesAsync();
 
-            Navigate(App.EditLikesUrl);
+            Navigate(Constants.EditLikesUrl);
         }
 
         async void BrowserPage_EditProfileTapped(object sender, EventArgs e)
         {
             await HideDiscoveriesAsync();
 
-            Navigate(App.EditProfileUrl);
+            Navigate(Constants.EditProfileUrl);
         }
 
         void BrowserPage_MemberAgreementTapped(object sender, EventArgs e)
         {
             HideSearchPanel();
 
-            Navigate(App.TermsUrl);
+            Navigate(Constants.TermsUrl);
         }
 
         void ViewModel_MenusLoaded(object sender, EventArgs e)
@@ -470,10 +540,6 @@ namespace TownFish.App.Pages
             // only hide loading if not in the process of hiding discoveries
             if (!mHidingDiscoveries)
                 Device.BeginInvokeOnMainThread(() => HideLoading());
-
-            // tell app to check sync token in case login changed
-            // (i.e. user logged out, or new user logged in)
-            App.CheckCuid(ViewModel.SyncToken);
         }
 
         void ViewModel_LocationTapped(object sender, EventArgs e)
@@ -542,7 +608,7 @@ namespace TownFish.App.Pages
                 return;
 
             // if it's a TF URL hide the discoveries and save URL for returning to later
-            if (url.StartsWith(App.BaseUrl))
+            if (url.StartsWith(Constants.BaseUrl))
             {
                 HideDiscoveries();
 
@@ -807,76 +873,37 @@ namespace TownFish.App.Pages
 			Fade (caller);
 		}
 
-		#endregion Methods
+        void PerformAppSync()
+         {
+            if (pushTokenSynced)
+                return;
 
-		#region Properties
+            if (ViewModel == null)
+                return;
 
-		public BrowserPageViewModel ViewModel => BindingContext as BrowserPageViewModel;
+            if (string.IsNullOrEmpty(ViewModel.SyncToken))
+                return;
 
-		#endregion Properties
+            Device.BeginInvokeOnMainThread(async() =>
+            {
+               try
+               {
+                   var url = string.Format(Constants.SHSyncUrl, ViewModel.SyncToken, App.OnesignalPlayerId);
+                   var result = await App.Client.GetAsync(url);
+                   if (result.IsSuccessStatusCode)
+                       pushTokenSynced = true;
+                }
+               catch 
+               {
+                
+               }
+               finally
+               {
 
-		#region Fields
+               }
+            });
+        }
 
-#if DEBUG
-		const uint cLocationPanelAnimationTime = 250;
-		const uint cLoadingPanelAnimationTime = 250;
-#else
-		const uint cLocationPanelAnimationTime = 250;
-		const uint cLoadingPanelAnimationTime = 250;
-#endif
-
-		// minimum time to show loading for
-		const int cLoadingDelayMS = 1000;
-		const int cHideFirstLoadingDelayMS = 10000;
-
-		// apparently iOS status bar height is always 20 in XF (apparently, I said)
-		const double cTopPaddingiOS = 20;
-
-		const string cPageLoadScript = "if (window.twnfsh && twnfsh.appReady) twnfsh.appReady();";
-
-		const string cBeginLoadingAction = "app_schema_loading";
-		const string cBeginLoadingValue = "true";
-
-		const string cSchemaAction = "app_schema_reload";
-		const string cSchemaMethod = "twnfsh.getSchema()";
-
-		const string cMenusVisibleAction = "app_schema_visible";
-		const string cMenusVisibleMethod = "twnfsh.visibleMenus()";
-
-		const string cPopupMenuAction = "app_schema_popup_menu";
-		const string cPopupMenuMethod = "twnfsh.getPopupMenuSchema()";
-
-		const string cPushAction = "app_schema_push_messages";
-		const string cPushMethod = "twnfsh.getPushMessages()";
-
-		const string cShowDiscoveriesAction = "app_schema_show_feed";
-		const string cShowDiscoveriesValue = "true";
-		const string cHideDiscoveriesAction = "app_schema_hide_feed";
-		const string cHideDiscoveriesValue = "true";
-
-		const string cCallbackFormat = "twnfsh.runCallback('{0}')";
-
-		const string cMoreActions = null; // e.g. "Please Select:";
-		const string cCancel = "Cancel";
-
-		const string cCustomUserAgent = "com.townfish.app";
-
-		TownFishMenuMap mCurrentMenuMap;
-
-		bool mFirstLoading = true;
-		bool mFirstShowing = true;
-		DateTime mOpenedLoadingTime;
-
-		bool mIsSearchVisible;
-		bool mShowingSearch;
-		bool mHidingSearch;
-		bool mHidingDiscoveries;
-		bool mHidingLoading;
-
-		string mLastSourceUrl;
-
-		private bool mDiscoveriesInfoActive = false;
-
-		#endregion Fields
-	}
+        #endregion Methods
+    }
 }

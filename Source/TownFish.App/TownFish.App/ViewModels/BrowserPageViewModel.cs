@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
+//using System.Net.Http;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 
 using TownFish.App.Models;
 using TownFish.App.Helpers;
+using System.Net.Http;
 
 namespace TownFish.App.ViewModels
 {
@@ -45,7 +46,7 @@ namespace TownFish.App.ViewModels
 				url = url.Replace ("{size}", "hdpi"); // HACK: force sizes for now; should be item.Size);
 				url = url.Replace ("{color}", mItem.Color);
 
-				return App.BaseUrl + url;
+				return Constants.BaseUrl + url;
 			}
 
 			#endregion Methods
@@ -616,7 +617,7 @@ namespace TownFish.App.ViewModels
 				using (var client = new HttpClient())
 				{
 					var resultJson = await client.GetStringAsync(
-							App.BaseUrl + mLocationApiFormat.Replace("{term}", SearchTerm.Trim()));
+                            Constants.BaseUrl + mLocationApiFormat.Replace("{term}", SearchTerm.Trim()));
 
 					// if a selection has already been made, ignore these results
 					if (string.IsNullOrEmpty (SearchTerm))
@@ -640,7 +641,7 @@ namespace TownFish.App.ViewModels
 
 		public void SetLocation (string cityID)
 		{
-			OnNavigateRequested (App.BaseUrl + mLocationSetFormat.Replace ("{id}", cityID));
+			OnNavigateRequested (Constants.BaseUrl + mLocationSetFormat.Replace ("{id}", cityID));
 		}
 
 		public void LoadMenuMap (TownFishMenuMap map)
@@ -656,6 +657,7 @@ namespace TownFish.App.ViewModels
 				mWhitelistUrls = map.WhitelistUrls;
 
 			SyncToken = map.SyncToken;
+            App.SyncToken = SyncToken;
 
 			try
 			{
@@ -684,7 +686,7 @@ namespace TownFish.App.ViewModels
 					// set this now that we know it
 					LocationName = WebUtility.HtmlDecode (CurrentLocation.Name);
 
-					InfoLocationIcon = App.BaseUrl + map.LocationIcons.Info
+					InfoLocationIcon = Constants.BaseUrl + map.LocationIcons.Info
 							.Replace ("{size}", size)
 							.Replace ("{color}", colour);
 
@@ -693,19 +695,19 @@ namespace TownFish.App.ViewModels
 					{
 						loc.Colour = LocationsTextColour;
 
-						loc.LeftImage = App.BaseUrl + map.LocationIcons.Pin
+						loc.LeftImage = Constants.BaseUrl + map.LocationIcons.Pin
 							.Replace ("{size}", size)
 							.Replace ("{color}", colour);
 
 						if (loc.ID == CurrentLocation.ID)
 						{
 							loc.IsSelected = true;
-							loc.RightImage = App.BaseUrl + map.LocationIcons.Tick
+							loc.RightImage = Constants.BaseUrl + map.LocationIcons.Tick
 									.Replace ("{size}", size)
 									.Replace ("{color}", colour);
 						}
 
-						loc.LockLocationIcon = App.BaseUrl + map.LocationIcons.Lock
+						loc.LockLocationIcon = Constants.BaseUrl + map.LocationIcons.Lock
 								.Replace ("{size}", size)
 								.Replace ("{color}", colour);
 
@@ -745,7 +747,7 @@ namespace TownFish.App.ViewModels
 				case "link":
 				case "back":
 					return new Command (_ =>
-						{ OnNavigateRequested (App.BaseUrl + item.Href); });
+						{ OnNavigateRequested (Constants.BaseUrl + item.Href); });
 
 				case "noop":
 					return sNoOpCommand;
@@ -1025,7 +1027,7 @@ namespace TownFish.App.ViewModels
 				url = url.Replace("{size}", "hdpi"); // HACK: force sizes for now; should be item.Size);
 				url = url.Replace("{color}", item.Color);
 
-				return App.BaseUrl + url;
+				return Constants.BaseUrl + url;
 			}
 			else if (item.Type == "heading")
 			{

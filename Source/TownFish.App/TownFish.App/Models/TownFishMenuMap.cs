@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 
 namespace TownFish.App.Models
@@ -53,8 +54,15 @@ namespace TownFish.App.Models
 
 	public class UberWebViewMessage
 	{
-		public string Action { get; set; }
+        [JsonProperty(PropertyName = "action")]
+        public string Action { get; set; }
 
-		public string Result { get; set;}
-	}
+        [JsonProperty(PropertyName = "result")]
+        public string Result { get; set;}
+
+        public UberWebViewMessage()
+        {
+
+        }
+    }
 }
