@@ -9,6 +9,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Com.OneSignal;
 using Com.OneSignal.Abstractions;
+using Microsoft.AppCenter;
+using Microsoft.AppCenter.Analytics;
+using Microsoft.AppCenter.Crashes;
 using Newtonsoft.Json;
 using Realms;
 using TownFish.App.Helpers;
@@ -17,6 +20,7 @@ using TownFish.App.Pages;
 using TownFish.App.ViewModels;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
+using Device = Xamarin.Forms.Device;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
 namespace TownFish.App
@@ -156,6 +160,7 @@ namespace TownFish.App
             mSleepTime = null;
             mResumedTime = null;
 
+            InitializeAppCenter();
             InitOneSignal();
 
             if(Device.RuntimePlatform == Device.iOS)
@@ -241,6 +246,14 @@ namespace TownFish.App
         }
 
         #region Onesignal
+
+        void InitializeAppCenter()
+        {
+            AppCenter.Start("android=de2720f8-f06b-4cdc-b177-d5c716848991;" +
+                  "uwp={Your UWP App secret here};" +
+                  "ios=e68a22ee-57cc-4633-ac88-e45cb490399e;",
+                  typeof(Analytics), typeof(Crashes));
+        }
 
         async void InitOneSignal()
         {
