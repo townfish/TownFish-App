@@ -9,6 +9,7 @@ using Xamarin.Forms;
 
 using TownFish.App.Models;
 using TownFish.App.ViewModels;
+using Newtonsoft.Json;
 
 namespace TownFish.App
 {
@@ -84,4 +85,34 @@ namespace TownFish.App
 			throw new NotImplementedException();
 		}
 	}
+
+    //public class UberWebViewMessageConverter : JsonConverter
+    //{
+    //    public override bool CanConvert(Type objectType)
+    //    {
+    //        return objectType == typeof(UberWebViewMessage);
+    //    }
+
+    //    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    //    {
+    //        if (reader.TokenType == JsonToken.StartObject)
+    //        {
+    //            var dict = new Dictionary<string, string>();
+    //            serializer.Populate(reader, dict);
+    //            return new UberWebViewMessage(dict["action"], dict["result"]);
+    //        }
+
+    //        //if (reader.TokenType == JsonToken.String)
+    //        //{
+    //        //    return new UberWebViewMessage((string)reader.Value);
+    //        //}
+
+    //        return null;
+    //    }
+
+    //    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    //    {
+    //        throw new NotImplementedException();
+    //    }
+    //}
 }

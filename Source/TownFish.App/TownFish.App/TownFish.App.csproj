@@ -72,6 +72,9 @@
     <Compile Include="Models\FeedsModel.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Models\RecievedPayload.cs" />
+    <Compile Include="Controls\UberWebView.cs" />
+    <Compile Include="Controls\ICookieStore.cs" />
+    <Compile Include="Controls\IUberWebViewRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Pages\BrowserPage.xaml">
@@ -80,9 +83,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Apptelic.UberWebView">
-      <HintPath>..\..\References\Apptelic.UberWebView.dll</HintPath>
-    </Reference>
     <Reference Include="Xamarin.Forms.Core">
       <HintPath>..\..\packages\Xamarin.Forms.3.6.0.293080\lib\netstandard1.0\Xamarin.Forms.Core.dll</HintPath>
     </Reference>

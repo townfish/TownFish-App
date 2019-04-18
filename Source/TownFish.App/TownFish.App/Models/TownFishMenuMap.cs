@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-
+using Xamarin.Forms.Internals;
 
 namespace TownFish.App.Models
 {
@@ -52,6 +52,7 @@ namespace TownFish.App.Models
 		#endregion
 	}
 
+    [Preserve]
 	public class UberWebViewMessage
 	{
         [JsonProperty(PropertyName = "action")]
@@ -59,10 +60,5 @@ namespace TownFish.App.Models
 
         [JsonProperty(PropertyName = "result")]
         public string Result { get; set;}
-
-        public UberWebViewMessage()
-        {
-
-        }
     }
 }

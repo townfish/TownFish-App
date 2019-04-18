@@ -5,9 +5,7 @@ using Xamarin.Forms.Platform.iOS;
 
 using Foundation;
 using UIKit;
-
-using Apptelic.UberWebViewLib.iOS;
-
+using TownFish.App.iOS.Renderers;
 
 namespace TownFish.App.iOS
 {

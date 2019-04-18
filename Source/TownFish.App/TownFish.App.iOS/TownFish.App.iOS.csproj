@@ -230,6 +230,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="FodyWeavers.xml" />
+    <Compile Include="Renderers\UberWebViewRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TownFish.App\TownFish.App.csproj">
@@ -251,10 +252,6 @@
     <BundleResource Include="Resources\Icon-Small%403x.png" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Apptelic.UberWebView.iOS, Version=2.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\References\Apptelic.UberWebView.iOS.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />

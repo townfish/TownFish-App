@@ -37,12 +37,12 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AndroidLinkMode>Full</AndroidLinkMode>
     <JavaMaximumHeapSize>2G</JavaMaximumHeapSize>
     <Debugger>Xamarin</Debugger>
     <AndroidSupportedAbis>arm64-v8a;armeabi-v7a;x86;x86_64</AndroidSupportedAbis>
     <AndroidEnableMultipleDex>false</AndroidEnableMultipleDex>
 <AndroidUseSharedRuntime>true</AndroidUseSharedRuntime>
+<AndroidLinkMode>Full</AndroidLinkMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -51,7 +51,6 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     <JavaMaximumHeapSize>2G</JavaMaximumHeapSize>
     <Debugger>.Net (Xamarin)</Debugger>
@@ -208,9 +207,6 @@
     <Reference Include="OneSignal.Android.Binding">
       <HintPath>..\..\packages\Com.OneSignal.3.2.2\lib\MonoAndroid10\OneSignal.Android.Binding.dll</HintPath>
     </Reference>
-    <Reference Include="Apptelic.UberWebView.Droid">
-      <HintPath>..\..\References\Release\Apptelic.UberWebView.Droid.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\PlatformHelper.cs" />
@@ -220,6 +216,7 @@
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SpashActivity.cs" />
+    <Compile Include="Renderers\UberWebViewRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

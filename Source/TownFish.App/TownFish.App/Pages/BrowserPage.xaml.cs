@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Apptelic.UberWebViewLib;
 using Newtonsoft.Json;
 using TownFish.App.Helpers;
 using TownFish.App.Models;
@@ -266,10 +265,9 @@ namespace TownFish.App.Pages
 
             try
             {
-                var model = JsonConvert.DeserializeObject<UberWebViewMessage>(msg);
-               
-                action = model.Action;
-                data = model.Result;
+                var result = JsonConvert.DeserializeObject<UberWebViewMessage>(msg);
+                action = result.Action;
+                data = result.Result;
             }
             catch (Exception ex)
             {
@@ -419,7 +417,7 @@ namespace TownFish.App.Pages
             }
         }
 
-        void UberWebView_NavigationFailed(object sender, UberWebView.NavigationException ex)
+        void UberWebView_NavigationFailed(object sender, Controls.UberWebView.NavigationException ex)
         {
             // HACK! ignore iOS -999 (nav cancelled?) error; appears harmless
             if (Device.RuntimePlatform == Device.iOS && ex.ErrorCode == -999)

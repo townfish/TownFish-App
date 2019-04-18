@@ -19,8 +19,6 @@ using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
 [assembly: XamlCompilation(XamlCompilationOptions.Compile)]
-
-
 namespace TownFish.App
 {
     public partial class App: Application

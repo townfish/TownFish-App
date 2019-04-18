@@ -45,7 +45,7 @@
 		<!-- WebView -->
 		<!-- don't bind to SourceUrl as we decide manually whether to navigate in Navigate() -->
 		<!--Source="{Binding SourceUrl}"-->
-		<apptelic:UberWebView x:Name="wbvContent" Grid.Row="2" 
+		<controls:UberWebView x:Name="wbvContent" Grid.Row="2" 
                               VerticalOptions="Fill" HorizontalOptions="Fill" />
 
 		<!-- Top Sub-Menu Bar -->
