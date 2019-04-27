@@ -8,9 +8,10 @@ using Android.Util;
 using Android.Views;
 using Android.Webkit;
 using Xamarin.Forms;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 using static Android.Provider.Settings;
-
+using Log = Android.Util.Log;
 
 namespace TownFish.App.Droid
 {
@@ -91,16 +92,24 @@ namespace TownFish.App.Droid
 //#endif
 			
             Forms.Init (this, bundle);
+
+            //for on restart by notif clicked
+            string nativeParam = null;
+            if (bundle != null)
+            {
+                bundle.KeySet().ForEach(key => Log.Debug("found bundle key :", $" {key}"));
+                //nativeParam = bundle.KeySet.GetString("data");
+            }
+
             FFImageLoading.Forms.Platform.CachedImageRenderer.Init(false);
 
             var deviceID = Secure.GetString (ApplicationContext.ContentResolver,
 					Secure.AndroidId);
 
-			mApp = new App (deviceID);
+			mApp = new App (deviceID, nativeParam);
 			mApp.AppCloseRequested += App_AppCloseRequested;
 
-			LoadApplication (mApp);
-            OnNewIntent(Intent);
+            LoadApplication(mApp);
         }
 
         void App_AppCloseRequested (object sender, EventArgs e)
