@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
-//using System.Net.Http;
+using System.Net.Http;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
@@ -15,7 +15,7 @@ using Newtonsoft.Json;
 
 using TownFish.App.Models;
 using TownFish.App.Helpers;
-using System.Net.Http;
+//using System.Net.Http;
 
 namespace TownFish.App.ViewModels
 {
