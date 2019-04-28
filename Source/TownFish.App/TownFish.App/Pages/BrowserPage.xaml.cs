@@ -817,9 +817,9 @@ namespace TownFish.App.Pages
 			{
 
 				pnlLoading.Opacity = 1;
-				pnlLoading.TranslationX = pnlLoading.Width;
+				//pnlLoading.TranslationX = pnlLoading.Width;
 
-				await pnlLoading.TranslateTo (0, 0, cLoadingPanelAnimationTime, Easing.CubicInOut);
+				await pnlLoading.TranslateTo (0, 0, cLoadingPanelAnimationTime, Easing.CubicIn);
 			}
 		}
 
@@ -833,7 +833,7 @@ namespace TownFish.App.Pages
 						$"original caller = {caller}");
 						//, "Cancel");
 
-				await pnlLoading.FadeTo (0, cLoadingPanelAnimationTime, Easing.CubicIn);
+				await pnlLoading.FadeTo (0, cLoadingPanelAnimationTime, Easing.CubicInOut);
 
 				// make sure we only show splash loading once
 				if (mFirstLoading)
