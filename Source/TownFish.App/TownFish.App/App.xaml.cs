@@ -12,6 +12,7 @@ using Com.OneSignal.Abstractions;
 using Microsoft.AppCenter;
 using Microsoft.AppCenter.Analytics;
 using Microsoft.AppCenter.Crashes;
+using Microsoft.AppCenter.Push;
 using Newtonsoft.Json;
 using Realms;
 using TownFish.App.Helpers;
@@ -234,6 +235,11 @@ namespace TownFish.App
         {
             // App opened through Universal App Link
             base.OnAppLinkRequestReceived(uri);
+
+            if (!(MainPage is BrowserPage))
+                return;
+
+            (MainPage as BrowserPage)?.LoadApplink(uri.OriginalString);
         }
 
         //called when notif is clicked and app ia already launched
@@ -252,7 +258,7 @@ namespace TownFish.App
             AppCenter.Start("android=de2720f8-f06b-4cdc-b177-d5c716848991;" +
                   "uwp={Your UWP App secret here};" +
                   "ios=e68a22ee-57cc-4633-ac88-e45cb490399e;",
-                  typeof(Analytics), typeof(Crashes));
+                  typeof(Analytics), typeof(Crashes), typeof(Push));
         }
 
         async void InitOneSignal()
@@ -264,6 +270,7 @@ namespace TownFish.App
                 .HandleNotificationOpened(HandleNotificationOpened)
                 .EndInit();
 
+            OneSignal.Current.SetLogLevel(LOG_LEVEL.VERBOSE, LOG_LEVEL.NONE);
             OneSignal.Current.IdsAvailable(IdsAvailable);
 
             //Optional: Callback when receive json push.
@@ -514,7 +521,6 @@ namespace TownFish.App
         private void IdsAvailable(string userID, string pushToken)
         {
             OnesignalPlayerId = userID;
-            SyncToken = pushToken;
 
             if ((Device.RuntimePlatform == Device.iOS) && MainPage.GetType() == typeof(BrowserPage))
                 return;

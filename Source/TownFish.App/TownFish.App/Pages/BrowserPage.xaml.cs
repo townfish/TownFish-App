@@ -203,6 +203,20 @@ namespace TownFish.App.Pages
             Navigate(source);
         }
 
+        public void LoadApplink(string link)
+        {
+            if (string.IsNullOrEmpty(link))
+                return;
+
+            ShowLoading();
+
+            // now start at the specified source URL, clearing it first to indicate we're not there yet
+            //var source = ViewModel.SourceUrl;
+            ViewModel.SourceUrl = null;
+
+            Navigate(link);
+        }
+
         protected override bool OnBackButtonPressed()
         {
             // Hello! When did this appear?!

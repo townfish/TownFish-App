@@ -167,6 +167,9 @@
     <Reference Include="System.Net.Http">
       <HintPath>..\..\..\..\..\..\..\..\..\Library\Frameworks\Xamarin.iOS.framework\Versions\12.8.0.0\lib\mono\Xamarin.iOS\System.Net.Http.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AppCenter.Push">
+      <HintPath>..\..\packages\Microsoft.AppCenter.Push.1.14.0\lib\portable-net45+win8+wpa81+wp8\Microsoft.AppCenter.Push.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

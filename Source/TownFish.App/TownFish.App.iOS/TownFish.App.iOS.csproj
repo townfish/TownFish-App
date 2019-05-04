@@ -103,10 +103,9 @@
     <WarningLevel>4</WarningLevel>
     <MtouchArch>ARMv7, ARM64</MtouchArch>
     <ConsolePause>false</ConsolePause>
-    <CodesignKey>iPhone Distribution: TownFish Limited (LK2389XQ78)</CodesignKey>
+    <CodesignKey>iPhone Distribution</CodesignKey>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <BuildIpa>true</BuildIpa>
-    <CodesignProvision>Store Distribution Profile</CodesignProvision>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
     <DebugType>none</DebugType>
@@ -237,6 +236,11 @@
       <Name>TownFish.App</Name>
       <Project>{4318E404-A1B4-4028-AC6E-D2673530AF49}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\OneSignalNotificationServiceExtension\OneSignalNotificationServiceExtension.csproj">
+      <IsAppExtension>true</IsAppExtension>
+      <Project>{776F78D9-0B23-41DB-AD34-842A1840DF10}</Project>
+      <Name>OneSignalNotificationServiceExtension</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\splash.png" />
@@ -337,6 +341,12 @@
     </Reference>
     <Reference Include="Microsoft.AppCenter.Analytics.iOS.Bindings">
       <HintPath>..\..\packages\Microsoft.AppCenter.Analytics.1.14.0\lib\Xamarin.iOS10\Microsoft.AppCenter.Analytics.iOS.Bindings.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AppCenter.Push">
+      <HintPath>..\..\packages\Microsoft.AppCenter.Push.1.14.0\lib\Xamarin.iOS10\Microsoft.AppCenter.Push.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AppCenter.Push.iOS.Bindings">
+      <HintPath>..\..\packages\Microsoft.AppCenter.Push.1.14.0\lib\Xamarin.iOS10\Microsoft.AppCenter.Push.iOS.Bindings.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

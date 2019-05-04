@@ -23,7 +23,7 @@
 	<key>CFBundleIdentifier</key>
 	<string>com.matt.townfish</string>
 	<key>CFBundleVersion</key>
-	<string>190415</string>
+	<string>190504</string>
 	<key>CFBundleIconFiles</key>
 	<array>
 		<string>Icon-60@2x.png</string>
@@ -32,7 +32,7 @@
 		<string>Icon-Small-40@2x.png</string>
 	</array>
 	<key>CFBundleShortVersionString</key>
-	<string>1.3.7</string>
+	<string>1.3.8</string>
 	<key>UIStatusBarTintParameters</key>
 	<dict>
 		<key>UINavigationBar</key>
@@ -78,5 +78,9 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+	<key>OneSignal_app_groups_key</key>
+	<string>group.com.matt.townfish.onesignal</string>
+	<key>OneSignal_disable_badge_clearing</key>
+	<string>No</string>
 </dict>
 </plist>
